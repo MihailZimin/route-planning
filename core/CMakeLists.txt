@@ -6,3 +6,5 @@ set(PROJECT_SOURCES
 )
 
 add_library(core SHARED ${PROJECT_SOURCES})
+set_target_properties(core PROPERTIES PUBLIC_HEADER data.h)
+target_include_directories(core PUBLIC .)

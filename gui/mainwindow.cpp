@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 
-#include "../core/data.h"
 #include "./ui_mainwindow.h"
+#include "data.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
