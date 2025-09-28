@@ -20,7 +20,7 @@ dev = [
 
 [tool.ruff.lint]
 select = ["ALL"]
-ignore = ["D203", "D213", "COM812"]
+ignore = ["D203", "D213", "COM812", "D200", "D212"]
 
 # Allow fix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]
