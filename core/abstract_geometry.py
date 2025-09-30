@@ -1,4 +1,5 @@
 """Abstract geometry classes for core geometry objects."""
+import json
 from abc import ABC, abstractmethod
 
 
@@ -14,7 +15,6 @@ class ABCGeo(ABC):
         """
 
     @classmethod
-    @abstractmethod
     def load(cls, json_data: str) -> "ABCGeo":
         """
         Create object from JSON string.
@@ -26,3 +26,4 @@ class ABCGeo(ABC):
             New instance of the class.
 
         """
+        return cls(*json.loads(json_data))
