@@ -1,6 +1,8 @@
 """Line class for core."""
-from abstract_geometry import ABCGeo
-from point import Point
+import json
+
+from .abstract_geometry import ABCGeo
+from .point import Point
 
 
 class Line(ABCGeo):
@@ -24,9 +26,10 @@ class Line(ABCGeo):
         """
         Return JSON string representation of the object.
         """
+        return json.dumps((self._start.save(), self._end.save()))
 
     @classmethod
-    def load(cls, json_data: str) -> None:
+    def load(cls, json_data: str) -> "Line":
         """
         Create object from JSON string.
 
@@ -37,6 +40,8 @@ class Line(ABCGeo):
             New instance of the class.
 
         """
+        json_string = json.loads(json_data)
+        return cls(Point.load(json_string[0]), Point.load(json_string[1]))
 
     @property
     def start(self) -> Point:
@@ -73,3 +78,9 @@ class Line(ABCGeo):
 
         """
         self._end = new_end
+
+    def __str__(self) -> str:
+        """
+        Return string representation of line.
+        """
+        return f"{self._start!s}, {self._end!s}"
