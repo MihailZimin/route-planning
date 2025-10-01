@@ -68,3 +68,11 @@ class Point(ABCGeo):
         Return string representation of point.
         """
         return f"({self._x}, {self._y})"
+
+    def __eq__(self, other):
+        """
+        Compare two points.
+        """
+        if not isinstance(other, Point):
+            return False
+        return self.x == other.x and self.y == other.y

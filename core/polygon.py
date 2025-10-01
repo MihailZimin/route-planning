@@ -1,6 +1,8 @@
 """Polygon class for core."""
-from abstract_geometry import ABCGeo
-from point import Point
+import json
+
+from .abstract_geometry import ABCGeo
+from .point import Point
 
 
 class Polygon(ABCGeo):
@@ -24,6 +26,7 @@ class Polygon(ABCGeo):
         """
         Return JSON string representation of the object.
         """
+        return json.dumps([point.save() for point in self._points])
 
     @classmethod
     def load(cls, json_data: str) -> None:
@@ -37,6 +40,7 @@ class Polygon(ABCGeo):
             New instance of the class.
 
         """
+        return cls([Point.load(el) for el in json.loads(json_data)])
 
     @property
     def points(self) -> list[Point]:
@@ -55,3 +59,9 @@ class Polygon(ABCGeo):
 
         """
         self._points = new_points
+
+    def __str__(self) -> str:
+        """
+        Return string representation of Polygon.
+        """
+        return f"{[str(point) for point in self._points]}"

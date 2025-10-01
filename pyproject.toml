@@ -18,6 +18,9 @@ dev = [
     "ruff>=0.13.2",
 ]
 
+[tool.ruff]
+line-length = 100
+
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = ["D203", "D213", "COM812", "D200", "D212", "S101", "PLR2004", "INP001"]
