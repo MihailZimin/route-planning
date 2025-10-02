@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>961</width>
+    <height>641</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Траектория БПЛА</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>PictTrajectory/drone.png</normaloff>PictTrajectory/drone.png</iconset>
+  </property>
+  <widget class="QWidget" name="CentralWidget">
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(255, 255, 255);</string>
+   </property>
+   <widget class="QGraphicsView" name="MapView">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>701</width>
+      <height>581</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(173, 255, 138);
+border: 8px double #555;
+
+</string>
+    </property>
+   </widget>
+   <widget class="QStackedWidget" name="StackedWidget">
+    <property name="geometry">
+     <rect>
+      <x>700</x>
+      <y>0</y>
+      <width>261</width>
+      <height>581</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border: 2px solid black #cccccc;</string>
+    </property>
+    <property name="currentIndex">
+     <number>0</number>
+    </property>
+    <widget class="QWidget" name="page_1">
+     <widget class="QFrame" name="page_1_frame">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>257</width>
+        <height>578</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <widget class="QLabel" name="features_label">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>20</y>
+         <width>236</width>
+         <height>121</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">font: 75 12pt &quot;Microsoft Tai Le&quot;;
+border: 2px solid black #cccccc;
+border-radius: 10px;
+background-color: rgb(243, 255, 233);</string>
+       </property>
+       <property name="text">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Характеристики&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="cur_points_amount_label">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>310</y>
+         <width>236</width>
+         <height>71</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">font: 75 9pt &quot;Microsoft Tai Le&quot;;
+border: 2px solid black #cccccc;
+border-radius: 10px;
+background-color: rgb(243, 255, 233);</string>
+       </property>
+       <property name="text">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Количество&lt;br/&gt;достигнутых &lt;br&gt; целей:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="textFormat">
+        <enum>Qt::RichText</enum>
+       </property>
+      </widget>
+      <widget class="QLabel" name="cur_distance_label">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>430</y>
+         <width>236</width>
+         <height>61</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">font: 75 9pt &quot;Microsoft Tai Le&quot;;
+border: 2px solid black #cccccc;
+border-radius: 10px;
+background-color: rgb(243, 255, 233);</string>
+       </property>
+       <property name="midLineWidth">
+        <number>-1</number>
+       </property>
+       <property name="text">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Пройденное&lt;br/&gt;расстояние (м):&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="speed_label">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>380</y>
+         <width>236</width>
+         <height>51</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">font: 75 9pt &quot;Microsoft Tai Le&quot;;
+border: 2px solid black #cccccc;
+border-radius: 10px;
+background-color: rgb(243, 255, 233);</string>
+       </property>
+       <property name="text">
+        <string>Скорость (км/ч):</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="air_defense_amount_label">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>260</y>
+         <width>236</width>
+         <height>51</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">font: 75 9pt &quot;Microsoft Tai Le&quot;;
+border: 2px solid black #cccccc;
+border-radius: 10px;
+background-color: rgb(243, 255, 233);</string>
+       </property>
+       <property name="text">
+        <string>Количество ПВО:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="control_points_amount_label">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>160</y>
+         <width>236</width>
+         <height>51</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">font: 75 9pt &quot;Microsoft Tai Le&quot;;
+border: 2px solid black #cccccc;
+border-radius: 10px;
+background-color: rgb(243, 255, 233);</string>
+       </property>
+       <property name="text">
+        <string>Количество КТ:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="drone_amount_label">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>210</y>
+         <width>236</width>
+         <height>51</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">font: 75 9pt &quot;Microsoft Tai Le&quot;;
+border: 2px solid black #cccccc;
+border-radius: 10px;
+background-color: rgb(243, 255, 233);</string>
+       </property>
+       <property name="text">
+        <string>Количество БПЛА:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="sum_distance_label">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>490</y>
+         <width>236</width>
+         <height>71</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">font: 75 9pt &quot;Microsoft Tai Le&quot;;
+border: 2px solid black #cccccc;
+border-radius: 10px;
+background-color: rgb(243, 255, 233);</string>
+       </property>
+       <property name="text">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Суммарное&lt;br/&gt;пройденное &lt;br/&gt;расстояние (м):&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="page_2">
+     <widget class="QFrame" name="page_2_frame">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>257</width>
+        <height>581</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <widget class="QLabel" name="features_label_2">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>20</y>
+         <width>236</width>
+         <height>121</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">font: 75 12pt &quot;Microsoft Tai Le&quot;;
+border: 2px solid black #cccccc;
+border-radius: 10px;
+background-color: rgb(243, 255, 233);</string>
+       </property>
+       <property name="text">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Изменение&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;параметров&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;карты&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+      <widget class="QTreeWidget" name="change_param">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>150</y>
+         <width>257</width>
+         <height>428</height>
+        </rect>
+       </property>
+       <property name="contextMenuPolicy">
+        <enum>Qt::CustomContextMenu</enum>
+       </property>
+       <column>
+        <property name="text">
+         <string>X</string>
+        </property>
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <italic>false</italic>
+          <bold>true</bold>
+          <underline>false</underline>
+         </font>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Y</string>
+        </property>
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <italic>false</italic>
+          <bold>true</bold>
+          <underline>false</underline>
+          <strikeout>false</strikeout>
+          <kerning>true</kerning>
+         </font>
+        </property>
+       </column>
+       <item>
+        <property name="text">
+         <string>Circle</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>X</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Y</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>R</string>
+         </property>
+        </item>
+       </item>
+      </widget>
+     </widget>
+    </widget>
+   </widget>
+   <zorder>StackedWidget</zorder>
+   <zorder>MapView</zorder>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>961</width>
+     <height>26</height>
+    </rect>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
