@@ -26,7 +26,7 @@ class Point(ABCGeo):
         Return JSON string representation of the object.
         """
         return json.dumps((self._x, self._y))
-    
+
     @classmethod
     def load(cls, json_data: str) -> "Point":
         """
