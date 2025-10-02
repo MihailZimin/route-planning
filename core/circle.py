@@ -1,6 +1,8 @@
 """Circle class for core."""
-from abstract_geometry import ABCGeo
-from point import Point
+import json
+
+from .abstract_geometry import ABCGeo
+from .point import Point
 
 
 class Circle(ABCGeo):
@@ -8,7 +10,7 @@ class Circle(ABCGeo):
     Circle core class.
     """
 
-    def __init__(self, radius: float, center: Point) -> None:
+    def __init__(self, center: Point, radius: float) -> None:
         """
         Initialize 2D circle.
 
@@ -24,6 +26,7 @@ class Circle(ABCGeo):
         """
         Return JSON string representation of the object.
         """
+        return json.dumps((self._center.save(), self._radius))
 
     @classmethod
     def load(cls, json_data: str) -> None:
@@ -37,6 +40,8 @@ class Circle(ABCGeo):
             New instance of the class.
 
         """
+        data = json.loads(json_data)
+        return cls(Point.load(data[0]), data[1])
 
     @property
     def radius(self) -> float:
@@ -73,3 +78,9 @@ class Circle(ABCGeo):
 
         """
         self._center = new_center
+
+    def __str__(self) -> str:
+        """
+        Return string representation of circle.
+        """
+        return f"{self._center!s}; radius={self._radius}"
