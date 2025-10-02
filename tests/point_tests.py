@@ -259,3 +259,9 @@ def test_with_fixtures(sample_point: Point, origin_point: Point) -> None:
     assert sample_point.y == 10
     assert origin_point.x == 0
     assert origin_point.y == 0
+
+
+def test_distance_calculation() -> None:
+    p1 = Point(0, 3)
+    p2 = Point(4, 0)
+    assert Point.calculate_distance(p1, p2) == 5
