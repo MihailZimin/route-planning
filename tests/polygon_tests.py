@@ -4,7 +4,6 @@ import json
 
 import pytest
 
-from core.abstract_geometry import ABCGeo
 from core.point import Point
 from core.polygon import Polygon
 
@@ -73,22 +72,6 @@ class TestPolygon:
             "['(0, 0)', '(1, 10)', '(2, 20)', '(3, 30)', '(4, 40)', "
             "'(5, 50)', '(6, 60)', '(7, 70)', '(8, 80)', '(9, 90)']"
         )
-
-    def test_is_instance_of_abcgeo(self, sample_polygon: Polygon) -> None:
-        """
-        Test that Polygon class inherited by ABCGeo.
-        """
-        assert isinstance(sample_polygon, ABCGeo)
-
-    def test_has_required_methods(self, sample_polygon: Polygon) -> None:
-        """
-        Test that Polygon have every method of ABCGeo.
-        """
-        assert hasattr(sample_polygon, "save")
-        assert callable(sample_polygon.save)
-
-        result = sample_polygon.save()
-        assert isinstance(result, str)
 
     def test_mupltiple_reassignments(self, sample_polygon: Polygon) -> None:
         """

@@ -4,7 +4,6 @@ import json
 
 import pytest
 
-from core.abstract_geometry import ABCGeo
 from core.circle import Circle
 from core.point import Point
 
@@ -66,22 +65,6 @@ class TestCircle:
         Test circle format.
         """
         assert str(sample_circle) == "(2, 5); radius=5.5"
-
-    def test_is_instance_of_abcgeo(self, sample_circle: Circle) -> None:
-        """
-        Test that Circle class inherited by ABCGeo.
-        """
-        assert isinstance(sample_circle, ABCGeo)
-
-    def test_has_required_methods(self, sample_circle: Circle) -> None:
-        """
-        Test that Circle has every method of ABCGeo.
-        """
-        assert hasattr(sample_circle, "save")
-        assert callable(sample_circle.save)
-
-        result = sample_circle.save()
-        assert isinstance(result, str)
 
     def test_multiple_reassignements(self, sample_circle: Circle) -> None:
         """

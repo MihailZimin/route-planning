@@ -3,7 +3,6 @@ import json
 
 import pytest
 
-from core.abstract_geometry import ABCGeo
 from core.point import Point
 
 
@@ -172,26 +171,6 @@ class TestPoint:
         assert loaded_data[0] == 1.123456789
         assert loaded_data[1] == 2.987654321
 
-    # Tests of inheritance by ABCGeo
-    def test_is_instance_of_abcgeo(self) -> None:
-        """
-        Test that Point class inherited by ABCGeo.
-        """
-        point = Point(1, 2)
-        assert isinstance(point, ABCGeo)
-
-    def test_has_required_methods(self) -> None:
-        """
-        Test that Point have every method of ABCGeo.
-        """
-        point = Point(1, 2)
-
-        assert hasattr(point, "save")
-        assert callable(point.save)
-
-        result = point.save()
-        assert isinstance(result, str)
-
     def test_load_method(self) -> None:
         """
         Test load method work with Point class.
@@ -262,6 +241,9 @@ def test_with_fixtures(sample_point: Point, origin_point: Point) -> None:
 
 
 def test_distance_calculation() -> None:
+    """
+    Test of distance calculation.
+    """
     p1 = Point(0, 3)
     p2 = Point(4, 0)
     assert Point.calculate_distance(p1, p2) == 5

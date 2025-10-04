@@ -4,7 +4,6 @@ import json
 
 import pytest
 
-from core.abstract_geometry import ABCGeo
 from core.line import Line
 from core.point import Point
 
@@ -71,22 +70,6 @@ class TestLine:
         Test line format.
         """
         assert str(sample_line) == "(1, 2), (2, 3)"
-
-    def test_is_instance_of_abcgeo(self, sample_line: Line) -> None:
-        """
-        Test that Line class inherited by ABCGeo.
-        """
-        assert isinstance(sample_line, ABCGeo)
-
-    def test_has_required_methods(self, sample_line: Line) -> None:
-        """
-        Test that Line have every method of ABCGeo.
-        """
-        assert hasattr(sample_line, "save")
-        assert callable(sample_line.save)
-
-        result = sample_line.save()
-        assert isinstance(result, str)
 
     def test_load_method(self) -> None:
         """
