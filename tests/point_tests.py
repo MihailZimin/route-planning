@@ -246,4 +246,4 @@ def test_distance_calculation() -> None:
     """
     p1 = Point(0, 3)
     p2 = Point(4, 0)
-    assert Point.calculate_distance(p1, p2) == 5
+    assert p1.distance_to(p2) == 5

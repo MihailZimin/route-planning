@@ -97,9 +97,8 @@ class Point(ABCGeo):
         """
         return hash((self.x, self.y))
 
-    @staticmethod
-    def calculate_distance(point1: "Point", point2: "Point") -> float:
+    def distance_to(self, point: "Point") -> float:
         """
         Calculate distance between two points.
         """
-        return ((point1.x - point2.x) ** 2 + (point1.y - point2.y) ** 2) ** 0.5
+        return ((self.x - point.x) ** 2 + (self.y - point.y) ** 2) ** 0.5
