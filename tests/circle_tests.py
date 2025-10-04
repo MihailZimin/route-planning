@@ -1,6 +1,5 @@
 """Tests for core class Circle."""
 
-import json
 
 import pytest
 
@@ -46,10 +45,9 @@ class TestCircle:
         """
         Test save method.
         """
-        json_str = sample_circle.save()
+        str_saved = sample_circle.save()
 
-        data = json.loads(json_str)
-        assert data == ["[2, 5]", 5.5]
+        assert str_saved == "[2, 5]; 5.5"
 
     def test_save_format_consistency(self, sample_circle: Circle) -> None:
         """
@@ -86,3 +84,13 @@ class TestCircle:
 
         new_save = sample_circle.save()
         assert initial_save != new_save
+
+    def test_load_method(self) -> None:
+        """
+        Test load method work with circle class.
+        """
+        string_data = "[1, 2]; 5.6"
+
+        circle = Circle.load(string_data)
+        assert circle.center == Point(1, 2)
+        assert circle.radius == 5.6

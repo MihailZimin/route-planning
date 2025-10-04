@@ -1,6 +1,5 @@
 """Tests for core class Line."""
 
-import json
 
 import pytest
 
@@ -51,10 +50,9 @@ class TestLine:
         """
         Test save method.
         """
-        json_str = sample_line.save()
+        str_saved = sample_line.save()
 
-        data = json.loads(json_str)
-        assert data == ["[1, 2]", "[2, 3]"]
+        assert str_saved == "[1, 2]; [2, 3]"
 
     def test_save_format_consistency(self, sample_line: Line) -> None:
         """
@@ -75,13 +73,11 @@ class TestLine:
         """
         Test load method work with Line class.
         """
-        start = Point(1, 2)
-        end = Point(2, 3)
-        json_data = json.dumps((start.save(), end.save()))
+        string_data = "[1, 2]; [2, 3]"
 
-        line = Line.load(json_data)
-        assert str(line.start) == str(start)
-        assert str(line.end) == str(end)
+        line = Line.load(string_data)
+        assert line.start == Point(1, 2)
+        assert line.end == Point(2, 3)
 
     def test_multiple_reassignments(self, sample_line: Line) -> None:
         """
@@ -108,4 +104,4 @@ class TestLine:
 
         new_save = sample_line.save()
         assert initial_save != new_save
-        assert json.loads(new_save) == ["[10, 10]", "[4, 4]"]
+        assert new_save == "[10, 10]; [4, 4]"

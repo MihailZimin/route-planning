@@ -1,6 +1,5 @@
 """Tests for core class Polygon."""
 
-import json
 
 import pytest
 
@@ -47,13 +46,11 @@ class TestPolygon:
         """
         Test save method.
         """
-        json_str = sample_polygon.save()
+        str_saved = sample_polygon.save()
 
-        data = json.loads(json_str)
-        assert data == [
-            "[0, 0]", "[1, 10]", "[2, 20]", "[3, 30]", "[4, 40]",
-            "[5, 50]", "[6, 60]", "[7, 70]", "[8, 80]", "[9, 90]"
-        ]
+        assert str_saved == (
+            "[0, 0]; [1, 10]; [2, 20]; [3, 30]; [4, 40]; [5, 50]; [6, 60]; [7, 70]; [8, 80]; [9, 90]"
+            )
 
     def test_save_format_consistency(self, sample_polygon: Polygon) -> None:
         """
@@ -82,7 +79,7 @@ class TestPolygon:
             assert sample_polygon.points == [Point(j, j * i) for j in range(i+5)]
 
     def test_save_after_coordinate_change(
-            self, sample_polygon: Polygon, sample_points: Point) -> None:
+            self, sample_polygon: Polygon, sample_points: list[Point]) -> None:
         """
         Another save test.
         """
@@ -92,3 +89,24 @@ class TestPolygon:
 
         new_save = sample_polygon.save()
         assert initial_save != new_save
+
+    def test_change_point_list(self, sample_polygon: Polygon, sample_points: list[Point]) -> None:
+        """
+        Test about independency of data in list data of polygon.
+        """
+        sample_polygon.points = sample_points
+        sample_points[0] = Point(7, 13)
+        assert sample_polygon.points[0] != Point(7, 13)
+        assert sample_polygon.points != sample_points
+
+    def test_load_method(self) -> None:
+        """
+        Test load method work with Polygon class.
+        """
+        string_data = "[1, 2]; [2, 3]; [3, 4]; [4, 5]"
+
+        poly = Polygon.load(string_data)
+        assert poly.points[0] == Point(1, 2)
+        assert poly.points[1] == Point(2, 3)
+        assert poly.points[2] == Point(3, 4)
+        assert poly.points[3] == Point(4, 5)
