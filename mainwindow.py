@@ -1,95 +1,82 @@
+"""Class for GUI.
+
+This module provides:
+- MainWindow: class for main window of app.
+
+"""
+
+
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QHBoxLayout, QPushButton, QFileDialog
-from PyQt6.QtCore import Qt, QSize
-from PyQt6.QtGui import QIcon
+
 from PyQt6 import uic
-from styles import BUTTON_STYLE1
+from PyQt6.QtCore import QSize
+from PyQt6.QtWidgets import QApplication, QFileDialog, QMainWindow
 
 
 class MainWindow(QMainWindow):
-    def __init__(self):
+    """
+    Main window class.
+    """
+
+    def __init__(self) -> None:
+        """
+        Initialize MainWindow object.
+        """
         super().__init__()
         self.initializeUI()
 
-    def initializeUI(self):
+    def initializeUI(self) -> None:
         """
-        Инициализация окна
+        Initionalization of MainWindow.
         """
         uic.loadUi("trajectory.ui", self)
-        self.setFixedSize(self.size())
-        self.addMenubar()
+        self.setGeometry(300, 100, 900, 550)
+        self.setMaximumSize(QSize(1000, 1000))
+        self.setMinimumSize(QSize(400, 300))
 
-    def addMenubar(self):
+        self.showStatAction.triggered.connect(self.showStatistic)
+        self.showParamsAction.triggered.connect(self.showParams)
+        self.choseMapAction.triggered.connect(self.processFile)
+        self.changeMapAction.triggered.connect(self.changeMap)
+        self.startAction.triggered.connect(self.startTrajectory)
+
+    def closeWindow(self) -> None:
         """
-        Создание собственного меню
-        """
-        menu = self.menuBar
-        button_box = QWidget()
-        button_layout = QHBoxLayout(button_box)
-        button_layout.setContentsMargins(10, 0, 10, 0)
-        button_layout.setSpacing(5)
-
-        self.start_btn = QPushButton("Старт")
-        self.chose_map_btn = QPushButton("Выбрать карту")
-        self.save_map_btn = QPushButton("Сохранить карту")
-        self.change_map_btn = QPushButton("Изменить карту")
-        self.exit_btn = QPushButton("Выход")
-
-        self.exit_btn.clicked.connect(self.closeWindow)
-        self.chose_map_btn.clicked.connect(self.selectFile)
-        self.start_btn.clicked.connect(self.startTrajectory)
-
-        buttons = [
-            (self.start_btn, "PictTrajectory/start.png"),
-            (self.chose_map_btn, "PictTrajectory/map.png"),
-            (self.save_map_btn, "PictTrajectory/save.png"),
-            (self.change_map_btn, "PictTrajectory/change.png"),
-            (self.exit_btn, "PictTrajectory/exit.png")
-        ]
-
-        for btn, pict in buttons:
-            btn.setStyleSheet(BUTTON_STYLE1)
-            btn.setIcon(QIcon(pict))
-            btn.setIconSize(QSize(30, 30))
-            btn.setFixedHeight(35)
-            btn.setFixedWidth(185)
-            button_layout.addWidget(btn)
-
-        menu.setCornerWidget(button_box, Qt.Corner.TopRightCorner)
-
-    def closeWindow(self):
-        """
-        Слот для выхода из приложения
+        Slot for closing app.
         """
         self.close()
 
-    def selectFile(self):
+    def showStatistic(self) -> None:
         """
-        Слот для выбора карты
+        Slot for showing statistic of flight.
+        """
+        self.stackedWidget.setCurrentIndex(0)
+
+    def showParams(self) -> None:
+        """
+        Slot for showing parametrs of flight.
+        """
+        self.stackedWidget.setCurrentIndex(1)
+
+    def changeMap(self) -> None:
+        """
+        Slot for changing map.
+        """
+        self.stackedWidget.setCurrentIndex(2)
+
+    def processFile(self) -> None:
+        """
+        Slot for chosing map.
         """
         file_path, _ = QFileDialog.getOpenFileName(self, "Выберите файл", "")
         if file_path:
             self.statusBar.showMessage(f"Выбран файл: {file_path}")
-            self.proccessSelectedFile()
 
-    def proccessSelectedFile(self):
+    def startTrajectory(self) -> None:
         """
-        Метод для обработки выбранной карты
-        """
-        pass
-
-    def startTrajectory(self):
-        """
-        Слот для запуска построения траектории
+        Slot for starting animation of flight.
         """
         self.statusBar.showMessage("Процесс построения траектории запущен")
-        self.showAnimation()
-
-    def showAnimation(self):
-        """
-        Метод для построения траектории
-        """
-        pass
 
 
 if __name__ == "__main__":
