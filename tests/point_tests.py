@@ -132,7 +132,7 @@ class TestPoint:
         (-1, -2, [-1, -2]),
         (0, 0, [0, 0]),
     ])
-    def test_save_parametrized(self, x: float, y: float, expected_json: str) -> None:
+    def test_load_parametrized(self, x: float, y: float, expected_json: str) -> None:
         """
         Parametrized test to load.
         """

@@ -1,6 +1,4 @@
 """Tests for core class Polygon."""
-
-
 import pytest
 
 from core.point import Point

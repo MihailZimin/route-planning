@@ -1,6 +1,4 @@
 """Tests for core class Line."""
-
-
 import pytest
 
 from core.line import Line
