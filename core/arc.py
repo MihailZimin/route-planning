@@ -11,7 +11,7 @@ class Arc(ABCGeo):
     Arc core class.
     """
 
-    def __init__(self, center: Point, p_start: Point, p_end: Point) -> "Arc":
+    def __init__(self, center: Point, p_start: Point, p_end: Point, precision: float = 1e-5) -> "Arc":
         """
         Return Arc object, constructed by 3 points.
 
@@ -22,6 +22,7 @@ class Arc(ABCGeo):
             center: coordinate(point) of center of Arc
             p_start: coordinate(point) of start of Arc
             p_end: coordinate(point) of end of Arc
+            precision: precision of difference in possible radius
 
         Returns:
             Arc: New Arc instance with such fields as:
@@ -33,23 +34,36 @@ class Arc(ABCGeo):
                 radius: radius of Arc
 
         """
-        radius = Point.calculate_distance(center, p_start)
-        if radius != Point.calculate_distance(center, p_end):
-            error_msg = ("Invalid input points, distance between"
+        self.__errormsg = ("Invalid input points, distance between"
                          "center and first point is not equal to"
                          "distance between center and second point")
-            raise ValueError(error_msg)
+        self._precision = precision
 
-        self._a_start = math.acos((center.y - p_start.y) / radius)
-        self._a_end = math.acos((center.y - p_end.y) / radius)
-        self._center = center
+        radius = center.distance_to(p_start)
         self._radius = radius
+        self._center = center
+        if not self.__compare_radius_and_distance(p_end):
+            raise ValueError(self.__errormsg)
+
+        self._a_start = math.acos((p_start.y - center.y) / radius)
+        if (p_start.x < center.x):
+            self._a_start = 2 * math.pi - self._a_start
+        self._a_end = math.acos((p_end.y - center.y) / radius)
+        if (p_end.x < center.x):
+            self._a_end = 2 * math.pi - self._a_end
         self._p_start = p_start
         self._p_end = p_end
 
 
     @classmethod
-    def from_angle(cls, radius: float, center: Point, angle_start: float, angle_end: float) -> "Arc":
+    def from_angle(
+        cls,
+        radius: float,
+        center: Point,
+        angle_start: float,
+        angle_end: float,
+        precision: float = 1e-5
+    ) -> "Arc":
         """
         Initialize Arc with radius, center point and angle.
 
@@ -61,6 +75,7 @@ class Arc(ABCGeo):
             center: Center point of the arc
             angle_start: Angle of the start angle in radians
             angle_end: Angle of the end angle in radians
+            precision: precision of difference in possible radius
 
         Returns:
             Arc: New Arc instance with such fields as:
@@ -80,7 +95,7 @@ class Arc(ABCGeo):
         p_end.x = center.x + radius * math.sin(angle_end)
         p_end.y = center.y + radius * math.cos(angle_end)
 
-        return cls(center, p_start, p_end)
+        return cls(center, p_start, p_end, precision)
 
     def save(self) -> str:
         """
@@ -88,11 +103,9 @@ class Arc(ABCGeo):
         """
         data = {
             "center": self._center.save(),
-            "radius": self._radius,
             "p_start": self._p_start.save(),
             "p_end": self._p_end.save(),
-            "a_start": self._a_start,
-            "a_end": self._a_end,
+            "precision": self._precision,
         }
         return json.dumps(data)
 
@@ -113,6 +126,7 @@ class Arc(ABCGeo):
             Point.load(data["center"]),
             Point.load(data["p_start"]),
             Point.load(data["p_end"]),
+            data["precision"],
         )
 
     @property
@@ -166,40 +180,12 @@ class Arc(ABCGeo):
         """
         return self._a_start
 
-    @a_start.setter
-    def a_start(self, new_angle: float) -> None:
-        """
-        Set angle of the arc in radians.
-
-        Also change start point position according to new angle.
-
-        Args:
-            new_angle: new angle value in radians
-
-        """
-        self._a_start = new_angle
-        self.__adjust_start_point()
-
     @property
     def a_end(self) -> float:
         """
         Return the angle of the arc in radians.
         """
-        return self._angle_end
-
-    @a_end.setter
-    def a_end(self, new_angle: float) -> None:
-        """
-        Set angle of the arc in radians.
-
-        Also change end point position according to new angle.
-
-        Args:
-            new_angle: new angle value in radians
-
-        """
-        self._a_end = new_angle
-        self.__adjust_end_point()
+        return self._a_end
 
     @property
     def p_start(self) -> Point:
@@ -219,8 +205,13 @@ class Arc(ABCGeo):
             new_start: new start position in radians.
 
         """
+        if not self.__compare_radius_and_distance(new_start):
+            raise ValueError(self.__errormsg)
+
         self._p_start = new_start
-        self._a_start = math.acos((self._center.y - self._p_start.y) / self._radius)
+        self._a_start = math.acos((self._p_start.y - self._center.y) / self._radius)
+        if (self._p_start.x < self._center.x):
+            self._a_start = 2 * math.pi - self._a_start
 
     @property
     def p_end(self) -> Point:
@@ -240,9 +231,31 @@ class Arc(ABCGeo):
             new_end: new end position in radians.
 
         """
-        self._p_start = new_end
-        self._a_end = math.acos((self._center.y - self._p_end.y) / self._radius)
+        if not self.__compare_radius_and_distance(new_end):
+            raise ValueError(self.__errormsg)
 
+        self._p_end = new_end
+        self._a_end = math.acos((self._p_end.y - self._center.y) / self._radius)
+        if (self._p_end.x < self._center.x):
+            self._a_end = 2 * math.pi - self._a_end
+
+    @property
+    def precision(self) -> float:
+        """
+        Return eps_precision.
+        """
+        return self._precision
+
+    @precision.setter
+    def precision(self, new_precision: float) -> None:
+        """
+        Set precision.
+
+        Args:
+            new_precision: new precision.
+
+        """
+        self._precision = new_precision
 
     def __adjust_start_point(self) -> None:
         """
@@ -263,3 +276,17 @@ class Arc(ABCGeo):
         Return string representation.
         """
         return self.save()
+
+    def __compare_radius_and_distance(self, point: Point) -> bool:
+        """
+        Compare distance between center and point with radius of arc.
+
+        Args:
+            point: point which distance to center we want to compare.
+
+        Returns:
+            True if difference lower than eps_precision
+            False otherwise
+
+        """
+        return math.isclose(self._center.distance_to(point), self._radius, rel_tol=self._precision)
