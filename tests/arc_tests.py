@@ -45,13 +45,13 @@ class TestArc:
         assert arc.center == center
         assert arc.p_start == p_start
         assert arc.p_end == p_end
-        assert math.isclose(arc.radius, 1.0, rel_tol=arc.precision)
+        assert math.isclose(arc.radius, 1.0, abs_tol=arc.precision)
 
     def test_a_start_property(self, sample_arc: Arc) -> None:
         """
         Test a_start getter.
         """
-        assert math.isclose(sample_arc.a_start, math.pi / 2, rel_tol=1e-5)
+        assert math.isclose(sample_arc.a_start, math.pi / 2, abs_tol=1e-5)
 
     @pytest.mark.parametrize(("new_start", "expected_angle"), [
         (Point(-1.0, 0), 1.5 * math.pi),
@@ -69,13 +69,13 @@ class TestArc:
         """
         sample_arc.p_start = new_start
         assert sample_arc.p_start == new_start
-        assert math.isclose(sample_arc.a_start, expected_angle, rel_tol=1e-5)
+        assert math.isclose(sample_arc.a_start, expected_angle, abs_tol=1e-5)
 
     def test_a_end_property(self, sample_arc: Arc) -> None:
         """
         Test a_end getter.
         """
-        assert math.isclose(sample_arc.a_end, 0, rel_tol=1e-5)
+        assert math.isclose(sample_arc.a_end, 0, abs_tol=1e-5)
 
     @pytest.mark.parametrize(("new_end", "expected_angle"), [
         (Point(-1.0, 0), 1.5 * math.pi),
@@ -93,7 +93,7 @@ class TestArc:
         """
         sample_arc.p_end = new_end
         assert sample_arc.p_end == new_end
-        assert math.isclose(sample_arc.a_end, expected_angle, rel_tol=1e-5)
+        assert math.isclose(sample_arc.a_end, expected_angle, abs_tol=1e-5)
 
     @pytest.mark.parametrize(("new_radius"), [
         (2), (3), (4), (5), (6), (7),
@@ -109,8 +109,8 @@ class TestArc:
         arc = Arc(Point(0, 0), start_point, end_point)
         arc.radius = new_radius
         assert arc.radius == new_radius
-        assert math.isclose(arc.p_start.distance_to(arc.center), new_radius, rel_tol=1e-5)
-        assert math.isclose(arc.p_end.distance_to(arc.center), new_radius, rel_tol=1e-5)
+        assert math.isclose(arc.p_start.distance_to(arc.center), new_radius, abs_tol=1e-5)
+        assert math.isclose(arc.p_end.distance_to(arc.center), new_radius, abs_tol=1e-5)
 
     @pytest.mark.parametrize(("new_center"), [
         Point(2, 3),
@@ -131,8 +131,8 @@ class TestArc:
         arc = Arc(Point(0, 0), start_point, end_point)
         arc.center = new_center
         assert arc.center == new_center
-        assert math.isclose(arc.p_start.distance_to(arc.center), arc.radius, rel_tol=1e-5)
-        assert math.isclose(arc.p_end.distance_to(arc.center), arc.radius, rel_tol=1e-5)
+        assert math.isclose(arc.p_start.distance_to(arc.center), arc.radius, abs_tol=1e-5)
+        assert math.isclose(arc.p_end.distance_to(arc.center), arc.radius, abs_tol=1e-5)
 
     def test_precision_property(self, sample_arc: Arc) -> None:
         """
@@ -148,19 +148,32 @@ class TestArc:
         str_saved = sample_arc.save()
 
         assert str_saved == (
-            '{"center": "[0, 0]", "p_start": "[1, 0]", "p_end": "[0, 1]", "precision": 1e-05}'
+            """{
+    "center": [0, 0],
+    "radius": 1.0,
+    "a_start": 1.5707963267948966,
+    "a_end": 0.0,
+    "precision": 1e-05
+}"""
         )
 
     def test_load_method(self) -> None:
         """
         Test load method.
         """
-        string_data = '{"center": "[0, 0]", "p_start": "[1, 0]", "p_end": "[0, 1]", "precision": 1e-05}'
+        string_data = """{
+            "center": [0, 0],
+            "radius": 1.0,
+            "a_start": 1.5707963267948966,
+            "a_end": 0.0,
+            "precision": 1e-05
+        }"""
 
         arc = Arc.load(string_data)
-        assert arc.center == Point(0, 0)
-        assert arc.p_start == Point(1, 0)
-        assert arc.p_end == Point(0, 1)
+
+        assert math.isclose(arc.center.distance_to(Point(0, 0)), 0, abs_tol=1e-5)
+        assert math.isclose(arc.p_start.distance_to(Point(1, 0)), 0, abs_tol=1e-5)
+        assert math.isclose(arc.p_end.distance_to(Point(0, 1)), 0, abs_tol=1e-5)
         assert arc.precision == 1e-5
         assert arc.a_start == math.pi / 2
         assert arc.a_end == 0

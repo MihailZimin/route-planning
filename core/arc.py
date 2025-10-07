@@ -58,8 +58,8 @@ class Arc(ABCGeo):
     @classmethod
     def from_angle(
         cls,
-        radius: float,
         center: Point,
+        radius: float,
         angle_start: float,
         angle_end: float,
         precision: float = 1e-5
@@ -71,8 +71,8 @@ class Arc(ABCGeo):
         arc formed counterclockwise from start angle to end angle.
 
         Args:
-            radius: Radius of the arc
             center: Center point of the arc
+            radius: Radius of the arc
             angle_start: Angle of the start angle in radians
             angle_end: Angle of the end angle in radians
             precision: precision of difference in possible radius
@@ -101,13 +101,17 @@ class Arc(ABCGeo):
         """
         Return JSON string representation of the object.
         """
-        data = {
-            "center": self._center.save(),
-            "p_start": self._p_start.save(),
-            "p_end": self._p_end.save(),
-            "precision": self._precision,
-        }
-        return json.dumps(data)
+        center_str = f'[{self._center.x}, {self._center.y}]'
+
+        return (
+        '{\n'
+        f'    "center": {center_str},\n'
+        f'    "radius": {self._radius},\n'
+        f'    "a_start": {self._a_start},\n'
+        f'    "a_end": {self._a_end},\n'
+        f'    "precision": {self._precision}\n'
+        '}'
+    )
 
     @classmethod
     def load(cls, json_data: str) -> "Arc":
@@ -122,10 +126,11 @@ class Arc(ABCGeo):
 
         """
         data = json.loads(json_data)
-        return cls(
-            Point.load(data["center"]),
-            Point.load(data["p_start"]),
-            Point.load(data["p_end"]),
+        return cls.from_angle(
+            Point.load(str(data["center"])),
+            data["radius"],
+            data["a_start"],
+            data["a_end"],
             data["precision"],
         )
 
