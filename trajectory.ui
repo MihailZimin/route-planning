@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>986</width>
-    <height>600</height>
+    <width>991</width>
+    <height>593</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -388,13 +388,16 @@ background-color: rgb(243, 255, 233);</string>
           </property>
           <item>
            <widget class="QFrame" name="page_3_frame">
+            <property name="contextMenuPolicy">
+             <enum>Qt::ActionsContextMenu</enum>
+            </property>
             <property name="frameShape">
              <enum>QFrame::StyledPanel</enum>
             </property>
             <property name="frameShadow">
              <enum>QFrame::Raised</enum>
             </property>
-            <layout class="QGridLayout" name="gridLayout_8" rowstretch="1,8">
+            <layout class="QGridLayout" name="gridLayout_8" rowstretch="1,6">
              <property name="leftMargin">
               <number>0</number>
              </property>
@@ -503,12 +506,49 @@ background-color: rgb(243, 255, 233);</string>
                   <number>0</number>
                  </property>
                  <item row="0" column="0">
-                  <widget class="QTreeWidget" name="treeWidget">
+                  <widget class="QTreeWidget" name="currentObjects">
+                   <property name="contextMenuPolicy">
+                    <enum>Qt::CustomContextMenu</enum>
+                   </property>
                    <column>
                     <property name="text">
                      <string>Объекты</string>
                     </property>
                    </column>
+                   <column>
+                    <property name="text">
+                     <string>Значения</string>
+                    </property>
+                   </column>
+                   <item>
+                    <property name="text">
+                     <string>Окружность</string>
+                    </property>
+                    <item>
+                     <property name="text">
+                      <string>X:</string>
+                     </property>
+                     <property name="text">
+                      <string>1</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Y: </string>
+                     </property>
+                     <property name="text">
+                      <string>1</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>R:</string>
+                     </property>
+                     <property name="text">
+                      <string>0.5</string>
+                     </property>
+                    </item>
+                   </item>
                   </widget>
                  </item>
                 </layout>
@@ -581,7 +621,7 @@ background-color: rgb(243, 255, 233);</string>
                     <item row="1" column="0">
                      <widget class="QStackedWidget" name="stackedWidget_param">
                       <property name="currentIndex">
-                       <number>3</number>
+                       <number>0</number>
                       </property>
                       <widget class="QWidget" name="page_1_point">
                        <layout class="QGridLayout" name="gridLayout_9">
@@ -611,7 +651,7 @@ background-color: rgb(243, 255, 233);</string>
                           <property name="frameShadow">
                            <enum>QFrame::Raised</enum>
                           </property>
-                          <layout class="QGridLayout" name="gridLayout_7" rowstretch="0,0,0">
+                          <layout class="QGridLayout" name="gridLayout_7" rowstretch="2,2,2,1" columnminimumwidth="0,0">
                            <property name="leftMargin">
                             <number>11</number>
                            </property>
@@ -624,7 +664,7 @@ background-color: rgb(243, 255, 233);</string>
                            <property name="bottomMargin">
                             <number>0</number>
                            </property>
-                           <item row="0" column="0">
+                           <item row="1" column="0">
                             <widget class="QLabel" name="XCoordLabelPoint">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -643,8 +683,8 @@ background-color: rgb(243, 255, 233);</string>
                              </property>
                             </widget>
                            </item>
-                           <item row="0" column="1">
-                            <widget class="QLineEdit" name="XCoordlineEdit">
+                           <item row="1" column="1">
+                            <widget class="QLineEdit" name="XCoordLineEditPoint">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -653,7 +693,7 @@ background-color: rgb(243, 255, 233);</string>
                              </property>
                             </widget>
                            </item>
-                           <item row="1" column="0">
+                           <item row="2" column="0">
                             <widget class="QLabel" name="YCoordLabelPoint">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -672,8 +712,8 @@ background-color: rgb(243, 255, 233);</string>
                              </property>
                             </widget>
                            </item>
-                           <item row="1" column="1">
-                            <widget class="QLineEdit" name="YCoordlineEditpoint">
+                           <item row="2" column="1">
+                            <widget class="QLineEdit" name="YCoordLineEditPoint">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -682,13 +722,32 @@ background-color: rgb(243, 255, 233);</string>
                              </property>
                             </widget>
                            </item>
-                           <item row="2" column="0" colspan="2">
-                            <widget class="QPushButton" name="addPoint">
+                           <item row="3" column="0" colspan="2">
+                            <widget class="QPushButton" name="addPointButton">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                                <horstretch>0</horstretch>
                                <verstretch>0</verstretch>
                               </sizepolicy>
+                             </property>
+                             <property name="autoFillBackground">
+                              <bool>false</bool>
+                             </property>
+                             <property name="styleSheet">
+                              <string notr="true">QPushButton {
+    border: 2px solid black #cccccc;
+	border-radius: 10px;
+}
+
+QPushButton:pressed {
+    margin-left: 1px;
+    margin-top: 1px;
+    margin-right: -1px;
+    margin-bottom: -1px;
+}
+
+
+</string>
                              </property>
                              <property name="text">
                               <string>Добавить</string>
@@ -697,6 +756,34 @@ background-color: rgb(243, 255, 233);</string>
                               <bool>true</bool>
                              </property>
                             </widget>
+                           </item>
+                           <item row="0" column="0">
+                            <widget class="QLabel" name="pointNameLabel">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="styleSheet">
+                              <string notr="true">font: 75 9pt &quot;Microsoft Tai Le&quot;;
+border: 2px solid black #cccccc;
+border-radius: 10px;
+background-color: rgb(243, 255, 233);</string>
+                             </property>
+                             <property name="text">
+                              <string>Название:</string>
+                             </property>
+                             <property name="alignment">
+                              <set>Qt::AlignCenter</set>
+                             </property>
+                             <property name="wordWrap">
+                              <bool>true</bool>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="0" column="1">
+                            <widget class="QLineEdit" name="pointNameLineEdit"/>
                            </item>
                           </layout>
                          </widget>
@@ -732,8 +819,17 @@ background-color: rgb(243, 255, 233);</string>
                            <enum>QFrame::Raised</enum>
                           </property>
                           <layout class="QGridLayout" name="gridLayout_17">
-                           <item row="0" column="0">
+                           <item row="1" column="1">
+                            <widget class="QLineEdit" name="XCoordLineEditCircle"/>
+                           </item>
+                           <item row="1" column="0">
                             <widget class="QLabel" name="XCoordLabelCircle">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
                              <property name="styleSheet">
                               <string notr="true">font: 75 9pt &quot;Microsoft Tai Le&quot;;
 border: 2px solid black #cccccc;
@@ -745,11 +841,14 @@ background-color: rgb(243, 255, 233);</string>
                              </property>
                             </widget>
                            </item>
-                           <item row="0" column="1">
-                            <widget class="QLineEdit" name="XCoordLineEdit"/>
-                           </item>
-                           <item row="1" column="0">
+                           <item row="2" column="0">
                             <widget class="QLabel" name="YCoordLabelCircle">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
                              <property name="styleSheet">
                               <string notr="true">font: 75 9pt &quot;Microsoft Tai Le&quot;;
 border: 2px solid black #cccccc;
@@ -761,11 +860,14 @@ background-color: rgb(243, 255, 233);</string>
                              </property>
                             </widget>
                            </item>
-                           <item row="1" column="1">
-                            <widget class="QLineEdit" name="YCoordLineEdit"/>
-                           </item>
-                           <item row="2" column="0">
+                           <item row="3" column="0">
                             <widget class="QLabel" name="RadiusLabel">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
                              <property name="styleSheet">
                               <string notr="true">font: 75 9pt &quot;Microsoft Tai Le&quot;;
 border: 2px solid black #cccccc;
@@ -778,10 +880,28 @@ background-color: rgb(243, 255, 233);</string>
                             </widget>
                            </item>
                            <item row="2" column="1">
-                            <widget class="QLineEdit" name="RadiusLineEdit"/>
+                            <widget class="QLineEdit" name="YCoordLineEditCircle"/>
                            </item>
-                           <item row="3" column="0" colspan="2">
-                            <widget class="QPushButton" name="addCircle">
+                           <item row="3" column="1">
+                            <widget class="QLineEdit" name="radiusLineEditCircle"/>
+                           </item>
+                           <item row="4" column="0" colspan="2">
+                            <widget class="QPushButton" name="addCircleButton">
+                             <property name="styleSheet">
+                              <string notr="true">QPushButton {
+    border: 2px solid black #cccccc;
+	border-radius: 10px;
+}
+
+QPushButton:pressed {
+    margin-left: 1px;
+    margin-top: 1px;
+    margin-right: -1px;
+    margin-bottom: -1px;
+}
+
+</string>
+                             </property>
                              <property name="text">
                               <string>Добавить</string>
                              </property>
@@ -789,6 +909,22 @@ background-color: rgb(243, 255, 233);</string>
                               <bool>true</bool>
                              </property>
                             </widget>
+                           </item>
+                           <item row="0" column="0">
+                            <widget class="QLabel" name="circleNameLabel">
+                             <property name="styleSheet">
+                              <string notr="true">font: 75 9pt &quot;Microsoft Tai Le&quot;;
+border: 2px solid black #cccccc;
+border-radius: 10px;
+background-color: rgb(243, 255, 233);</string>
+                             </property>
+                             <property name="text">
+                              <string>Название</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="0" column="1">
+                            <widget class="QLineEdit" name="circleNameLineEdit"/>
                            </item>
                           </layout>
                          </widget>
@@ -823,7 +959,7 @@ background-color: rgb(243, 255, 233);</string>
                           <property name="frameShadow">
                            <enum>QFrame::Raised</enum>
                           </property>
-                          <layout class="QGridLayout" name="gridLayout_4">
+                          <layout class="QGridLayout" name="gridLayout_4" rowstretch="0,0,0,0,0,0" columnstretch="3,2">
                            <property name="leftMargin">
                             <number>11</number>
                            </property>
@@ -831,10 +967,70 @@ background-color: rgb(243, 255, 233);</string>
                             <number>11</number>
                            </property>
                            <property name="bottomMargin">
-                            <number>11</number>
+                            <number>0</number>
                            </property>
+                           <property name="horizontalSpacing">
+                            <number>4</number>
+                           </property>
+                           <property name="verticalSpacing">
+                            <number>6</number>
+                           </property>
+                           <item row="2" column="0" colspan="2">
+                            <widget class="QPushButton" name="addPointPolygonButton">
+                             <property name="enabled">
+                              <bool>true</bool>
+                             </property>
+                             <property name="styleSheet">
+                              <string notr="true">QPushButton {
+    border: 2px solid black #cccccc;
+	border-radius: 10px;
+}
+
+QPushButton:pressed {
+    margin-left: 1px;
+    margin-top: 1px;
+    margin-right: -1px;
+    margin-bottom: -1px;
+}
+
+</string>
+                             </property>
+                             <property name="text">
+                              <string>Добавить точку</string>
+                             </property>
+                             <property name="checkable">
+                              <bool>true</bool>
+                             </property>
+                             <property name="autoDefault">
+                              <bool>true</bool>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="1" column="1">
+                            <widget class="QLineEdit" name="YCoordLineEditPolygon"/>
+                           </item>
+                           <item row="5" column="0" colspan="2">
+                            <widget class="QTreeWidget" name="pointsPolygon">
+                             <column>
+                              <property name="text">
+                               <string>Точка</string>
+                              </property>
+                             </column>
+                             <column>
+                              <property name="text">
+                               <string>Значение</string>
+                              </property>
+                             </column>
+                            </widget>
+                           </item>
                            <item row="0" column="0">
                             <widget class="QLabel" name="XCoordLabelPolygon">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
                              <property name="styleSheet">
                               <string notr="true">font: 75 9pt &quot;Microsoft Tai Le&quot;;
 border: 2px solid black #cccccc;
@@ -854,6 +1050,12 @@ background-color: rgb(243, 255, 233);</string>
                            </item>
                            <item row="1" column="0">
                             <widget class="QLabel" name="YCoordLabelPolygon">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
                              <property name="styleSheet">
                               <string notr="true">font: 75 9pt &quot;Microsoft Tai Le&quot;;
 border: 2px solid black #cccccc;
@@ -868,27 +1070,49 @@ background-color: rgb(243, 255, 233);</string>
                              </property>
                             </widget>
                            </item>
-                           <item row="1" column="1">
-                            <widget class="QLineEdit" name="YCoordLineEditPolygon"/>
-                           </item>
-                           <item row="2" column="0" colspan="2">
-                            <widget class="QPushButton" name="addPointPolygon">
+                           <item row="4" column="0" colspan="2">
+                            <widget class="QPushButton" name="addPolygonButton">
+                             <property name="styleSheet">
+                              <string notr="true">QPushButton {
+    border: 2px solid black #cccccc;
+	border-radius: 10px;
+}
+
+QPushButton:pressed {
+    margin-left: 1px;
+    margin-top: 1px;
+    margin-right: -1px;
+    margin-bottom: -1px;
+}
+
+</string>
+                             </property>
                              <property name="text">
-                              <string>Добавить</string>
-                             </property>
-                             <property name="checkable">
-                              <bool>true</bool>
+                              <string>Добавить многоугольник</string>
                              </property>
                             </widget>
                            </item>
-                           <item row="3" column="0" colspan="2">
-                            <widget class="QTreeWidget" name="PointsPolygon">
-                             <column>
-                              <property name="text">
-                               <string>Точки</string>
-                              </property>
-                             </column>
+                           <item row="3" column="0">
+                            <widget class="QLabel" name="polygonNameLabel">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="styleSheet">
+                              <string notr="true">font: 75 9pt &quot;Microsoft Tai Le&quot;;
+border: 2px solid black #cccccc;
+border-radius: 10px;
+background-color: rgb(243, 255, 233);</string>
+                             </property>
+                             <property name="text">
+                              <string>Название:</string>
+                             </property>
                             </widget>
+                           </item>
+                           <item row="3" column="1">
+                            <widget class="QLineEdit" name="polygonNameLineEdit"/>
                            </item>
                           </layout>
                          </widget>
@@ -923,20 +1147,29 @@ background-color: rgb(243, 255, 233);</string>
                           <property name="frameShadow">
                            <enum>QFrame::Raised</enum>
                           </property>
-                          <layout class="QGridLayout" name="gridLayout_16" rowstretch="2,2,2,2,1">
+                          <layout class="QGridLayout" name="gridLayout_16" rowstretch="1,1,1,1,1,1" columnstretch="3,2" rowminimumheight="0,0,0,0,0,0">
                            <property name="leftMargin">
                             <number>11</number>
                            </property>
                            <property name="topMargin">
-                            <number>11</number>
+                            <number>0</number>
                            </property>
                            <property name="rightMargin">
                             <number>11</number>
                            </property>
-                           <item row="0" column="0">
+                           <property name="bottomMargin">
+                            <number>0</number>
+                           </property>
+                           <property name="verticalSpacing">
+                            <number>20</number>
+                           </property>
+                           <item row="2" column="1">
+                            <widget class="QLineEdit" name="YCoordLineEditBegin"/>
+                           </item>
+                           <item row="1" column="0">
                             <widget class="QLabel" name="XCoordLabelLineBegin">
                              <property name="sizePolicy">
-                              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                                <horstretch>0</horstretch>
                                <verstretch>0</verstretch>
                               </sizepolicy>
@@ -955,13 +1188,59 @@ background-color: rgb(243, 255, 233);</string>
                              </property>
                             </widget>
                            </item>
-                           <item row="0" column="1">
-                            <widget class="QLineEdit" name="XCoordLineEditBegin"/>
+                           <item row="5" column="0" colspan="2">
+                            <widget class="QPushButton" name="addLineButton">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="styleSheet">
+                              <string notr="true">QPushButton {
+    border: 2px solid black #cccccc;
+	border-radius: 10px;
+}
+
+QPushButton:pressed {
+    margin-left: 1px;
+    margin-top: 1px;
+    margin-right: -1px;
+    margin-bottom: -1px;
+}
+
+</string>
+                             </property>
+                             <property name="text">
+                              <string>Добавить</string>
+                             </property>
+                             <property name="checkable">
+                              <bool>true</bool>
+                             </property>
+                             <property name="checked">
+                              <bool>false</bool>
+                             </property>
+                             <property name="autoRepeat">
+                              <bool>false</bool>
+                             </property>
+                             <property name="autoExclusive">
+                              <bool>false</bool>
+                             </property>
+                             <property name="autoDefault">
+                              <bool>false</bool>
+                             </property>
+                             <property name="default">
+                              <bool>false</bool>
+                             </property>
+                             <property name="flat">
+                              <bool>false</bool>
+                             </property>
+                            </widget>
                            </item>
-                           <item row="1" column="0">
+                           <item row="2" column="0">
                             <widget class="QLabel" name="YCoordLabelLineBegin">
                              <property name="sizePolicy">
-                              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                                <horstretch>0</horstretch>
                                <verstretch>0</verstretch>
                               </sizepolicy>
@@ -980,13 +1259,10 @@ background-color: rgb(243, 255, 233);</string>
                              </property>
                             </widget>
                            </item>
-                           <item row="1" column="1">
-                            <widget class="QLineEdit" name="YCoordLineEditBegin"/>
-                           </item>
-                           <item row="2" column="0">
+                           <item row="3" column="0">
                             <widget class="QLabel" name="XCoordLabelLineEnd">
                              <property name="sizePolicy">
-                              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                                <horstretch>0</horstretch>
                                <verstretch>0</verstretch>
                               </sizepolicy>
@@ -1005,13 +1281,19 @@ background-color: rgb(243, 255, 233);</string>
                              </property>
                             </widget>
                            </item>
-                           <item row="2" column="1">
+                           <item row="3" column="1">
                             <widget class="QLineEdit" name="XCoordLineEditEnd"/>
                            </item>
-                           <item row="3" column="0">
+                           <item row="1" column="1">
+                            <widget class="QLineEdit" name="XCoordLineEditBegin"/>
+                           </item>
+                           <item row="4" column="1">
+                            <widget class="QLineEdit" name="YCoordLineEditEnd"/>
+                           </item>
+                           <item row="4" column="0">
                             <widget class="QLabel" name="YCoordLabelLineEnd">
                              <property name="sizePolicy">
-                              <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                                <horstretch>0</horstretch>
                                <verstretch>0</verstretch>
                               </sizepolicy>
@@ -1030,36 +1312,27 @@ background-color: rgb(243, 255, 233);</string>
                              </property>
                             </widget>
                            </item>
-                           <item row="3" column="1">
-                            <widget class="QLineEdit" name="YCoordLineEditEnd"/>
-                           </item>
-                           <item row="4" column="0" colspan="2">
-                            <widget class="QPushButton" name="addLine">
+                           <item row="0" column="0">
+                            <widget class="QLabel" name="lineName">
                              <property name="sizePolicy">
-                              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                                <horstretch>0</horstretch>
                                <verstretch>0</verstretch>
                               </sizepolicy>
                              </property>
+                             <property name="styleSheet">
+                              <string notr="true">font: 75 9pt &quot;Microsoft Tai Le&quot;;
+border: 2px solid black #cccccc;
+border-radius: 10px;
+background-color: rgb(243, 255, 233);</string>
+                             </property>
                              <property name="text">
-                              <string>Добавить</string>
-                             </property>
-                             <property name="checkable">
-                              <bool>true</bool>
-                             </property>
-                             <property name="checked">
-                              <bool>true</bool>
-                             </property>
-                             <property name="autoDefault">
-                              <bool>true</bool>
-                             </property>
-                             <property name="default">
-                              <bool>false</bool>
-                             </property>
-                             <property name="flat">
-                              <bool>false</bool>
+                              <string>Название:</string>
                              </property>
                             </widget>
+                           </item>
+                           <item row="0" column="1">
+                            <widget class="QLineEdit" name="lineNameLineEdit"/>
                            </item>
                           </layout>
                          </widget>
@@ -1093,7 +1366,7 @@ background-color: rgb(243, 255, 233);</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>986</width>
+     <width>991</width>
      <height>26</height>
     </rect>
    </property>
@@ -1127,7 +1400,7 @@ background-color: rgb(243, 255, 233);</string>
     <property name="title">
      <string>Выход</string>
     </property>
-    <addaction name="exitAction_2"/>
+    <addaction name="exitAction"/>
    </widget>
    <addaction name="start"/>
    <addaction name="map"/>
@@ -1135,16 +1408,6 @@ background-color: rgb(243, 255, 233);</string>
    <addaction name="stat"/>
    <addaction name="exit"/>
   </widget>
-  <action name="action_2">
-   <property name="text">
-    <string>сохранить</string>
-   </property>
-  </action>
-  <action name="exitAction">
-   <property name="text">
-    <string>Выйти</string>
-   </property>
-  </action>
   <action name="startAction">
    <property name="text">
     <string>Запустить построение траектории</string>
@@ -1175,9 +1438,17 @@ background-color: rgb(243, 255, 233);</string>
     <string>Посмотреть статистику</string>
    </property>
   </action>
-  <action name="exitAction_2">
+  <action name="exitAction">
    <property name="text">
     <string>Выйти</string>
+   </property>
+  </action>
+  <action name="actionDeleteObj">
+   <property name="text">
+    <string>Удалить</string>
+   </property>
+   <property name="toolTip">
+    <string>Удалить выбранный объект</string>
    </property>
   </action>
  </widget>
@@ -1200,7 +1471,7 @@ background-color: rgb(243, 255, 233);</string>
    </hints>
   </connection>
   <connection>
-   <sender>exitAction_2</sender>
+   <sender>exitAction</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>close()</slot>
