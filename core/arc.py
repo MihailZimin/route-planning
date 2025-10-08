@@ -101,7 +101,7 @@ class Arc(ABCGeo):
         """
         Return JSON string representation of the object.
         """
-        center_str = f'[{self._center.x}, {self._center.y}]'
+        center_str = f"[{self._center.x}, {self._center.y}]"
 
         return (
         '{\n'
@@ -294,4 +294,4 @@ class Arc(ABCGeo):
             False otherwise
 
         """
-        return math.isclose(self._center.distance_to(point), self._radius, rel_tol=self._precision)
+        return math.isclose(self._center.distance_to(point), self._radius, abs_tol=self._precision)

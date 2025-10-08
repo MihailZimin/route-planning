@@ -25,6 +25,9 @@ class Polygon(ABCGeo):
             points: list of Point objects
 
         """
+        if points[0] != points[-1]:
+            error_msg = "start point and end point must be the same"
+            raise ValueError(error_msg)
         self._points = points.copy()
 
     def save(self) -> str:
@@ -71,7 +74,7 @@ class Polygon(ABCGeo):
         """
         Return string representation of Polygon.
         """
-        return f"{[str(point) for point in self._points]}"
+        return "[" + " ".join([str(point) for point in self._points]) + "]"
 
     def get_points_copy(self) -> list[Point]:
         """

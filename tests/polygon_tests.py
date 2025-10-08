@@ -10,14 +10,14 @@ def sample_polygon() -> Polygon:
     """
     Fixture for Polygon.
     """
-    return Polygon([Point(i, 10 * i) for i in range(10)])
+    return Polygon([Point(i, 10 * i) for i in range(10)] + [Point(0, 0)])
 
 @pytest.fixture
 def sample_points() -> list[Point]:
     """
     Fixture for point list.
     """
-    return [Point(i, 5 * i) for i in range(10)]
+    return [Point(i, 5 * i) for i in range(10)] + [Point(0, 0)]
 
 
 class TestPolygon:
@@ -47,14 +47,15 @@ class TestPolygon:
         str_saved = sample_polygon.save()
 
         assert str_saved == (
-            "[0, 0]; [1, 10]; [2, 20]; [3, 30]; [4, 40]; [5, 50]; [6, 60]; [7, 70]; [8, 80]; [9, 90]"
+            "[0, 0]; [1, 10]; [2, 20]; [3, 30]; [4, 40]; [5, 50]; "
+            "[6, 60]; [7, 70]; [8, 80]; [9, 90]; [0, 0]"
             )
 
     def test_save_format_consistency(self, sample_polygon: Polygon) -> None:
         """
         Test save independance of object.
         """
-        polygon = Polygon([Point(i, 10 * i) for i in range(10)])
+        polygon = Polygon([Point(i, 10 * i) for i in range(10)] + [Point(0, 0)])
 
         assert sample_polygon is not polygon
         assert sample_polygon.save() == polygon.save()
@@ -64,8 +65,7 @@ class TestPolygon:
         Test polygon format.
         """
         assert str(sample_polygon) == (
-            "['(0, 0)', '(1, 10)', '(2, 20)', '(3, 30)', '(4, 40)', "
-            "'(5, 50)', '(6, 60)', '(7, 70)', '(8, 80)', '(9, 90)']"
+            "[(0, 0) (1, 10) (2, 20) (3, 30) (4, 40) (5, 50) (6, 60) (7, 70) (8, 80) (9, 90) (0, 0)]"
         )
 
     def test_mupltiple_reassignments(self, sample_polygon: Polygon) -> None:
@@ -101,10 +101,17 @@ class TestPolygon:
         """
         Test load method work with Polygon class.
         """
-        string_data = "[1, 2]; [2, 3]; [3, 4]; [4, 5]"
+        string_data = "[1, 2]; [2, 3]; [3, 4]; [4, 5]; [1, 2]"
 
         poly = Polygon.load(string_data)
         assert poly.points[0] == Point(1, 2)
         assert poly.points[1] == Point(2, 3)
         assert poly.points[2] == Point(3, 4)
         assert poly.points[3] == Point(4, 5)
+
+    def test_initialization_invalid(self, sample_points: list[Point]) -> None:
+        """
+        Test for init exception.
+        """
+        with pytest.raises(ValueError, match="start point and end point must be the same"):
+            Polygon(sample_points[0:-1])
