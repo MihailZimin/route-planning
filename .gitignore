@@ -1,0 +1,5 @@
+.venv
+.ruff_cache
+check.py
+tests/__pycache__
+core/__pycache__
