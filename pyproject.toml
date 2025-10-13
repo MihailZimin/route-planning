@@ -3,7 +3,7 @@ name = "route-planning"
 version = "0.1.0"
 description = "Add your description here"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = ["PyQt6 >= 6.9.1"]
 
 # Same as Black.
 line-length = 88
@@ -30,7 +30,8 @@ line-length = 105
 
 [tool.ruff.lint]
 select = ["ALL"]
-ignore = ["D203", "COM812", "D200", "D212"]
+ignore = ["D203", "COM812", "D200", "D212", "N802"]
+
 
 # Allow fix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]
