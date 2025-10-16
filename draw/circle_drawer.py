@@ -12,26 +12,30 @@ from PyQt6.QtWidgets import QGraphicsEllipseItem, QGraphicsView
 
 from .abstract_drawer import ABCDrawer
 
+from core.point import Point
+from core.circle import Circle
 
-class CircleDrawer(ABCDrawer):
+class CircleDrawer(ABCDrawer, Circle):
     """
     Class for drawing circle.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, center: Point, radius: float, name: str) -> None:
         """
         Init circle drawer.
         """
-        super().__init__()
+        super().__init__(center, radius)
         self.graphicsItem: QGraphicsEllipseItem = QGraphicsEllipseItem()
+        self._name = name
 
-    def draw(
-        self,
-        map_view: QGraphicsView,
-        x: float,
-        y: float,
-        rad: float
-    ) -> None:
+    @property
+    def name(self) -> str:
+        """
+        Return circle name.
+        """
+        return self._name
+
+    def draw(self, map_view: QGraphicsView) -> None:
         """
         Draw circle.
 
@@ -47,13 +51,27 @@ class CircleDrawer(ABCDrawer):
         scene = map_view.scene()
         color = QColor(255, 0, 0)
         self.graphicsItem = scene.addEllipse(
-            x - rad / 2,
-            y - rad / 2,
-            rad,
-            rad,
+            self.center.x - self.radius / 2,
+            self.center.y - self.radius / 2,
+            self.radius,
+            self.radius,
             QPen(color),
             QBrush(color)
-        )
+    )
+
+    @property
+    def parameters(self) -> tuple:
+        """
+        Return line parameters for GUI display. 
+        """
+        params = {
+            "Название:": self.name,
+            "X:": self.center.x,
+            "Y:": self.center.y,
+            "Радиус:": self.radius
+        }
+
+        return params
 
     def delete(self, map_view: QGraphicsView) -> None:
         """

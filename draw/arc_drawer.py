@@ -8,6 +8,7 @@ This module provides:
 
 from .abstract_drawer import ABCDrawer
 
+from PyQt6.QtWidgets import QGraphicsView
 
 class ArcDrawer(ABCDrawer):
     """
@@ -20,12 +21,12 @@ class ArcDrawer(ABCDrawer):
         """
         super().__init__()
 
-    def draw(self) -> None:
+    def draw(self, map_view: QGraphicsView) -> None:
         """
         Draw arc.
         """
 
-    def delete(self) -> None:
+    def delete(self, map_view: QGraphicsView) -> None:
         """
         Delete arc.
         """

@@ -8,20 +8,23 @@ This module provides:
 
 from abc import ABC, abstractmethod
 
+from core.abstract_geometry import ABCGeo
 
-class ABCDrawer(ABC):
+from PyQt6.QtWidgets import QGraphicsView
+
+class ABCDrawer(ABCGeo, ABC):
     """
     Abstaract drawer class.
     """
 
     @abstractmethod
-    def draw(self) -> None:
+    def draw(self, map_view: QGraphicsView) -> None:
         """
         Draw geometry object.
         """
 
     @abstractmethod
-    def delete(self) -> None:
+    def delete(self, map_view: QGraphicsView) -> None:
         """
         Delete geometry object.
         """

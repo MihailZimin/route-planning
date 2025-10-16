@@ -17,12 +17,15 @@ from PyQt6.QtWidgets import (
     QMainWindow,
     QMenu,
     QMessageBox,
-    QTreeWidgetItem,
+    QTreeWidgetItem
 )
 
+from draw.abstract_drawer import ABCDrawer
 from draw.point_drawer import PointDrawer
 from draw.circle_drawer import CircleDrawer
 from draw.line_drawer import LineDrawer
+
+from core.point import Point
 
 
 class MainWindow(QMainWindow):
@@ -35,8 +38,7 @@ class MainWindow(QMainWindow):
         Initialize MainWindow object.
         """
         super().__init__()
-        self.geo_objects: list = []
-        self.geo_objects_counter: int = 0
+        self.geo_objects: list[ABCDrawer] = []
         self.initializeUI()
 
     def initializeUI(self) -> None:
@@ -60,7 +62,8 @@ class MainWindow(QMainWindow):
         self.addPointPolygonButton.clicked.connect(self.addPolygonPoint)
         self.addPolygonButton.clicked.connect(self.addPolygon)
 
-        self.addCurrentObjectsContexMenu()
+        self.deleteButton.clicked.connect(self.deleteObject)
+        self.objectList.itemSelectionChanged.connect(self.showObjectsParams)
 
         self.scene = QGraphicsScene()
         self.mapView.setScene(self.scene)
@@ -80,7 +83,7 @@ class MainWindow(QMainWindow):
 
     def showParams(self) -> None:
         """
-        Slot for showing parametrs of flight.
+        Slot for showing parameters of flight.
         """
         self.stackedWidget.setCurrentIndex(1)
 
@@ -104,55 +107,56 @@ class MainWindow(QMainWindow):
         """
         self.statusBar.showMessage("Процесс построения траектории запущен")
 
-    def addCurrentObjectsContexMenu(self) -> None:
+    def updateObjectList(self) -> None:
         """
-        Add contex menu to delete geo Objects.
+        Update list of geometry objects.
         """
-        self.currentObjects.customContextMenuRequested.connect(
-            self.showContextMenu
-        )
-        self.actionDeleteObj.triggered.connect(self.deleteObject)
-
-    def showContextMenu(self, position: QPoint) -> None:
-        """
-        Show context menu for currentObjects.
-
-        Args:
-            position: position of cursor at the click moment.
-
-        """
-        context_menu = QMenu(self.currentObjects)
-        context_menu.addAction(self.actionDeleteObj)
-
-        context_menu.exec(self.currentObjects.viewport().mapToGlobal(position))
+        self.objectList.clear()
+        for object in self.geo_objects:
+            self.objectList.addItem(object.name)
 
     def deleteObject(self) -> None:
         """
         Delete selected geo object.
         """
-        selected_objects = self.currentObjects.selectedItems()
+        selected_objects = self.objectList.selectedItems()
+
         if not selected_objects:
             QMessageBox.information(self, "Траектория БПЛА",
-                "He выбран объект для удаления")
+                "Выберите элемент")
             return
 
-        object_param = [obj for obj in selected_objects if obj.parent() is None]
-        if not object_param:
+        items_index = []
+
+        for item in selected_objects:
+            index = self.objectList.row(item)
+            items_index.append(index)
+        
+        items_index.sort(reverse=True)
+        for i in items_index:
+            self.geo_objects.pop(i)
+
+        self.updateObjectList()
+        self.redraw()
+
+    def showObjectsParams(self) -> None:
+        """
+        Show parameters of selected objects.
+        """
+        selected_objects = self.objectList.selectedItems()
+
+        if not selected_objects:
+            self.infoLabel.setText("Характеристики объекта")
             return
 
-        root = self.currentObjects.invisibleRootItem()
-        for obj in selected_objects:
-            for i in range(obj.childCount()):
-                child = obj.child(i)
-                if child.text(0) == "ID:":
-                    id_item = child
-                    break
-            if id_item:
-                object_id = int(id_item.text(1))
-                self.geo_objects[object_id].delete(self.mapView)
-                self.geo_objects[object_id] = None
+        info = ""
 
-            root.removeChild(obj)
+        for item in selected_objects:
+            index = self.objectList.row(item)
+            for param, value in self.geo_objects[index].parameters.items():
+                info += param + f"  {value}<br>"
+
+        self.infoLabel.setText(info)
 
     def validateParamets(self, params: list[str]) -> bool:
         """
@@ -176,7 +180,6 @@ class MainWindow(QMainWindow):
 
         return True
 
-
     def addPoint(self) -> None:
         """
         Add point to the list of current objects.
@@ -192,23 +195,15 @@ class MainWindow(QMainWindow):
         if not name:
             name = "Точка"
 
-        point = QTreeWidgetItem([name])
-        QTreeWidgetItem(point, ["X:", x_coord])
-        QTreeWidgetItem(point, ["Y:", y_coord])
-        QTreeWidgetItem(point, ["ID:", str(self.geo_objects_counter)])
-        self.currentObjects.addTopLevelItem(point)
+        point = PointDrawer(float(x_coord), float(y_coord), name)
+        self.geo_objects.append(point)
+        point.draw(self.mapView)
+        self.updateObjectList()
+
+        self.objectList.setCurrentRow(len(self.geo_objects) - 1)
+
         QMessageBox.information(self, "Траектория БПЛА",
                 "Точка добавлена")
-
-        point_draw = PointDrawer()
-        self.geo_objects.append(point_draw)
-        self.geo_objects_counter += 1
-        point_draw.draw(
-            self.mapView, 
-            float(x_coord), 
-            float(y_coord), 
-            name
-        )
 
     def addCircle(self) -> None:
         """
@@ -226,24 +221,17 @@ class MainWindow(QMainWindow):
         if not name:
             name = "Окружность"
 
-        circle = QTreeWidgetItem([name])
-        QTreeWidgetItem(circle, ["X:", x_coord])
-        QTreeWidgetItem(circle, ["Y:", y_coord])
-        QTreeWidgetItem(circle, ["R:", radius])
-        QTreeWidgetItem(circle, ["ID:", str(self.geo_objects_counter)])
-        self.currentObjects.addTopLevelItem(circle)
+        center = Point(float(x_coord), float(y_coord))
+
+        circle = CircleDrawer(center, float(radius), name)
+        self.geo_objects.append(circle)
+        circle.draw(self.mapView)
+        self.updateObjectList()
+
+        self.objectList.setCurrentRow(len(self.geo_objects) - 1)
+
         QMessageBox.information(self, "Траектория БПЛА",
                 "Окружность добавлена")
-        
-        circle_draw = CircleDrawer()
-        self.geo_objects.append(circle_draw)
-        self.geo_objects_counter += 1
-        circle_draw.draw(
-            self.mapView, 
-            float(x_coord), 
-            float(y_coord), 
-            float(radius)
-        )
 
     def addLine(self) -> None:
         """
@@ -262,23 +250,17 @@ class MainWindow(QMainWindow):
         if not name:
             name = "Отрезок"
 
-        line = QTreeWidgetItem([name])
-        QTreeWidgetItem(line, ["X1:", x_coord_beg])
-        QTreeWidgetItem(line, ["Y1:", y_coord_beg])
-        QTreeWidgetItem(line, ["X2:", x_coord_end])
-        QTreeWidgetItem(line, ["Y2:", y_coord_end])
-        QTreeWidgetItem(line, ["ID:", str(self.geo_objects_counter)])
-        self.currentObjects.addTopLevelItem(line)
+        point_begin = Point(float(x_coord_beg), float(y_coord_beg))
+        point_end = Point(float(x_coord_end), float(y_coord_end))
+        
+        line_draw = LineDrawer(point_begin, point_end, name)
+        self.geo_objects.append(line_draw)
+        line_draw.draw(self.mapView)
+
+        self.objectList.setCurrentRow(len(self.geo_objects) - 1)
+
         QMessageBox.information(self, "Траектория БПЛА",
                 "Отрезок добавлен")
-        line_draw = LineDrawer()
-        self.geo_objects.append(line_draw)
-        self.geo_objects_counter += 1
-        line_draw.draw(
-            self.mapView,
-            (float(x_coord_beg), float(y_coord_beg)),
-            (float(x_coord_end), float(y_coord_end))
-        )
 
     def addPolygonPoint(self) -> None:
         """
@@ -333,6 +315,13 @@ class MainWindow(QMainWindow):
                 "Многоугольник добавлен")
         self.pointsPolygon.clear()
 
+    def redraw(self) -> None:
+        """
+        Redraw current map.
+        """
+        self.scene.clear()
+        for object in self.geo_objects:
+            object.draw(self.mapView)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>991</width>
-    <height>593</height>
+    <width>960</width>
+    <height>649</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>PictTrajectory/drone.png</normaloff>PictTrajectory/drone.png</iconset>
+    <normaloff>../pict_trajectory/drone.png</normaloff>../pict_trajectory/drone.png</iconset>
   </property>
   <widget class="QWidget" name="CentralWidget">
    <property name="styleSheet">
@@ -459,7 +459,7 @@ background-color: rgb(243, 255, 233);</string>
                 <enum>QTabWidget::Rounded</enum>
                </property>
                <property name="currentIndex">
-                <number>1</number>
+                <number>0</number>
                </property>
                <property name="iconSize">
                 <size>
@@ -505,21 +505,46 @@ background-color: rgb(243, 255, 233);</string>
                  <property name="spacing">
                   <number>0</number>
                  </property>
-                 <item row="0" column="0">
-                  <widget class="QTreeWidget" name="currentObjects">
-                   <property name="contextMenuPolicy">
-                    <enum>Qt::CustomContextMenu</enum>
+                 <item row="2" column="0">
+                  <widget class="QPushButton" name="deleteButton">
+                   <property name="styleSheet">
+                    <string notr="true">QPushButton {
+    border: 2px solid black #cccccc;
+}
+
+QPushButton:pressed {
+    margin-left: 1px;
+    margin-top: 1px;
+    margin-right: -1px;
+    margin-bottom: -1px;
+}</string>
                    </property>
-                   <column>
-                    <property name="text">
-                     <string>Объекты</string>
-                    </property>
-                   </column>
-                   <column>
-                    <property name="text">
-                     <string>Значения</string>
-                    </property>
-                   </column>
+                   <property name="text">
+                    <string>Удалить</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QListWidget" name="objectList">
+                   <property name="selectionMode">
+                    <enum>QAbstractItemView::ExtendedSelection</enum>
+                   </property>
+                   <property name="viewMode">
+                    <enum>QListView::ListMode</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="infoLabel">
+                   <property name="styleSheet">
+                    <string notr="true">border: 2px solid black #cccccc;</string>
+                   </property>
+                   <property name="text">
+                    <string>Характеристики объекта</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
                   </widget>
                  </item>
                 </layout>
@@ -1337,7 +1362,7 @@ background-color: rgb(243, 255, 233);</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>991</width>
+     <width>960</width>
      <height>26</height>
     </rect>
    </property>

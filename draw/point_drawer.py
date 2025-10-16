@@ -12,28 +12,31 @@ from PyQt6.QtWidgets import QGraphicsEllipseItem, QGraphicsTextItem, QGraphicsVi
 
 from .abstract_drawer import ABCDrawer
 
+from core.point import Point
 
-class PointDrawer(ABCDrawer):
+class PointDrawer(ABCDrawer, Point):
     """
     Class for drawing point.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, x: float = 0, y: float = 0, name: str = "") -> None:
         """
         Init point drawer.
         """
-        super().__init__()
+        super().__init__(x, y)
         self.graphicsItem: QGraphicsEllipseItem = QGraphicsEllipseItem()
         self.graphicsText: QGraphicsTextItem = QGraphicsTextItem()
+        self._name = name
+        self.point_size: int = 5
 
-    def draw(
-        self,
-        map_view: QGraphicsView,
-        x: float,
-        y: float,
-        name: str,
-        point_size: int = 5,
-    ) -> None:
+    @property
+    def name(self) -> str:
+        """
+        Return point name.
+        """
+        return self._name
+
+    def draw(self, map_view: QGraphicsView) -> None:
         """
         Draw point.
 
@@ -50,18 +53,31 @@ class PointDrawer(ABCDrawer):
         scene = map_view.scene()
         color = QColor(255, 0, 0)
         self.graphicsItem = scene.addEllipse(
-            x - point_size / 2,
-            y - point_size / 2,
-            point_size,
-            point_size,
+            self.x - self.point_size / 2,
+            self.y - self.point_size / 2,
+            self.point_size,
+            self.point_size,
             QPen(color),
             QBrush(color)
         )
 
-        if name:
-            self.graphicsText = scene.addText(name)
-            self.graphicsText.setPos(x + point_size, y - point_size)
+        if self.name:
+            self.graphicsText = scene.addText(self.name)
+            self.graphicsText.setPos(self.x + self.point_size, self.y - self.point_size)
             self.graphicsText.setDefaultTextColor(color)
+
+    @property
+    def parameters(self) -> tuple:
+        """
+        Return line parameters for GUI display. 
+        """
+        params = {
+            "Название:": self.name,
+            "X:": self.x,
+            "Y:": self.y
+        }
+
+        return params
 
     def delete(self, map_view: QGraphicsView) -> None:
         """

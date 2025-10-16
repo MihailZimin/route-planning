@@ -7,30 +7,35 @@ This module provides:
 """
 
 
-from PyQt6.QtGui import QBrush, QColor, QPen
+from PyQt6.QtGui import QColor, QPen
 from PyQt6.QtWidgets import QGraphicsLineItem, QGraphicsView
 
 from .abstract_drawer import ABCDrawer
 
+from core.point import Point
+from core.line import Line
 
-class LineDrawer(ABCDrawer):
+class LineDrawer(ABCDrawer, Line):
     """
     Class for drawing line.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, start: Point, end: Point, name: str) -> None:
         """
         Init line drawer.
         """
-        super().__init__()
+        super().__init__(start, end)
         self.graphicsItem: QGraphicsLineItem = QGraphicsLineItem()
+        self._name = name
 
-    def draw(
-        self,
-        map_view: QGraphicsView,
-        begin: tuple[float, float],
-        end: tuple[float, float]
-    ) -> None:
+    @property
+    def name(self) -> str:
+        """
+        Return line name.
+        """
+        return self._name
+
+    def draw(self, map_view: QGraphicsView) -> None:
         """
         Draw line.
 
@@ -40,16 +45,32 @@ class LineDrawer(ABCDrawer):
             end: tuple of coordinates of line end.
 
         Default line color: Red.
+
         """
         color = QColor(255, 0, 0)
         scene = map_view.scene()
         self.graphicsItem = scene.addLine(
-            begin[0],
-            begin[1],
-            end[0],
-            end[1],
+            self.start.x,
+            self.start.y,
+            self.end.x,
+            self.end.y,
             QPen(color)
         )
+
+    @property
+    def parameters(self) -> tuple:
+        """
+        Return line parameters for GUI display. 
+        """
+        params = {
+            "Название:": self.name,
+            "X1:": self.start.x,
+            "Y1:": self.start.y,
+            "X2:": self.end.x,
+            "Y2:": self.end.y
+        }
+
+        return params
 
     def delete(self, map_view: QGraphicsView) -> None:
         """
@@ -57,6 +78,7 @@ class LineDrawer(ABCDrawer):
 
         Args:
             map_view: widget where line is located.
+
         """
         scene = map_view.scene()
         scene.removeItem(self.graphicsItem)
