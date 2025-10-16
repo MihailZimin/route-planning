@@ -24,8 +24,6 @@ class PointDrawer(ABCDrawer, Point):
         Init point drawer.
         """
         super().__init__(x, y)
-        self.graphicsItem: QGraphicsEllipseItem = QGraphicsEllipseItem()
-        self.graphicsText: QGraphicsTextItem = QGraphicsTextItem()
         self._name = name
         self.point_size: int = 5
 
@@ -52,7 +50,7 @@ class PointDrawer(ABCDrawer, Point):
         """
         scene = map_view.scene()
         color = QColor(255, 0, 0)
-        self.graphicsItem = scene.addEllipse(
+        point = scene.addEllipse(
             self.x - self.point_size / 2,
             self.y - self.point_size / 2,
             self.point_size,
@@ -61,13 +59,17 @@ class PointDrawer(ABCDrawer, Point):
             QBrush(color)
         )
 
+        pen = QPen(QColor(0, 0, 0))
+        pen.setWidth(1)
+        point.setPen(pen)
+
         if self.name:
-            self.graphicsText = scene.addText(self.name)
-            self.graphicsText.setPos(self.x + self.point_size, self.y - self.point_size)
-            self.graphicsText.setDefaultTextColor(color)
+            graphicsText = scene.addText(self.name)
+            graphicsText.setPos(self.x + self.point_size, self.y - self.point_size)
+            graphicsText.setDefaultTextColor(color)
 
     @property
-    def parameters(self) -> tuple:
+    def parameters(self) -> dict:
         """
         Return line parameters for GUI display. 
         """
@@ -78,15 +80,3 @@ class PointDrawer(ABCDrawer, Point):
         }
 
         return params
-
-    def delete(self, map_view: QGraphicsView) -> None:
-        """
-        Delete point from map.
-
-        Args:
-            map_view: widget where point is located.
-
-        """
-        scene = map_view.scene()
-        scene.removeItem(self.graphicsItem)
-        scene.removeItem(self.graphicsText)

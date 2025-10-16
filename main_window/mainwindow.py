@@ -9,13 +9,12 @@ This module provides:
 import sys
 
 from PyQt6 import uic
-from PyQt6.QtCore import QPoint, QSize
+from PyQt6.QtCore import QSize
 from PyQt6.QtWidgets import (
     QApplication,
     QFileDialog,
     QGraphicsScene,
     QMainWindow,
-    QMenu,
     QMessageBox,
     QTreeWidgetItem
 )
@@ -24,6 +23,7 @@ from draw.abstract_drawer import ABCDrawer
 from draw.point_drawer import PointDrawer
 from draw.circle_drawer import CircleDrawer
 from draw.line_drawer import LineDrawer
+from draw.polygon_drawer import PolygonDrawer
 
 from core.point import Point
 
@@ -148,7 +148,7 @@ class MainWindow(QMainWindow):
         if not selected_objects:
             self.infoLabel.setText("Характеристики объекта")
             return
-
+ 
         info = ""
 
         for item in selected_objects:
@@ -253,9 +253,10 @@ class MainWindow(QMainWindow):
         point_begin = Point(float(x_coord_beg), float(y_coord_beg))
         point_end = Point(float(x_coord_end), float(y_coord_end))
         
-        line_draw = LineDrawer(point_begin, point_end, name)
-        self.geo_objects.append(line_draw)
-        line_draw.draw(self.mapView)
+        line = LineDrawer(point_begin, point_end, name)
+        self.geo_objects.append(line)
+        line.draw(self.mapView)
+        self.updateObjectList()
 
         self.objectList.setCurrentRow(len(self.geo_objects) - 1)
 
@@ -274,7 +275,7 @@ class MainWindow(QMainWindow):
             return
 
         point_num = self.pointsPolygon.topLevelItemCount()
-        point = QTreeWidgetItem(["Точка " + str(point_num)])
+        point = QTreeWidgetItem(["Точка " + str(point_num + 1)])
         QTreeWidgetItem(point, ["X:", x_coord])
         QTreeWidgetItem(point, ["Y:", y_coord])
         self.pointsPolygon.addTopLevelItem(point)
@@ -296,21 +297,24 @@ class MainWindow(QMainWindow):
         if not name:
             name = "Многоугольник"
 
-        polygon = QTreeWidgetItem([name])
+        polygon_points = []
+
         for i in range(points_count):
+            coords = []
             point = self.pointsPolygon.topLevelItem(i)
-            new_point = QTreeWidgetItem(polygon)
-            for j in range(point.columnCount()):
-                new_point.setText(j, point.text(j))
             for k in range(point.childCount()):
                 coord = point.child(k)
-                new_coord = QTreeWidgetItem(new_point)
-                for j in range(coord.columnCount()):
-                    new_coord.setText(j, coord.text(j))
-                new_point.addChild(new_coord)
+                coords.append(float(coord.text(1)))
+            p = Point(coords[0], coords[1])
+            polygon_points.append(p)
 
+        polygon = PolygonDrawer(polygon_points, name)
+        self.geo_objects.append(polygon)
+        polygon.draw(self.mapView)
+        self.updateObjectList()
 
-        self.currentObjects.addTopLevelItem(polygon)
+        self.objectList.setCurrentRow(len(self.geo_objects) - 1)
+
         QMessageBox.information(self, "Траектория БПЛА",
                 "Многоугольник добавлен")
         self.pointsPolygon.clear()

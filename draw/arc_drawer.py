@@ -25,8 +25,3 @@ class ArcDrawer(ABCDrawer):
         """
         Draw arc.
         """
-
-    def delete(self, map_view: QGraphicsView) -> None:
-        """
-        Delete arc.
-        """

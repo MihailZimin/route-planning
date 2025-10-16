@@ -25,7 +25,6 @@ class LineDrawer(ABCDrawer, Line):
         Init line drawer.
         """
         super().__init__(start, end)
-        self.graphicsItem: QGraphicsLineItem = QGraphicsLineItem()
         self._name = name
 
     @property
@@ -49,7 +48,7 @@ class LineDrawer(ABCDrawer, Line):
         """
         color = QColor(255, 0, 0)
         scene = map_view.scene()
-        self.graphicsItem = scene.addLine(
+        scene.addLine(
             self.start.x,
             self.start.y,
             self.end.x,
@@ -58,7 +57,7 @@ class LineDrawer(ABCDrawer, Line):
         )
 
     @property
-    def parameters(self) -> tuple:
+    def parameters(self) -> dict:
         """
         Return line parameters for GUI display. 
         """
@@ -71,14 +70,3 @@ class LineDrawer(ABCDrawer, Line):
         }
 
         return params
-
-    def delete(self, map_view: QGraphicsView) -> None:
-        """
-        Delete line.
-
-        Args:
-            map_view: widget where line is located.
-
-        """
-        scene = map_view.scene()
-        scene.removeItem(self.graphicsItem)

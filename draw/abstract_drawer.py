@@ -22,9 +22,3 @@ class ABCDrawer(ABCGeo, ABC):
         """
         Draw geometry object.
         """
-
-    @abstractmethod
-    def delete(self, map_view: QGraphicsView) -> None:
-        """
-        Delete geometry object.
-        """

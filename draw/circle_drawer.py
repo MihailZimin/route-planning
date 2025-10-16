@@ -25,7 +25,6 @@ class CircleDrawer(ABCDrawer, Circle):
         Init circle drawer.
         """
         super().__init__(center, radius)
-        self.graphicsItem: QGraphicsEllipseItem = QGraphicsEllipseItem()
         self._name = name
 
     @property
@@ -50,17 +49,21 @@ class CircleDrawer(ABCDrawer, Circle):
         """
         scene = map_view.scene()
         color = QColor(255, 0, 0)
-        self.graphicsItem = scene.addEllipse(
+        circle = scene.addEllipse(
             self.center.x - self.radius / 2,
             self.center.y - self.radius / 2,
             self.radius,
             self.radius,
             QPen(color),
             QBrush(color)
-    )
+        )
+
+        pen = QPen(QColor(0, 0, 0))
+        pen.setWidth(2)
+        circle.setPen(pen)
 
     @property
-    def parameters(self) -> tuple:
+    def parameters(self) -> dict:
         """
         Return line parameters for GUI display. 
         """
@@ -72,14 +75,3 @@ class CircleDrawer(ABCDrawer, Circle):
         }
 
         return params
-
-    def delete(self, map_view: QGraphicsView) -> None:
-        """
-        Delete Circle.
-
-        Args:
-            map_view: widget where circle is located.
-
-        """
-        scene = map_view.scene()
-        scene.removeItem(self.graphicsItem)
