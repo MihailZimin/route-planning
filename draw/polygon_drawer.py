@@ -6,15 +6,15 @@ This module provides:
 
 """
 
-from .abstract_drawer import ABCDrawer
-
-from PyQt6.QtWidgets import QGraphicsView, QGraphicsPolygonItem
+from PyQt6.QtCore import QPointF
+from PyQt6.QtGui import QBrush, QColor, QPolygonF
+from PyQt6.QtWidgets import QGraphicsPolygonItem, QGraphicsView
 
 from core.point import Point
 from core.polygon import Polygon
 
-from PyQt6.QtCore import QPointF
-from PyQt6.QtGui import QPolygonF, QPen, QBrush, QColor
+from .abstract_drawer import ABCDrawer
+
 
 class PolygonDrawer(Polygon, ABCDrawer):
     """
@@ -50,11 +50,11 @@ class PolygonDrawer(Polygon, ABCDrawer):
         polygon_to_draw.setBrush(brush)
         scene = map_view.scene()
         scene.addItem(polygon_to_draw)
-    
+
     @property
     def parameters(self) -> dict:
         """
-        Return polygon parameters for GUI display. 
+        Return polygon parameters for GUI display.
         """
         params = {"Название:": self.name}
         for i, point in enumerate(self.points):

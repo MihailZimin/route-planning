@@ -6,9 +6,10 @@ This module provides:
 
 """
 
+from PyQt6.QtWidgets import QGraphicsView
+
 from .abstract_drawer import ABCDrawer
 
-from PyQt6.QtWidgets import QGraphicsView
 
 class ArcDrawer(ABCDrawer):
     """

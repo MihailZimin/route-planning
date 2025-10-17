@@ -8,11 +8,12 @@ This module provides:
 
 
 from PyQt6.QtGui import QBrush, QColor, QPen
-from PyQt6.QtWidgets import QGraphicsEllipseItem, QGraphicsTextItem, QGraphicsView
+from PyQt6.QtWidgets import QGraphicsView
+
+from core.point import Point
 
 from .abstract_drawer import ABCDrawer
 
-from core.point import Point
 
 class PointDrawer(ABCDrawer, Point):
     """
@@ -64,19 +65,17 @@ class PointDrawer(ABCDrawer, Point):
         point.setPen(pen)
 
         if self.name:
-            graphicsText = scene.addText(self.name)
-            graphicsText.setPos(self.x + self.point_size, self.y - self.point_size)
-            graphicsText.setDefaultTextColor(color)
+            graphics_text = scene.addText(self.name)
+            graphics_text.setPos(self.x + self.point_size, self.y - self.point_size)
+            graphics_text.setDefaultTextColor(color)
 
     @property
     def parameters(self) -> dict:
         """
-        Return line parameters for GUI display. 
+        Return line parameters for GUI display.
         """
-        params = {
+        return {
             "Название:": self.name,
             "X:": self.x,
             "Y:": self.y
         }
-
-        return params

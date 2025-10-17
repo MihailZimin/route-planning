@@ -1,4 +1,5 @@
-"""Abstract class for drawing geometry objects.
+"""
+Abstract class for drawing geometry objects.
 
 This module provides:
 - ABCDrawer : abstract drawer class
@@ -8,9 +9,10 @@ This module provides:
 
 from abc import ABC, abstractmethod
 
+from PyQt6.QtWidgets import QGraphicsView
+
 from core.abstract_geometry import ABCGeo
 
-from PyQt6.QtWidgets import QGraphicsView
 
 class ABCDrawer(ABCGeo, ABC):
     """

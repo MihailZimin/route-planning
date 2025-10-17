@@ -8,12 +8,13 @@ This module provides:
 
 
 from PyQt6.QtGui import QColor, QPen
-from PyQt6.QtWidgets import QGraphicsLineItem, QGraphicsView
+from PyQt6.QtWidgets import QGraphicsView
+
+from core.line import Line
+from core.point import Point
 
 from .abstract_drawer import ABCDrawer
 
-from core.point import Point
-from core.line import Line
 
 class LineDrawer(ABCDrawer, Line):
     """
@@ -59,14 +60,12 @@ class LineDrawer(ABCDrawer, Line):
     @property
     def parameters(self) -> dict:
         """
-        Return line parameters for GUI display. 
+        Return line parameters for GUI display.
         """
-        params = {
+        return {
             "Название:": self.name,
             "X1:": self.start.x,
             "Y1:": self.start.y,
             "X2:": self.end.x,
             "Y2:": self.end.y
         }
-
-        return params

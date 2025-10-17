@@ -8,12 +8,13 @@ This module provides:
 
 
 from PyQt6.QtGui import QBrush, QColor, QPen
-from PyQt6.QtWidgets import QGraphicsEllipseItem, QGraphicsView
+from PyQt6.QtWidgets import QGraphicsView
+
+from core.circle import Circle
+from core.point import Point
 
 from .abstract_drawer import ABCDrawer
 
-from core.point import Point
-from core.circle import Circle
 
 class CircleDrawer(ABCDrawer, Circle):
     """
@@ -65,13 +66,11 @@ class CircleDrawer(ABCDrawer, Circle):
     @property
     def parameters(self) -> dict:
         """
-        Return line parameters for GUI display. 
+        Return line parameters for GUI display.
         """
-        params = {
+        return {
             "Название:": self.name,
             "X:": self.center.x,
             "Y:": self.center.y,
             "Радиус:": self.radius
         }
-
-        return params

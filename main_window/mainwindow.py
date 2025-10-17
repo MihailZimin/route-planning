@@ -1,4 +1,5 @@
-"""Class for GUI.
+"""
+Class for GUI.
 
 This module provides:
 - MainWindow: class for main window of app.
@@ -7,6 +8,7 @@ This module provides:
 
 
 import sys
+from typing import TYPE_CHECKING
 
 from PyQt6 import uic
 from PyQt6.QtCore import QSize
@@ -16,16 +18,17 @@ from PyQt6.QtWidgets import (
     QGraphicsScene,
     QMainWindow,
     QMessageBox,
-    QTreeWidgetItem
+    QTreeWidgetItem,
 )
 
-from draw.abstract_drawer import ABCDrawer
-from draw.point_drawer import PointDrawer
+from core.point import Point
 from draw.circle_drawer import CircleDrawer
 from draw.line_drawer import LineDrawer
+from draw.point_drawer import PointDrawer
 from draw.polygon_drawer import PolygonDrawer
 
-from core.point import Point
+if TYPE_CHECKING:
+    from draw.abstract_drawer import ABCDrawer
 
 
 class MainWindow(QMainWindow):
@@ -112,8 +115,8 @@ class MainWindow(QMainWindow):
         Update list of geometry objects.
         """
         self.objectList.clear()
-        for object in self.geo_objects:
-            self.objectList.addItem(object.name)
+        for obj in self.geo_objects:
+            self.objectList.addItem(obj.name)
 
     def deleteObject(self) -> None:
         """
@@ -131,7 +134,7 @@ class MainWindow(QMainWindow):
         for item in selected_objects:
             index = self.objectList.row(item)
             items_index.append(index)
-        
+
         items_index.sort(reverse=True)
         for i in items_index:
             self.geo_objects.pop(i)
@@ -148,7 +151,7 @@ class MainWindow(QMainWindow):
         if not selected_objects:
             self.infoLabel.setText("Характеристики объекта")
             return
- 
+
         info = ""
 
         for item in selected_objects:
@@ -252,7 +255,7 @@ class MainWindow(QMainWindow):
 
         point_begin = Point(float(x_coord_beg), float(y_coord_beg))
         point_end = Point(float(x_coord_end), float(y_coord_end))
-        
+
         line = LineDrawer(point_begin, point_end, name)
         self.geo_objects.append(line)
         line.draw(self.mapView)
@@ -324,8 +327,8 @@ class MainWindow(QMainWindow):
         Redraw current map.
         """
         self.scene.clear()
-        for object in self.geo_objects:
-            object.draw(self.mapView)
+        for obj in self.geo_objects:
+            obj.draw(self.mapView)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
