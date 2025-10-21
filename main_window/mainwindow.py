@@ -7,6 +7,7 @@ This module provides:
 """
 
 
+import json
 import sys
 from typing import TYPE_CHECKING
 
@@ -55,9 +56,10 @@ class MainWindow(QMainWindow):
 
         self.showStatAction.triggered.connect(self.showStatistic)
         self.showParamsAction.triggered.connect(self.showParams)
-        self.choseMapAction.triggered.connect(self.processFile)
+        self.chooseMapAction.triggered.connect(self.chooseMap)
         self.changeMapAction.triggered.connect(self.changeMap)
         self.startAction.triggered.connect(self.startTrajectory)
+        self.saveMapAction.triggered.connect(self.SaveMap)
 
         self.addPointButton.clicked.connect(self.addPoint)
         self.addCircleButton.clicked.connect(self.addCircle)
@@ -96,13 +98,34 @@ class MainWindow(QMainWindow):
         """
         self.stackedWidget.setCurrentIndex(2)
 
-    def processFile(self) -> None:
+    def chooseMap(self) -> None:
         """
         Slot for chosing map.
         """
         file_path, _ = QFileDialog.getOpenFileName(self, "Выберите файл", "")
         if file_path:
             self.statusBar.showMessage(f"Выбран файл: {file_path}")
+
+
+    def SaveMap(self) -> None:
+        """
+        Slot for saving map
+        """
+        if self.geo_objects:
+            file_name, _ = QFileDialog.getSaveFileName(
+                self, 
+                "Сохранить карту", 
+                "", 
+                "JSON Files (*.json);;All Files (*)"
+            )
+            if file_name:
+                with open(file_name, "w", encoding='utf-8') as file:
+                    map_data = [obj.save() for obj in self.geo_objects]
+                    json.dump(map_data, file, indent=4)
+                self.statusBar.showMessage(f"Карта {file_name} сохранена") 
+        else:
+            QMessageBox.information(self, "Траектория БПЛА",
+                "Ha карте нет объектов для сохранения")
 
     def startTrajectory(self) -> None:
         """

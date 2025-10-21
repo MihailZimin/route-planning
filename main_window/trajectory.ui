@@ -1376,8 +1376,8 @@ background-color: rgb(243, 255, 233);</string>
     <property name="title">
      <string>Карта</string>
     </property>
-    <addaction name="choseMapAction"/>
-    <addaction name="SaveMapAction"/>
+    <addaction name="chooseMapAction"/>
+    <addaction name="saveMapAction"/>
     <addaction name="changeMapAction"/>
    </widget>
    <widget class="QMenu" name="params">
@@ -1409,12 +1409,12 @@ background-color: rgb(243, 255, 233);</string>
     <string>Запустить построение траектории</string>
    </property>
   </action>
-  <action name="choseMapAction">
+  <action name="chooseMapAction">
    <property name="text">
     <string>Выбрать карту</string>
    </property>
   </action>
-  <action name="SaveMapAction">
+  <action name="saveMapAction">
    <property name="text">
     <string>Сохранить карту</string>
    </property>
