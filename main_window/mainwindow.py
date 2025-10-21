@@ -106,7 +106,6 @@ class MainWindow(QMainWindow):
         if file_path:
             self.statusBar.showMessage(f"Выбран файл: {file_path}")
 
-
     def SaveMap(self) -> None:
         """
         Slot for saving map
