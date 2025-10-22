@@ -8,6 +8,7 @@ This module provides:
 
 
 import sys
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from PyQt6 import uic
@@ -21,9 +22,9 @@ from PyQt6.QtWidgets import (
     QTreeWidgetItem,
 )
 
-from core.point import Point
-from core.line import Line
 from core.circle import Circle
+from core.line import Line
+from core.point import Point
 from core.polygon import Polygon
 from draw.circle_drawer import CircleDrawer
 from draw.line_drawer import LineDrawer
@@ -107,13 +108,13 @@ class MainWindow(QMainWindow):
         file_path, _ = QFileDialog.getOpenFileName(self, "Выберите файл", "")
         if file_path:
             self.geo_objects = []
-            with open(file_path, "r", encoding="utf-8") as file:
+            with Path(file_path).open("r", encoding="utf-8") as file:
                 obj_list = file.readlines()
                 for obj in obj_list:
                     params = obj.split("|")
                     obj_type = params[0]
                     obj_params = params[1]
-                    obj_name = params[2].replace('\n', '')
+                    obj_name = params[2].replace("\n", "")
 
                     if obj_type == "Point":
                         point = Point.load(obj_params)
@@ -138,17 +139,17 @@ class MainWindow(QMainWindow):
 
     def SaveMap(self) -> None:
         """
-        Slot for saving map
+        Slot for saving map.
         """
         if self.geo_objects:
             file_name, _ = QFileDialog.getSaveFileName(
-                self, 
-                "Сохранить карту", 
-                "", 
+                self,
+                "Сохранить карту",
+                "",
                 "Text files (*.txt);;All Files (*)"
             )
             if file_name:
-                with open(file_name, "w", encoding='utf-8') as file:
+                with Path(file_name).open("w", encoding="utf-8") as file:
                     for obj in self.geo_objects:
                         obj_params = obj.save()
                         obj_type = ""
@@ -161,8 +162,8 @@ class MainWindow(QMainWindow):
                         elif isinstance(obj, PolygonDrawer):
                             obj_type = "Polygon"
                         obj_string = obj_type + "|" + obj_params + "|" + obj.name
-                        file.write(obj_string + '\n')
-                self.statusBar.showMessage(f"Карта сохранена") 
+                        file.write(obj_string + "\n")
+                self.statusBar.showMessage("Карта сохранена")
         else:
             QMessageBox.information(self, "Траектория БПЛА",
                 "Ha карте нет объектов для сохранения")
@@ -220,7 +221,7 @@ class MainWindow(QMainWindow):
         for item in selected_objects:
             index = self.objectList.row(item)
             for param, value in self.geo_objects[index].parameters.items():
-                info += param + f"  {value}" + '\n'
+                info += param + f"  {value}" + "\n"
 
         self.infoLabel.setText(info)
 
