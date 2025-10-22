@@ -7,7 +7,6 @@ This module provides:
 """
 
 
-import json
 import sys
 from typing import TYPE_CHECKING
 
@@ -23,6 +22,9 @@ from PyQt6.QtWidgets import (
 )
 
 from core.point import Point
+from core.line import Line
+from core.circle import Circle
+from core.polygon import Polygon
 from draw.circle_drawer import CircleDrawer
 from draw.line_drawer import LineDrawer
 from draw.point_drawer import PointDrawer
@@ -104,6 +106,34 @@ class MainWindow(QMainWindow):
         """
         file_path, _ = QFileDialog.getOpenFileName(self, "Выберите файл", "")
         if file_path:
+            self.geo_objects = []
+            with open(file_path, "r", encoding="utf-8") as file:
+                obj_list = file.readlines()
+                for obj in obj_list:
+                    params = obj.split("|")
+                    obj_type = params[0]
+                    obj_params = params[1]
+                    obj_name = params[2].replace('\n', '')
+
+                    if obj_type == "Point":
+                        point = Point.load(obj_params)
+                        point_draw = PointDrawer(point.x, point.y, obj_name)
+                        self.geo_objects.append(point_draw)
+                    elif obj_type == "Line":
+                        line = Line.load(obj_params)
+                        line_draw = LineDrawer(line.start, line.end, obj_name)
+                        self.geo_objects.append(line_draw)
+                    elif obj_type == "Circle":
+                        circle = Circle.load(obj_params)
+                        circle_draw = CircleDrawer(circle.center, circle.radius, obj_name)
+                        self.geo_objects.append(circle_draw)
+                    elif obj_type == "Polygon":
+                        polygon = Polygon.load(obj_params)
+                        polygon_draw = PolygonDrawer(polygon.points, obj_name)
+                        self.geo_objects.append(polygon_draw)
+
+            self.updateObjectList()
+            self.redraw()
             self.statusBar.showMessage(f"Выбран файл: {file_path}")
 
     def SaveMap(self) -> None:
@@ -130,7 +160,7 @@ class MainWindow(QMainWindow):
                             obj_type = "Line"
                         elif isinstance(obj, PolygonDrawer):
                             obj_type = "Polygon"
-                        obj_string = obj_type + " | " + obj_params + " | " + obj.name
+                        obj_string = obj_type + "|" + obj_params + "|" + obj.name
                         file.write(obj_string + '\n')
                 self.statusBar.showMessage(f"Карта сохранена") 
         else:
@@ -190,7 +220,7 @@ class MainWindow(QMainWindow):
         for item in selected_objects:
             index = self.objectList.row(item)
             for param, value in self.geo_objects[index].parameters.items():
-                info += param + f"  {value}<br>"
+                info += param + f"  {value}" + '\n'
 
         self.infoLabel.setText(info)
 
