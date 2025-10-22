@@ -115,13 +115,24 @@ class MainWindow(QMainWindow):
                 self, 
                 "Сохранить карту", 
                 "", 
-                "JSON Files (*.json);;All Files (*)"
+                "Text files (*.txt);;All Files (*)"
             )
             if file_name:
                 with open(file_name, "w", encoding='utf-8') as file:
-                    map_data = [obj.save() for obj in self.geo_objects]
-                    json.dump(map_data, file, indent=4)
-                self.statusBar.showMessage(f"Карта {file_name} сохранена") 
+                    for obj in self.geo_objects:
+                        obj_params = obj.save()
+                        obj_type = ""
+                        if isinstance(obj, PointDrawer):
+                            obj_type = "Point"
+                        elif isinstance(obj, CircleDrawer):
+                            obj_type = "Circle"
+                        elif isinstance(obj, LineDrawer):
+                            obj_type = "Line"
+                        elif isinstance(obj, PolygonDrawer):
+                            obj_type = "Polygon"
+                        obj_string = obj_type + " | " + obj_params + " | " + obj.name
+                        file.write(obj_string + '\n')
+                self.statusBar.showMessage(f"Карта сохранена") 
         else:
             QMessageBox.information(self, "Траектория БПЛА",
                 "Ha карте нет объектов для сохранения")
