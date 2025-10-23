@@ -7,8 +7,8 @@ This module provides:
 """
 
 
-from PyQt6.QtGui import QBrush, QColor, QPen
-from PyQt6.QtWidgets import QGraphicsView
+import QCustomPlot_PyQt6 as qcp
+from PyQt6.QtGui import QBrush, QColor, QFont, QPen
 
 from core.point import Point
 
@@ -26,7 +26,7 @@ class PointDrawer(ABCDrawer, Point):
         """
         super().__init__(x, y)
         self._name = name
-        self.point_size: int = 5
+        self.point_size: int = 8
 
     @property
     def name(self) -> str:
@@ -35,7 +35,7 @@ class PointDrawer(ABCDrawer, Point):
         """
         return self._name
 
-    def draw(self, map_view: QGraphicsView) -> None:
+    def draw(self, map_view: qcp.QCustomPlot) -> None:
         """
         Draw point.
 
@@ -49,25 +49,24 @@ class PointDrawer(ABCDrawer, Point):
         Default point color: Red.
 
         """
-        scene = map_view.scene()
         color = QColor(255, 0, 0)
-        point = scene.addEllipse(
-            self.x - self.point_size / 2,
-            self.y - self.point_size / 2,
-            self.point_size,
-            self.point_size,
-            QPen(color),
-            QBrush(color)
-        )
+        point = qcp.QCPItemEllipse(map_view)
+
+        point.topLeft.setCoords(self.x - self.point_size/2, self.y + self.point_size/2)
+        point.bottomRight.setCoords(self.x + self.point_size/2, self.y - self.point_size/2)
 
         pen = QPen(QColor(0, 0, 0))
         pen.setWidth(1)
         point.setPen(pen)
+        point.setBrush(QBrush(QColor(color)))
 
         if self.name:
-            graphics_text = scene.addText(self.name)
-            graphics_text.setPos(self.x + self.point_size, self.y - self.point_size)
-            graphics_text.setDefaultTextColor(color)
+            text_item = qcp.QCPItemText(map_view)
+            text_item.position.setCoords(self.x + 2*self.point_size, self.y + 2*self.point_size)
+            text_item.setText(self.name)
+            text_item.setFont(QFont("Arial", 8))
+
+        map_view.replot()
 
     @property
     def parameters(self) -> dict:
