@@ -7,8 +7,8 @@ This module provides:
 """
 
 
+import QCustomPlot_PyQt6 as qcp
 from PyQt6.QtGui import QBrush, QColor, QPen
-from PyQt6.QtWidgets import QGraphicsView
 
 from core.circle import Circle
 from core.point import Point
@@ -35,7 +35,7 @@ class CircleDrawer(ABCDrawer, Circle):
         """
         return self._name
 
-    def draw(self, map_view: QGraphicsView) -> None:
+    def draw(self, map_view: qcp.QCustomPlot) -> None:
         """
         Draw circle.
 
@@ -48,20 +48,18 @@ class CircleDrawer(ABCDrawer, Circle):
         Default circle color: Red.
 
         """
-        scene = map_view.scene()
         color = QColor(255, 0, 0)
-        circle = scene.addEllipse(
-            self.center.x - self.radius / 2,
-            self.center.y - self.radius / 2,
-            self.radius,
-            self.radius,
-            QPen(color),
-            QBrush(color)
-        )
+        circle = qcp.QCPItemEllipse(map_view)
+
+        circle.topLeft.setCoords(self.center.x - self.radius, self.center.y + self.radius)
+        circle.bottomRight.setCoords(self.center.x + self.radius, self.center.y - self.radius)
 
         pen = QPen(QColor(0, 0, 0))
         pen.setWidth(2)
         circle.setPen(pen)
+        circle.setBrush(QBrush(QColor(color)))
+
+        map_view.replot()
 
     @property
     def parameters(self) -> dict:
