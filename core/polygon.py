@@ -1,4 +1,5 @@
 """Polygon class for core."""
+import numpy as np
 
 from .abstract_geometry import ABCGeo
 from .point import Point
@@ -25,10 +26,9 @@ class Polygon(ABCGeo):
             points: list of Point objects
 
         """
-        if points[0] != points[-1]:
-            error_msg = "start point and end point must be the same"
-            raise ValueError(error_msg)
         self._points = points.copy()
+        if self._points[0] != self.points[-1]:
+            self._points.append(self._points[0])
 
     def save(self) -> str:
         """
@@ -86,4 +86,35 @@ class Polygon(ABCGeo):
         """
         Add a point in the end of a list.
         """
-        self._points.append(point)
+        self._points[-1] = point
+        if self._points[0] != self.points[-1]:
+            self._points.append(self._points[0])
+
+    @staticmethod
+    def _check_on_convex(points: list[Point]) -> bool:
+        """
+        Check if polygon is convex.
+
+        Args:
+            points: list of points that form polygon
+
+        Returns:
+            bool variable:
+                True if points form convex polygon
+                False otherwise
+
+        """
+        sides = list(zip(points[:-1], points[1:]))
+        pair_sides = zip(sides[:-1], sides[1:])
+        cnt_right = cnt_left = 0
+        for side1, side2 in pair_sides:
+            vec1 = np.array([side1[1].x - side1[0].x, side1[1].y - side1[0].y, 0])
+            vec2 = np.array([side2[1].x - side2[0].x, side2[1].y - side2[0].y, 0])
+            cross_v1v2 = np.cross(vec1, vec2)
+            if cross_v1v2[2] > 0:
+                cnt_right += 1
+            else:
+                cnt_left += 1
+        if cnt_left * cnt_right:
+            return False
+        return True
