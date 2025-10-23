@@ -42,14 +42,4 @@ class BruteForceSolver(TSPSolver):
                 optimal_path = [start, *permutation, start]
 
         self._optimal_length = optimal_length
-        return optimal_path
-    
-    def get_optimal_length(self) -> float:
-        """
-        Method for debug
-
-        Returns:
-            most optimal length of route
-
-        """
-        return self._optimal_length
+        return optimal_path, optimal_length
