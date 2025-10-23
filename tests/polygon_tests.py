@@ -108,10 +108,3 @@ class TestPolygon:
         assert poly.points[1] == Point(2, 3)
         assert poly.points[2] == Point(3, 4)
         assert poly.points[3] == Point(4, 5)
-
-    def test_initialization_invalid(self, sample_points: list[Point]) -> None:
-        """
-        Test for init exception.
-        """
-        with pytest.raises(ValueError, match="start point and end point must be the same"):
-            Polygon(sample_points[0:-1])

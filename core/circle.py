@@ -29,7 +29,7 @@ class Circle(ABCGeo):
         return "; ".join(data)
 
     @classmethod
-    def load(cls, data: str) -> None:
+    def load(cls, data: str) -> "Circle":
         """
         Create object from JSON string.
 

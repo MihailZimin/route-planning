@@ -38,7 +38,7 @@ class Polygon(ABCGeo):
         return "; ".join(points)
 
     @classmethod
-    def load(cls, data: str) -> None:
+    def load(cls, data: str) -> "Polygon":
         """
         Create object from JSON string.
 

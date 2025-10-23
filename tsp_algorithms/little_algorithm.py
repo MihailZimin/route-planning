@@ -3,6 +3,8 @@ import heapq
 
 import numpy as np
 
+from .tsp_abstract_solver import TSPSolver
+
 
 class Node:
         """
@@ -35,7 +37,7 @@ class Node:
             return self.lower_bound < other.lower_bound
 
 
-class LittleAlgorithm:
+class LittleAlgorithm(TSPSolver):
     """
     Class that represents Little algorithm solution to TSP.
     """
