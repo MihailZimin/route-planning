@@ -56,7 +56,6 @@ class MainWindow(QMainWindow):
         """
         uic.loadUi("main_window/trajectory.ui", self)
         self.setGeometry(300, 100, 900, 550)
-        self.setMaximumSize(QSize(1000, 1000))
         self.setMinimumSize(QSize(400, 300))
 
         self.showStatAction.triggered.connect(self.showStatistic)
@@ -281,7 +280,7 @@ class MainWindow(QMainWindow):
 
         point = PointDrawer(float(x_coord), float(y_coord), name)
         self.geo_objects.append(point)
-        point.draw(self.mapView)
+        point.draw(self.custom_plot)
         self.updateObjectList()
 
         self.objectList.setCurrentRow(len(self.geo_objects) - 1)
@@ -309,7 +308,7 @@ class MainWindow(QMainWindow):
 
         circle = CircleDrawer(center, float(radius), name)
         self.geo_objects.append(circle)
-        circle.draw(self.mapView)
+        circle.draw(self.custom_plot)
         self.updateObjectList()
 
         self.objectList.setCurrentRow(len(self.geo_objects) - 1)
@@ -407,9 +406,10 @@ class MainWindow(QMainWindow):
         """
         Redraw current map.
         """
-        self.scene.clear()
+        self.custom_plot.clearItems()
         for obj in self.geo_objects:
-            obj.draw(self.mapView)
+            obj.draw(self.custom_plot)
+        self.custom_plot.replot()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
