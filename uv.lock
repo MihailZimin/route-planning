@@ -117,11 +117,27 @@ wheels = [
 ]
 
 [[package]]
+name = "qcustomplot-pyqt6"
+version = "2.1.1.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pyqt6" },
+    { name = "pyqt6-sip" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/66/fe/3608cf235dd60cf1ccdd892786f4bb0aeb3073348ad75f04eaa36b2add6d/QCustomPlot_PyQt6-2.1.1.2.tar.gz", hash = "sha256:655b72d3ba573bff08ee4bebdb91ec1fe2589f7b2f00ca88dca7fda32d90e06d", size = 487886, upload-time = "2024-05-01T15:10:31.569Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c4/d8/3aac17a6f53180b194f4c9c75b6064f05c7116ecdac6a201e0f68b769e31/QCustomPlot_PyQt6-2.1.1.2-cp312-cp312-manylinux_2_28_x86_64.whl", hash = "sha256:c761e3a05a9b9ab06d85ad266096428a2026f091615923c2fbdb86ba5f6fe754", size = 1089619, upload-time = "2024-05-01T15:10:27.496Z" },
+    { url = "https://files.pythonhosted.org/packages/e8/c3/396fe90d981550d7ee52902e413fc53f5cfcf53793b0bdf7b5f3763a7440/QCustomPlot_PyQt6-2.1.1.2-cp312-none-win_amd64.whl", hash = "sha256:1677f69d8a787a5fa77f5e495639c76104a3729f4c1639a8f442e89cecb95e4f", size = 823887, upload-time = "2024-05-03T14:53:01.635Z" },
+    { url = "https://files.pythonhosted.org/packages/19/42/66ea2eae39b235189e8f80846205c9fa6df0db8e7546a014124dde81241b/qcustomplot_pyqt6-2.1.1.2-cp313-none-win_amd64.whl", hash = "sha256:32af2f4e428b76fa6fed1142abcae9e76cbc402faa2a119911590b34d229f0c6", size = 2550300, upload-time = "2025-07-18T08:10:46.9Z" },
+]
+
+[[package]]
 name = "route-planning"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "pyqt6" },
+    { name = "qcustomplot-pyqt6" },
 ]
 
 [package.dev-dependencies]
@@ -131,7 +147,10 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "pyqt6", specifier = ">=6.9.1" }]
+requires-dist = [
+    { name = "pyqt6", specifier = ">=6.9.1" },
+    { name = "qcustomplot-pyqt6", specifier = ">=2.1.1.2" },
+]
 
 [package.metadata.requires-dev]
 dev = [

@@ -11,15 +11,17 @@ import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+import QCustomPlot_PyQt6 as qcp
 from PyQt6 import uic
-from PyQt6.QtCore import QSize
+from PyQt6.QtCore import QSize, Qt
+from PyQt6.QtGui import QColor, QPen
 from PyQt6.QtWidgets import (
     QApplication,
     QFileDialog,
-    QGraphicsScene,
     QMainWindow,
     QMessageBox,
     QTreeWidgetItem,
+    QVBoxLayout,
 )
 
 from core.circle import Circle
@@ -73,9 +75,24 @@ class MainWindow(QMainWindow):
         self.deleteButton.clicked.connect(self.deleteObject)
         self.objectList.itemSelectionChanged.connect(self.showObjectsParams)
 
-        self.scene = QGraphicsScene()
-        self.mapView.setScene(self.scene)
-        self.scene.setSceneRect(1, 1, 600, 450)
+        self.initializeCustomPlot()
+
+    def initializeCustomPlot(self) -> None:
+        """
+        Initionalization of QCustomPlot for map drawing.
+        """
+        self.custom_plot = qcp.QCustomPlot()
+        layout = QVBoxLayout(self.mapView)
+        layout.addWidget(self.custom_plot)
+
+        self.custom_plot.setBackground(QColor(173, 255, 138))
+
+        grid_pen = QPen(QColor(0, 0, 0), 0.25, Qt.PenStyle.SolidLine)
+        self.custom_plot.xAxis.grid().setPen(grid_pen)
+        self.custom_plot.yAxis.grid().setPen(grid_pen)
+
+        self.custom_plot.xAxis.setRange(0, 1000)
+        self.custom_plot.yAxis.setRange(0, 1000)
 
     def closeWindow(self) -> None:
         """
