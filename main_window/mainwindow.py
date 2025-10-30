@@ -17,6 +17,7 @@ from PyQt6.QtCore import QSize, Qt
 from PyQt6.QtGui import QColor, QPen
 from PyQt6.QtWidgets import (
     QApplication,
+    QDialog,
     QFileDialog,
     QMainWindow,
     QMessageBox,
@@ -32,6 +33,7 @@ from draw.circle_drawer import CircleDrawer
 from draw.line_drawer import LineDrawer
 from draw.point_drawer import PointDrawer
 from draw.polygon_drawer import PolygonDrawer
+from main_window.dialogwindow import EditDialogWindow
 
 if TYPE_CHECKING:
     from draw.abstract_drawer import ABCDrawer
@@ -73,6 +75,7 @@ class MainWindow(QMainWindow):
 
         self.deleteButton.clicked.connect(self.deleteObject)
         self.objectList.itemSelectionChanged.connect(self.showObjectsParams)
+        self.objectList.itemDoubleClicked.connect(self.editObject)
 
         self.initializeCustomPlot()
 
@@ -412,6 +415,24 @@ class MainWindow(QMainWindow):
         for obj in self.geo_objects:
             obj.draw(self.custom_plot)
         self.custom_plot.replot()
+
+    def editObject(self) -> None:
+        """
+        Edit selected object.
+        """
+        selected_objects = self.objectList.selectedItems()
+        index = self.objectList.row(selected_objects[0])
+        geo_object = self.geo_objects[index]
+        edit_win = EditDialogWindow(geo_object, self)
+        if edit_win.exec() == QDialog.DialogCode.Accepted:
+            if geo_object.type == "Point":
+                new_params = edit_win.getChanges()
+                geo_object.name = new_params["name"].text()
+                geo_object.x = float(new_params["x"].text())
+                geo_object.y = float(new_params["y"].text())
+                self.redraw()
+            QMessageBox.information(self, "Траектория БПЛА",
+                    "Объект обновлён")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
