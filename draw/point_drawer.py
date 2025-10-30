@@ -50,15 +50,17 @@ class PointDrawer(ABCDrawer, Point):
 
         """
         color = QColor(255, 0, 0)
-        point = qcp.QCPItemEllipse(map_view)
-
-        point.topLeft.setCoords(self.x - self.point_size/2, self.y + self.point_size/2)
-        point.bottomRight.setCoords(self.x + self.point_size/2, self.y - self.point_size/2)
+        point = map_view.addGraph()
+        point.setData([self.x], [self.y])
 
         pen = QPen(QColor(0, 0, 0))
         pen.setWidth(1)
-        point.setPen(pen)
-        point.setBrush(QBrush(QColor(color)))
+        point_style = qcp.QCPScatterStyle()
+        point_style.setShape(qcp.QCPScatterStyle.ScatterShape.ssCircle)
+        point_style.setPen(pen)
+        point_style.setBrush(QBrush(QColor(color)))
+
+        point.setScatterStyle(point_style)
 
         if self.name:
             text_item = qcp.QCPItemText(map_view)
