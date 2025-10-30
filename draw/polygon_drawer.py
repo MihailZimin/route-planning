@@ -25,7 +25,8 @@ class PolygonDrawer(Polygon, ABCDrawer):
         Init polygon drawer.
         """
         super().__init__(points)
-        self._name : str = name
+        self._name = name
+        self._type : str = "Polygon"
 
     @property
     def name(self) -> str:
@@ -33,6 +34,13 @@ class PolygonDrawer(Polygon, ABCDrawer):
         Return polygon name.
         """
         return self._name
+
+    @property
+    def type(self) -> str:
+        """
+        Return geo object type.
+        """
+        return self._type
 
     def draw(self, map_view: qcp.QCustomPlot) -> None:
         """

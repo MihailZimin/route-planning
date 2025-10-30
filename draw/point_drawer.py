@@ -25,8 +25,9 @@ class PointDrawer(ABCDrawer, Point):
         Init point drawer.
         """
         super().__init__(x, y)
-        self._name : str = name
+        self._name = name
         self._point_size: int = 5
+        self._type : str = "Point"
 
     @property
     def name(self) -> str:
@@ -34,6 +35,20 @@ class PointDrawer(ABCDrawer, Point):
         Return point name.
         """
         return self._name
+
+    @name.setter
+    def name(self, name: str) -> None:
+        """
+        Set point name.
+        """
+        self._name = name
+
+    @property
+    def type(self) -> str:
+        """
+        Return geo object type.
+        """
+        return self._type
 
     def draw(self, map_view: qcp.QCustomPlot) -> None:
         """

@@ -26,8 +26,9 @@ class LineDrawer(ABCDrawer, Line):
         Init line drawer.
         """
         super().__init__(start, end)
-        self._name : str = name
+        self._name = name
         self._point_size : int = 5
+        self._type : str = "Line"
 
     @property
     def name(self) -> str:
@@ -35,6 +36,13 @@ class LineDrawer(ABCDrawer, Line):
         Return line name.
         """
         return self._name
+
+    @property
+    def type(self) -> str:
+        """
+        Return geo object type.
+        """
+        return self._type
 
     def draw(self, map_view: qcp.QCustomPlot) -> None:
         """

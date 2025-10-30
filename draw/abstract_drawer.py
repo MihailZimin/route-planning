@@ -9,7 +9,7 @@ This module provides:
 
 from abc import ABC, abstractmethod
 
-from PyQt6.QtWidgets import QGraphicsView
+import QCustomPlot_PyQt6 as qcp
 
 from core.abstract_geometry import ABCGeo
 
@@ -20,7 +20,28 @@ class ABCDrawer(ABCGeo, ABC):
     """
 
     @abstractmethod
-    def draw(self, map_view: QGraphicsView) -> None:
+    def draw(self, map_view: qcp.QCustomPlot) -> None:
         """
         Draw geometry object.
+        """
+
+    @property
+    @abstractmethod
+    def name(self) -> str:
+        """
+        Return geo object name.
+        """
+
+    @property
+    @abstractmethod
+    def type(self) -> str:
+        """
+        Return geo object type.
+        """
+
+    @property
+    @abstractmethod
+    def parameters(self) -> dict:
+        """
+        Return object parameters for GUI display.
         """
