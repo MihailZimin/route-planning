@@ -313,16 +313,21 @@ class LittleAlgorithm(TSPSolver):
         Representation method of Little's algorithm.
 
         Args:
-            matrix: initial matrix of distances
-            start: starting point index
+            matrix: matrix of lengthes,
+                where matrix[i][j] is length of path from i-th control point to j-th
+            start: index of start control point
 
         Returns:
             list of indices of points which form circle for the most optimal TSP solution
 
         """
-        matrix = np.array(matrix)
+        matrix = np.where(matrix == -1, np.inf, matrix)
         sz = matrix.shape[0]
         nodes = []
+
+        components = self._find_strongly_connected_components(matrix)
+        if len(components) > 1:
+            return self._get_elements_not_in_main_component(components, start), -1
 
         root_matrix = matrix.copy()
         lower_bound = (self.__reduce_matrix_by_rows(root_matrix) +
