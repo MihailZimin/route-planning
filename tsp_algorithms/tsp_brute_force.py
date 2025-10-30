@@ -27,6 +27,10 @@ class BruteForceSolver(TSPSolver):
         size = matrix.shape[0]
         matrix = np.where(matrix == -1, np.inf, matrix)
 
+        components = self._find_strongly_connected_components(matrix)
+        if len(components) > 1:
+            return self._get_elements_not_in_main_component(components, start), -1
+
         permutated_vertices = [i for i in range(size) if i != start]
 
         optimal_length = np.inf
