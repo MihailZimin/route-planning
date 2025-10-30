@@ -5,7 +5,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from tsp_algorithms.tsp_brute_force import BruteForceSolver
+from tsp_algorithms.brute_force import BruteForceSolver
 
 
 @pytest.fixture

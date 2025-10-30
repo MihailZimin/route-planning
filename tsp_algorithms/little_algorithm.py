@@ -3,7 +3,7 @@ import heapq
 
 import numpy as np
 
-from .tsp_abstract_solver import TSPSolver
+from .abstract_solver import TSPSolver
 
 
 class Node:
