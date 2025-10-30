@@ -76,5 +76,5 @@ pythonpath = [
 ]
 markers = [
     "fast: fast running tests",
-    "slow: slow running tests",
+    "slow: slow running tests (deselect with '-m \"not slow\"')",
 ]
