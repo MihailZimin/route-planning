@@ -7,14 +7,15 @@ This module provides:
 """
 
 
-from PyQt6.QtGui import QColor, QPen
-from PyQt6.QtWidgets import QGraphicsView
+from PyQt6.QtGui import QColor, QBrush, QPen
+from PyQt6.QtCore import Qt
 
 from core.line import Line
 from core.point import Point
 
 from .abstract_drawer import ABCDrawer
 
+import QCustomPlot_PyQt6 as qcp
 
 class LineDrawer(ABCDrawer, Line):
     """
@@ -35,7 +36,7 @@ class LineDrawer(ABCDrawer, Line):
         """
         return self._name
 
-    def draw(self, map_view: QGraphicsView) -> None:
+    def draw(self, map_view: qcp.QCustomPlot) -> None:
         """
         Draw line.
 
@@ -48,14 +49,21 @@ class LineDrawer(ABCDrawer, Line):
 
         """
         color = QColor(255, 0, 0)
-        scene = map_view.scene()
-        scene.addLine(
-            self.start.x,
-            self.start.y,
-            self.end.x,
-            self.end.y,
-            QPen(color)
-        )
+        line = map_view.addGraph()
+        line.setData([self.start.x, self.end.x], [self.start.y, self.end.y])
+
+        pen = QPen(QColor(0, 0, 0))
+        pen.setWidth(1)
+        point_style = qcp.QCPScatterStyle()
+        point_style.setShape(qcp.QCPScatterStyle.ScatterShape.ssCircle)
+        point_style.setPen(pen)
+        point_style.setBrush(QBrush(QColor(color)))
+        point_style.setSize(self.start.point_size)
+
+        line.setScatterStyle(point_style)
+        line.setPen(QPen(color, 2))
+
+        map_view.replot()
 
     @property
     def parameters(self) -> dict:
