@@ -6,15 +6,14 @@ This module provides:
 
 """
 
-from PyQt6.QtCore import QPointF
-from PyQt6.QtGui import QBrush, QColor, QPolygonF
-from PyQt6.QtWidgets import QGraphicsPolygonItem, QGraphicsView
+from PyQt6.QtGui import QBrush, QColor, QPen
 
 from core.point import Point
 from core.polygon import Polygon
 
 from .abstract_drawer import ABCDrawer
 
+import QCustomPlot_PyQt6 as qcp
 
 class PolygonDrawer(Polygon, ABCDrawer):
     """
@@ -35,21 +34,34 @@ class PolygonDrawer(Polygon, ABCDrawer):
         """
         return self._name
 
-    def draw(self, map_view: QGraphicsView) -> None:
+    def draw(self, map_view: qcp.QCustomPlot) -> None:
         """
         Draw Polygon.
         """
-        points_to_draw = []
-        for point in self.points:
-            p = QPointF(point.x, point.y)
-            points_to_draw.append(p)
+        x_coords = []
+        y_coords = []
 
-        polygon = QPolygonF(points_to_draw)
-        brush = QBrush(QColor(0, 0, 255, 100))
-        polygon_to_draw = QGraphicsPolygonItem(polygon)
-        polygon_to_draw.setBrush(brush)
-        scene = map_view.scene()
-        scene.addItem(polygon_to_draw)
+        for point in self.points:
+            x_coords.append(point.x)
+            y_coords.append(point.y)
+
+        polygon = qcp.QCPCurve(map_view.xAxis, map_view.yAxis)
+        polygon.setData(x_coords, y_coords)
+
+        pen = QPen(QColor(0, 0, 0))
+        pen.setWidth(1)
+        color = QColor(0, 0, 255)
+        point_style = qcp.QCPScatterStyle()
+        point_style.setShape(qcp.QCPScatterStyle.ScatterShape.ssCircle)
+        point_style.setPen(pen)
+        point_style.setBrush(QBrush(color))
+        point_style.setSize(5)
+
+        polygon.setScatterStyle(point_style)
+        polygon.setPen(QPen(color, 2))
+        polygon.setBrush(QBrush(color))
+
+        map_view.replot()
 
     @property
     def parameters(self) -> dict:
