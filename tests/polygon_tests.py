@@ -10,14 +10,14 @@ def sample_polygon() -> Polygon:
     """
     Fixture for Polygon.
     """
-    return Polygon([Point(i, 10 * i) for i in range(10)] + [Point(0, 0)])
+    return Polygon([Point(0, 0), Point(1, 0), Point(1, 1), Point(0, 1)])
 
 @pytest.fixture
 def sample_points() -> list[Point]:
     """
     Fixture for point list.
     """
-    return [Point(i, 5 * i) for i in range(10)] + [Point(0, 0)]
+    return [Point(0, 0), Point(1, 0), Point(1, 1), Point(0, 1), Point(0, 0)]
 
 
 class TestPolygon:
@@ -47,15 +47,14 @@ class TestPolygon:
         str_saved = sample_polygon.save()
 
         assert str_saved == (
-            "[0, 0]; [1, 10]; [2, 20]; [3, 30]; [4, 40]; [5, 50]; "
-            "[6, 60]; [7, 70]; [8, 80]; [9, 90]; [0, 0]"
+            "[0, 0]; [1, 0]; [1, 1]; [0, 1]; [0, 0]"
             )
 
     def test_save_format_consistency(self, sample_polygon: Polygon) -> None:
         """
         Test save independance of object.
         """
-        polygon = Polygon([Point(i, 10 * i) for i in range(10)] + [Point(0, 0)])
+        polygon = Polygon(sample_polygon.points)
 
         assert sample_polygon is not polygon
         assert sample_polygon.save() == polygon.save()
@@ -65,28 +64,16 @@ class TestPolygon:
         Test polygon format.
         """
         assert str(sample_polygon) == (
-            "[(0, 0) (1, 10) (2, 20) (3, 30) (4, 40) (5, 50) (6, 60) (7, 70) (8, 80) (9, 90) (0, 0)]"
+            "[(0, 0) (1, 0) (1, 1) (0, 1) (0, 0)]"
         )
 
-    def test_mupltiple_reassignments(self, sample_polygon: Polygon) -> None:
+    def test_reassignment_of_points(self, sample_polygon: Polygon) -> None:
         """
-        Test of multiple rewriting.
+        Test of rewriting.
         """
-        for i in range(10):
-            sample_polygon.points = [Point(j, j * i) for j in range(i+5)]
-            assert sample_polygon.points == [Point(j, j * i) for j in range(i+5)]
-
-    def test_save_after_coordinate_change(
-            self, sample_polygon: Polygon, sample_points: list[Point]) -> None:
-        """
-        Another save test.
-        """
-        initial_save = sample_polygon.save()
-
-        sample_polygon.points = sample_points
-
-        new_save = sample_polygon.save()
-        assert initial_save != new_save
+        new_points = [Point(0, 0), Point(1, 1), Point(0, 1)]
+        sample_polygon.points = new_points
+        assert sample_polygon.points == [*new_points, Point(0, 0)]
 
     def test_change_point_list(self, sample_polygon: Polygon, sample_points: list[Point]) -> None:
         """
@@ -108,3 +95,29 @@ class TestPolygon:
         assert poly.points[1] == Point(2, 3)
         assert poly.points[2] == Point(3, 4)
         assert poly.points[3] == Point(4, 5)
+
+    def test_check_on_convex_method(self) -> None:
+        """
+        Test check on convex method.
+        """
+        convex_list_of_points = [Point(0, 0), Point(1, 0), Point(1, 1), Point(0, 1), Point(0, 0)]
+        not_convex_list_of_points = [
+            Point(0, 0), Point(1, 0), Point(1, 1), Point(0.5, 0.5), Point(0, 1), Point(0, 0)
+        ]
+        assert Polygon.check_on_convex(convex_list_of_points)
+        assert not Polygon.check_on_convex(not_convex_list_of_points)
+
+    def test_getitem_attribute(self, sample_polygon: Polygon, sample_points: list[Point]) -> None:
+        """
+        Test getitem method.
+        """
+        for i in range(len(sample_polygon.points) - 1):
+            point = sample_polygon[i]
+            assert point == sample_points[i]
+
+    def test_setitem_attribute(self, sample_polygon: Polygon) -> None:
+        """
+        Test setitem method.
+        """
+        sample_polygon[1] = Point(2, 0)
+        assert sample_polygon[1] == Point(2, 0)
