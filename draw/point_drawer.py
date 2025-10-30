@@ -26,7 +26,7 @@ class PointDrawer(ABCDrawer, Point):
         """
         super().__init__(x, y)
         self._name = name
-        self.point_size: int = 8
+        self.point_size: int = 5
 
     @property
     def name(self) -> str:
@@ -59,6 +59,7 @@ class PointDrawer(ABCDrawer, Point):
         point_style.setShape(qcp.QCPScatterStyle.ScatterShape.ssCircle)
         point_style.setPen(pen)
         point_style.setBrush(QBrush(QColor(color)))
+        point_style.setSize(self.point_size)
 
         point.setScatterStyle(point_style)
 

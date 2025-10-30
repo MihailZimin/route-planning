@@ -55,7 +55,7 @@ class MainWindow(QMainWindow):
         Initionalization of MainWindow.
         """
         uic.loadUi("main_window/trajectory.ui", self)
-        self.setGeometry(300, 100, 900, 550)
+        self.setGeometry(300, 100, 900, 650)
         self.setMinimumSize(QSize(400, 300))
 
         self.showStatAction.triggered.connect(self.showStatistic)
@@ -333,12 +333,12 @@ class MainWindow(QMainWindow):
         if not name:
             name = "Отрезок"
 
-        point_begin = Point(float(x_coord_beg), float(y_coord_beg))
-        point_end = Point(float(x_coord_end), float(y_coord_end))
+        point_begin = PointDrawer(float(x_coord_beg), float(y_coord_beg))
+        point_end = PointDrawer(float(x_coord_end), float(y_coord_end))
 
         line = LineDrawer(point_begin, point_end, name)
         self.geo_objects.append(line)
-        line.draw(self.mapView)
+        line.draw(self.custom_plot)
         self.updateObjectList()
 
         self.objectList.setCurrentRow(len(self.geo_objects) - 1)
@@ -393,7 +393,7 @@ class MainWindow(QMainWindow):
 
         polygon = PolygonDrawer(polygon_points, name)
         self.geo_objects.append(polygon)
-        polygon.draw(self.mapView)
+        polygon.draw(self.custom_plot)
         self.updateObjectList()
 
         self.objectList.setCurrentRow(len(self.geo_objects) - 1)
@@ -407,6 +407,8 @@ class MainWindow(QMainWindow):
         Redraw current map.
         """
         self.custom_plot.clearItems()
+        self.custom_plot.clearGraphs()
+        self.custom_plot.clearPlottables()
         for obj in self.geo_objects:
             obj.draw(self.custom_plot)
         self.custom_plot.replot()

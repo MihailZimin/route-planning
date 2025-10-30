@@ -6,6 +6,7 @@ This module provides:
 
 """
 
+import QCustomPlot_PyQt6 as qcp
 from PyQt6.QtGui import QBrush, QColor, QPen
 
 from core.point import Point
@@ -13,7 +14,6 @@ from core.polygon import Polygon
 
 from .abstract_drawer import ABCDrawer
 
-import QCustomPlot_PyQt6 as qcp
 
 class PolygonDrawer(Polygon, ABCDrawer):
     """

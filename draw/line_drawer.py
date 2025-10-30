@@ -7,15 +7,14 @@ This module provides:
 """
 
 
-from PyQt6.QtGui import QColor, QBrush, QPen
-from PyQt6.QtCore import Qt
+import QCustomPlot_PyQt6 as qcp
+from PyQt6.QtGui import QBrush, QColor, QPen
 
 from core.line import Line
 from core.point import Point
 
 from .abstract_drawer import ABCDrawer
 
-import QCustomPlot_PyQt6 as qcp
 
 class LineDrawer(ABCDrawer, Line):
     """
@@ -57,7 +56,7 @@ class LineDrawer(ABCDrawer, Line):
         point_style = qcp.QCPScatterStyle()
         point_style.setShape(qcp.QCPScatterStyle.ScatterShape.ssCircle)
         point_style.setPen(pen)
-        point_style.setBrush(QBrush(QColor(color)))
+        point_style.setBrush(QBrush(color))
         point_style.setSize(self.start.point_size)
 
         line.setScatterStyle(point_style)
