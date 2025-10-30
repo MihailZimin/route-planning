@@ -25,7 +25,7 @@ class PolygonDrawer(Polygon, ABCDrawer):
         Init polygon drawer.
         """
         super().__init__(points)
-        self._name = name
+        self._name : str = name
 
     @property
     def name(self) -> str:

@@ -25,8 +25,8 @@ class PointDrawer(ABCDrawer, Point):
         Init point drawer.
         """
         super().__init__(x, y)
-        self._name = name
-        self.point_size: int = 5
+        self._name : str = name
+        self._point_size: int = 5
 
     @property
     def name(self) -> str:
@@ -59,13 +59,13 @@ class PointDrawer(ABCDrawer, Point):
         point_style.setShape(qcp.QCPScatterStyle.ScatterShape.ssCircle)
         point_style.setPen(pen)
         point_style.setBrush(QBrush(QColor(color)))
-        point_style.setSize(self.point_size)
+        point_style.setSize(self._point_size)
 
         point.setScatterStyle(point_style)
 
         if self.name:
             text_item = qcp.QCPItemText(map_view)
-            text_item.position.setCoords(self.x + 2*self.point_size, self.y + 2*self.point_size)
+            text_item.position.setCoords(self.x + 2*self._point_size, self.y + 2*self._point_size)
             text_item.setText(self.name)
             text_item.setFont(QFont("Arial", 8))
 

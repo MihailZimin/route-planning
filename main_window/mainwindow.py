@@ -229,7 +229,7 @@ class MainWindow(QMainWindow):
         selected_objects = self.objectList.selectedItems()
 
         if not selected_objects:
-            self.infoLabel.setText("Характеристики объекта")
+            self.infoLabel.setText("")
             return
 
         info = ""

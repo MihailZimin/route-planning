@@ -26,7 +26,7 @@ class CircleDrawer(ABCDrawer, Circle):
         Init circle drawer.
         """
         super().__init__(center, radius)
-        self._name = name
+        self._name : str = name
 
     @property
     def name(self) -> str:

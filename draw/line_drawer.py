@@ -26,7 +26,8 @@ class LineDrawer(ABCDrawer, Line):
         Init line drawer.
         """
         super().__init__(start, end)
-        self._name = name
+        self._name : str = name
+        self._point_size : int = 5
 
     @property
     def name(self) -> str:
@@ -57,7 +58,7 @@ class LineDrawer(ABCDrawer, Line):
         point_style.setShape(qcp.QCPScatterStyle.ScatterShape.ssCircle)
         point_style.setPen(pen)
         point_style.setBrush(QBrush(color))
-        point_style.setSize(self.start.point_size)
+        point_style.setSize(self._point_size)
 
         line.setScatterStyle(point_style)
         line.setPen(QPen(color, 2))
