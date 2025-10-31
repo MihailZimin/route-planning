@@ -94,7 +94,27 @@ class EditDialogWindow(QDialog):
             self.widgets["R"] = QLineEdit()
             self.widgets["R"].setPlaceholderText("Введите радиус")
             self.info_layout.addRow("R:", self.widgets["R"])
-        
+
+        if self._geo_object.type == "Line":
+            self.widgets["name"] = QLineEdit()
+            self.widgets["name"].setPlaceholderText("Введите название")
+            self.info_layout.addRow("Название", self.widgets["name"])
+
+            self.widgets["x1"] = QLineEdit()
+            self.widgets["x1"].setPlaceholderText("Введите координату X1")
+            self.info_layout.addRow("X1:", self.widgets["x1"])
+
+            self.widgets["y1"] = QLineEdit()
+            self.widgets["y1"].setPlaceholderText("Введите координату Y1")
+            self.info_layout.addRow("Y1:", self.widgets["y1"])
+
+            self.widgets["x2"] = QLineEdit()
+            self.widgets["x2"].setPlaceholderText("Введите координату X2")
+            self.info_layout.addRow("X2:", self.widgets["x2"])
+
+            self.widgets["y2"] = QLineEdit()
+            self.widgets["y2"].setPlaceholderText("Введите координату Y2")
+            self.info_layout.addRow("Y2:", self.widgets["y2"])
 
     def loadParams(self) -> None:
         """

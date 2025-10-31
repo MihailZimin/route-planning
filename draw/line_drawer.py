@@ -36,6 +36,13 @@ class LineDrawer(ABCDrawer, Line):
         Return line name.
         """
         return self._name
+    
+    @name.setter
+    def name(self, name: str) -> None:
+        """
+        Set line name.
+        """
+        self._name = name
 
     @property
     def type(self) -> str:
