@@ -1,0 +1,61 @@
+{
+    "test1": {
+        "matrix": [
+            [-1, 2, 9, 10],
+            [1, -1, 6, 4],
+            [15, 7, -1, 8],
+            [6, 3, 12, -1]
+        ],
+        "start": 0,
+        "expected_length": 21,
+        "description": "ordinary test"
+    },
+    "test2": {
+        "matrix": [
+            [-1, -1, -1, 10],
+            [1, -1, -1, -1],
+            [-1, 7, -1, -1],
+            [-1, -1, 12, -1]
+        ],
+        "start": 0,
+        "expected_length": 30,
+        "description": "test with only one correct path"
+    },
+    "test3": {
+        "matrix": [
+            [-1, 5, -1, 10],
+            [1, -1, 5, -1],
+            [-1, 7, -1, 5],
+            [5, -1, 12, -1]
+        ],
+        "start": 0,
+        "expected_length": 20,
+        "description": "test with two paths, only one is correct"
+    },
+    "test4": {
+        "matrix": [
+            [-1, 5, -1, 10],
+            [1, -1, 5, -1],
+            [-1, 7, -1, 5],
+            [15, -1, 12, -1]
+        ],
+        "start": 0,
+        "expected_length": 30,
+        "description": "test with two correct paths"
+    },
+    "test5": {
+        "matrix": [
+            [-1, 1, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, 1, -1, -1, -1, -1],
+            [1, -1, -1, -1, -1, -1, -1, -1],
+            [-1, -1, 1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1, 1, -1, -1],
+            [-1, -1, -1, -1, -1, -1, -1, 1],
+            [-1, -1, -1, -1, 1, -1, -1, -1],
+            [-1, -1, -1, -1, -1, -1, 1, -1]
+        ],
+        "start": 0,
+        "expected_length": -1,
+        "description": "test without route through every vertex"
+    }
+}
