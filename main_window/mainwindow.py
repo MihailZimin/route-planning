@@ -424,13 +424,18 @@ class MainWindow(QMainWindow):
         index = self.objectList.row(selected_objects[0])
         geo_object = self.geo_objects[index]
         edit_win = EditDialogWindow(geo_object, self)
+        new_params = edit_win.getChanges()
         if edit_win.exec() == QDialog.DialogCode.Accepted:
             if geo_object.type == "Point":
-                new_params = edit_win.getChanges()
                 geo_object.name = new_params["name"].text()
                 geo_object.x = float(new_params["x"].text())
                 geo_object.y = float(new_params["y"].text())
-                self.redraw()
+            if geo_object.type == "Circle":
+                geo_object.name = new_params["name"].text()
+                geo_object.center.x = float(new_params["x"].text())
+                geo_object.center.y = float(new_params["y"].text())
+                geo_object.radius = float(new_params["R"].text())
+            self.redraw()
             QMessageBox.information(self, "Траектория БПЛА",
                     "Объект обновлён")
 

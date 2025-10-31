@@ -78,6 +78,24 @@ class EditDialogWindow(QDialog):
             self.widgets["y"].setPlaceholderText("Введите координату Y")
             self.info_layout.addRow("Y:", self.widgets["y"])
 
+        if self._geo_object.type == "Circle":
+            self.widgets["name"] = QLineEdit()
+            self.widgets["name"].setPlaceholderText("Введите название")
+            self.info_layout.addRow("Название", self.widgets["name"])
+
+            self.widgets["x"] = QLineEdit()
+            self.widgets["x"].setPlaceholderText("Введите координату X")
+            self.info_layout.addRow("X:", self.widgets["x"])
+
+            self.widgets["y"] = QLineEdit()
+            self.widgets["y"].setPlaceholderText("Введите координату Y")
+            self.info_layout.addRow("Y:", self.widgets["y"])
+
+            self.widgets["R"] = QLineEdit()
+            self.widgets["R"].setPlaceholderText("Введите радиус")
+            self.info_layout.addRow("R:", self.widgets["R"])
+        
+
     def loadParams(self) -> None:
         """
         Load current parameters of geo object.
