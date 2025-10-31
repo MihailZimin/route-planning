@@ -1,4 +1,5 @@
-"""Class for GUI.
+"""
+Class for GUI.
 
 This module provides:
 - MainWindow: class for main window of app.
@@ -7,22 +8,35 @@ This module provides:
 
 
 import sys
+from pathlib import Path
+from typing import TYPE_CHECKING
 
+import QCustomPlot_PyQt6 as qcp
 from PyQt6 import uic
-from PyQt6.QtCore import QPoint, QSize
+from PyQt6.QtCore import QSize, Qt
+from PyQt6.QtGui import QColor, QPen
 from PyQt6.QtWidgets import (
     QApplication,
+    QDialog,
     QFileDialog,
-    QGraphicsScene,
     QMainWindow,
-    QMenu,
     QMessageBox,
     QTreeWidgetItem,
+    QVBoxLayout,
 )
 
-from draw.point_drawer import PointDrawer
+from core.circle import Circle
+from core.line import Line
+from core.point import Point
+from core.polygon import Polygon
 from draw.circle_drawer import CircleDrawer
 from draw.line_drawer import LineDrawer
+from draw.point_drawer import PointDrawer
+from draw.polygon_drawer import PolygonDrawer
+from main_window.dialogwindow import EditDialogWindow
+
+if TYPE_CHECKING:
+    from draw.abstract_drawer import ABCDrawer
 
 
 class MainWindow(QMainWindow):
@@ -35,8 +49,7 @@ class MainWindow(QMainWindow):
         Initialize MainWindow object.
         """
         super().__init__()
-        self.geo_objects: list = []
-        self.geo_objects_counter: int = 0
+        self.geo_objects: list[ABCDrawer] = []
         self.initializeUI()
 
     def initializeUI(self) -> None:
@@ -44,15 +57,15 @@ class MainWindow(QMainWindow):
         Initionalization of MainWindow.
         """
         uic.loadUi("main_window/trajectory.ui", self)
-        self.setGeometry(300, 100, 900, 550)
-        self.setMaximumSize(QSize(1000, 1000))
+        self.setGeometry(300, 100, 900, 650)
         self.setMinimumSize(QSize(400, 300))
 
         self.showStatAction.triggered.connect(self.showStatistic)
         self.showParamsAction.triggered.connect(self.showParams)
-        self.choseMapAction.triggered.connect(self.processFile)
+        self.chooseMapAction.triggered.connect(self.chooseMap)
         self.changeMapAction.triggered.connect(self.changeMap)
         self.startAction.triggered.connect(self.startTrajectory)
+        self.saveMapAction.triggered.connect(self.SaveMap)
 
         self.addPointButton.clicked.connect(self.addPoint)
         self.addCircleButton.clicked.connect(self.addCircle)
@@ -60,11 +73,28 @@ class MainWindow(QMainWindow):
         self.addPointPolygonButton.clicked.connect(self.addPolygonPoint)
         self.addPolygonButton.clicked.connect(self.addPolygon)
 
-        self.addCurrentObjectsContexMenu()
+        self.deleteButton.clicked.connect(self.deleteObject)
+        self.objectList.itemSelectionChanged.connect(self.showObjectsParams)
+        self.objectList.itemDoubleClicked.connect(self.editObject)
 
-        self.scene = QGraphicsScene()
-        self.mapView.setScene(self.scene)
-        self.scene.setSceneRect(1, 1, 600, 450)
+        self.initializeCustomPlot()
+
+    def initializeCustomPlot(self) -> None:
+        """
+        Initionalization of QCustomPlot for map drawing.
+        """
+        self.custom_plot = qcp.QCustomPlot()
+        layout = QVBoxLayout(self.mapView)
+        layout.addWidget(self.custom_plot)
+
+        self.custom_plot.setBackground(QColor(173, 255, 138))
+
+        grid_pen = QPen(QColor(0, 0, 0), 0.25, Qt.PenStyle.SolidLine)
+        self.custom_plot.xAxis.grid().setPen(grid_pen)
+        self.custom_plot.yAxis.grid().setPen(grid_pen)
+
+        self.custom_plot.xAxis.setRange(0, 1000)
+        self.custom_plot.yAxis.setRange(0, 1000)
 
     def closeWindow(self) -> None:
         """
@@ -80,7 +110,7 @@ class MainWindow(QMainWindow):
 
     def showParams(self) -> None:
         """
-        Slot for showing parametrs of flight.
+        Slot for showing parameters of flight.
         """
         self.stackedWidget.setCurrentIndex(1)
 
@@ -90,13 +120,72 @@ class MainWindow(QMainWindow):
         """
         self.stackedWidget.setCurrentIndex(2)
 
-    def processFile(self) -> None:
+    def chooseMap(self) -> None:
         """
         Slot for chosing map.
         """
         file_path, _ = QFileDialog.getOpenFileName(self, "Выберите файл", "")
         if file_path:
+            self.geo_objects = []
+            with Path(file_path).open("r", encoding="utf-8") as file:
+                obj_list = file.readlines()
+                for obj in obj_list:
+                    params = obj.split("|")
+                    obj_type = params[0]
+                    obj_params = params[1]
+                    obj_name = params[2].replace("\n", "")
+
+                    if obj_type == "Point":
+                        point = Point.load(obj_params)
+                        point_draw = PointDrawer(point.x, point.y, obj_name)
+                        self.geo_objects.append(point_draw)
+                    elif obj_type == "Line":
+                        line = Line.load(obj_params)
+                        line_draw = LineDrawer(line.start, line.end, obj_name)
+                        self.geo_objects.append(line_draw)
+                    elif obj_type == "Circle":
+                        circle = Circle.load(obj_params)
+                        circle_draw = CircleDrawer(circle.center, circle.radius, obj_name)
+                        self.geo_objects.append(circle_draw)
+                    elif obj_type == "Polygon":
+                        polygon = Polygon.load(obj_params)
+                        polygon_draw = PolygonDrawer(polygon.points, obj_name)
+                        self.geo_objects.append(polygon_draw)
+
+            self.updateObjectList()
+            self.redraw()
             self.statusBar.showMessage(f"Выбран файл: {file_path}")
+
+    def SaveMap(self) -> None:
+        """
+        Slot for saving map.
+        """
+        if self.geo_objects:
+            file_name, _ = QFileDialog.getSaveFileName(
+                self,
+                "Сохранить карту",
+                "",
+                "Text files (*.txt);;All Files (*)"
+            )
+            if file_name:
+                with Path(file_name).open("w", encoding="utf-8") as file:
+                    for obj in self.geo_objects:
+                        obj_params = obj.save()
+                        obj_type = ""
+                        if isinstance(obj, PointDrawer):
+                            obj_type = "Point"
+                        elif isinstance(obj, CircleDrawer):
+                            obj_type = "Circle"
+                        elif isinstance(obj, LineDrawer):
+                            obj_type = "Line"
+                        elif isinstance(obj, PolygonDrawer):
+                            obj_type = "Polygon"
+                        obj_string = obj_type + "|" + obj_params + "|" + obj.name
+                        file.write(obj_string + "\n")
+                self.statusBar.showMessage("Карта сохранена")
+        else:
+            QMessageBox.information(self, "Траектория БПЛА",
+                "Ha карте нет объектов для сохранения")
 
     def startTrajectory(self) -> None:
         """
@@ -104,55 +193,56 @@ class MainWindow(QMainWindow):
         """
         self.statusBar.showMessage("Процесс построения траектории запущен")
 
-    def addCurrentObjectsContexMenu(self) -> None:
+    def updateObjectList(self) -> None:
         """
-        Add contex menu to delete geo Objects.
+        Update list of geometry objects.
         """
-        self.currentObjects.customContextMenuRequested.connect(
-            self.showContextMenu
-        )
-        self.actionDeleteObj.triggered.connect(self.deleteObject)
-
-    def showContextMenu(self, position: QPoint) -> None:
-        """
-        Show context menu for currentObjects.
-
-        Args:
-            position: position of cursor at the click moment.
-
-        """
-        context_menu = QMenu(self.currentObjects)
-        context_menu.addAction(self.actionDeleteObj)
-
-        context_menu.exec(self.currentObjects.viewport().mapToGlobal(position))
+        self.objectList.clear()
+        for obj in self.geo_objects:
+            self.objectList.addItem(obj.name)
 
     def deleteObject(self) -> None:
         """
         Delete selected geo object.
         """
-        selected_objects = self.currentObjects.selectedItems()
+        selected_objects = self.objectList.selectedItems()
+
         if not selected_objects:
             QMessageBox.information(self, "Траектория БПЛА",
-                "He выбран объект для удаления")
+                "Выберите элемент")
             return
 
-        object_param = [obj for obj in selected_objects if obj.parent() is None]
-        if not object_param:
+        items_index = []
+
+        for item in selected_objects:
+            index = self.objectList.row(item)
+            items_index.append(index)
+
+        items_index.sort(reverse=True)
+        for i in items_index:
+            self.geo_objects.pop(i)
+
+        self.updateObjectList()
+        self.redraw()
+
+    def showObjectsParams(self) -> None:
+        """
+        Show parameters of selected objects.
+        """
+        selected_objects = self.objectList.selectedItems()
+
+        if not selected_objects:
+            self.infoLabel.setText("")
             return
 
-        root = self.currentObjects.invisibleRootItem()
-        for obj in selected_objects:
-            for i in range(obj.childCount()):
-                child = obj.child(i)
-                if child.text(0) == "ID:":
-                    id_item = child
-                    break
-            if id_item:
-                object_id = int(id_item.text(1))
-                self.geo_objects[object_id].delete(self.mapView)
-                self.geo_objects[object_id] = None
+        info = ""
 
-            root.removeChild(obj)
+        for item in selected_objects:
+            index = self.objectList.row(item)
+            for param, value in self.geo_objects[index].parameters.items():
+                info += param + f"  {value}" + "\n"
+
+        self.infoLabel.setText(info)
 
     def validateParamets(self, params: list[str]) -> bool:
         """
@@ -176,7 +266,6 @@ class MainWindow(QMainWindow):
 
         return True
 
-
     def addPoint(self) -> None:
         """
         Add point to the list of current objects.
@@ -192,23 +281,15 @@ class MainWindow(QMainWindow):
         if not name:
             name = "Точка"
 
-        point = QTreeWidgetItem([name])
-        QTreeWidgetItem(point, ["X:", x_coord])
-        QTreeWidgetItem(point, ["Y:", y_coord])
-        QTreeWidgetItem(point, ["ID:", str(self.geo_objects_counter)])
-        self.currentObjects.addTopLevelItem(point)
+        point = PointDrawer(float(x_coord), float(y_coord), name)
+        self.geo_objects.append(point)
+        point.draw(self.custom_plot)
+        self.updateObjectList()
+
+        self.objectList.setCurrentRow(len(self.geo_objects) - 1)
+
         QMessageBox.information(self, "Траектория БПЛА",
                 "Точка добавлена")
-
-        point_draw = PointDrawer()
-        self.geo_objects.append(point_draw)
-        self.geo_objects_counter += 1
-        point_draw.draw(
-            self.mapView, 
-            float(x_coord), 
-            float(y_coord), 
-            name
-        )
 
     def addCircle(self) -> None:
         """
@@ -226,24 +307,17 @@ class MainWindow(QMainWindow):
         if not name:
             name = "Окружность"
 
-        circle = QTreeWidgetItem([name])
-        QTreeWidgetItem(circle, ["X:", x_coord])
-        QTreeWidgetItem(circle, ["Y:", y_coord])
-        QTreeWidgetItem(circle, ["R:", radius])
-        QTreeWidgetItem(circle, ["ID:", str(self.geo_objects_counter)])
-        self.currentObjects.addTopLevelItem(circle)
+        center = Point(float(x_coord), float(y_coord))
+
+        circle = CircleDrawer(center, float(radius), name)
+        self.geo_objects.append(circle)
+        circle.draw(self.custom_plot)
+        self.updateObjectList()
+
+        self.objectList.setCurrentRow(len(self.geo_objects) - 1)
+
         QMessageBox.information(self, "Траектория БПЛА",
                 "Окружность добавлена")
-        
-        circle_draw = CircleDrawer()
-        self.geo_objects.append(circle_draw)
-        self.geo_objects_counter += 1
-        circle_draw.draw(
-            self.mapView, 
-            float(x_coord), 
-            float(y_coord), 
-            float(radius)
-        )
 
     def addLine(self) -> None:
         """
@@ -262,23 +336,18 @@ class MainWindow(QMainWindow):
         if not name:
             name = "Отрезок"
 
-        line = QTreeWidgetItem([name])
-        QTreeWidgetItem(line, ["X1:", x_coord_beg])
-        QTreeWidgetItem(line, ["Y1:", y_coord_beg])
-        QTreeWidgetItem(line, ["X2:", x_coord_end])
-        QTreeWidgetItem(line, ["Y2:", y_coord_end])
-        QTreeWidgetItem(line, ["ID:", str(self.geo_objects_counter)])
-        self.currentObjects.addTopLevelItem(line)
+        point_begin = PointDrawer(float(x_coord_beg), float(y_coord_beg))
+        point_end = PointDrawer(float(x_coord_end), float(y_coord_end))
+
+        line = LineDrawer(point_begin, point_end, name)
+        self.geo_objects.append(line)
+        line.draw(self.custom_plot)
+        self.updateObjectList()
+
+        self.objectList.setCurrentRow(len(self.geo_objects) - 1)
+
         QMessageBox.information(self, "Траектория БПЛА",
                 "Отрезок добавлен")
-        line_draw = LineDrawer()
-        self.geo_objects.append(line_draw)
-        self.geo_objects_counter += 1
-        line_draw.draw(
-            self.mapView,
-            (float(x_coord_beg), float(y_coord_beg)),
-            (float(x_coord_end), float(y_coord_end))
-        )
 
     def addPolygonPoint(self) -> None:
         """
@@ -292,7 +361,7 @@ class MainWindow(QMainWindow):
             return
 
         point_num = self.pointsPolygon.topLevelItemCount()
-        point = QTreeWidgetItem(["Точка " + str(point_num)])
+        point = QTreeWidgetItem(["Точка " + str(point_num + 1)])
         QTreeWidgetItem(point, ["X:", x_coord])
         QTreeWidgetItem(point, ["Y:", y_coord])
         self.pointsPolygon.addTopLevelItem(point)
@@ -314,25 +383,68 @@ class MainWindow(QMainWindow):
         if not name:
             name = "Многоугольник"
 
-        polygon = QTreeWidgetItem([name])
+        polygon_points = []
+
         for i in range(points_count):
+            coords = []
             point = self.pointsPolygon.topLevelItem(i)
-            new_point = QTreeWidgetItem(polygon)
-            for j in range(point.columnCount()):
-                new_point.setText(j, point.text(j))
             for k in range(point.childCount()):
                 coord = point.child(k)
-                new_coord = QTreeWidgetItem(new_point)
-                for j in range(coord.columnCount()):
-                    new_coord.setText(j, coord.text(j))
-                new_point.addChild(new_coord)
+                coords.append(float(coord.text(1)))
+            p = Point(coords[0], coords[1])
+            polygon_points.append(p)
 
+        polygon = PolygonDrawer(polygon_points, name)
+        self.geo_objects.append(polygon)
+        polygon.draw(self.custom_plot)
+        self.updateObjectList()
 
-        self.currentObjects.addTopLevelItem(polygon)
+        self.objectList.setCurrentRow(len(self.geo_objects) - 1)
+
         QMessageBox.information(self, "Траектория БПЛА",
                 "Многоугольник добавлен")
         self.pointsPolygon.clear()
 
+    def redraw(self) -> None:
+        """
+        Redraw current map.
+        """
+        self.custom_plot.clearItems()
+        self.custom_plot.clearGraphs()
+        self.custom_plot.clearPlottables()
+        for obj in self.geo_objects:
+            obj.draw(self.custom_plot)
+        self.custom_plot.replot()
+
+    def editObject(self) -> None:
+        """
+        Edit selected object.
+        """
+        selected_objects = self.objectList.selectedItems()
+        index = self.objectList.row(selected_objects[0])
+        geo_object = self.geo_objects[index]
+        edit_win = EditDialogWindow(geo_object, self)
+        new_params = edit_win.getChanges()
+        if edit_win.exec() == QDialog.DialogCode.Accepted:
+            if geo_object.type == "Point":
+                geo_object.name = new_params["name"].text()
+                geo_object.x = float(new_params["x"].text())
+                geo_object.y = float(new_params["y"].text())
+            if geo_object.type == "Circle":
+                geo_object.name = new_params["name"].text()
+                geo_object.center.x = float(new_params["x"].text())
+                geo_object.center.y = float(new_params["y"].text())
+                geo_object.radius = float(new_params["R"].text())
+            if geo_object.type == "Line":
+                geo_object.name = new_params["name"].text()
+                geo_object.start.x = float(new_params["x1"].text())
+                geo_object.start.y = float(new_params["y1"].text())
+                geo_object.end.x = float(new_params["x2"].text())
+                geo_object.end.y = float(new_params["y2"].text())
+
+            self.redraw()
+            QMessageBox.information(self, "Траектория БПЛА",
+                    "Объект обновлён")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

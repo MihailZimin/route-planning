@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>991</width>
-    <height>593</height>
+    <width>960</width>
+    <height>649</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>PictTrajectory/drone.png</normaloff>PictTrajectory/drone.png</iconset>
+    <normaloff>../pict_trajectory/drone.png</normaloff>../pict_trajectory/drone.png</iconset>
   </property>
   <widget class="QWidget" name="CentralWidget">
    <property name="styleSheet">
@@ -46,12 +46,10 @@
        <enum>QLayout::SetDefaultConstraint</enum>
       </property>
       <item>
-       <widget class="QGraphicsView" name="mapView">
+       <widget class="QWidget" name="mapView" native="true">
         <property name="styleSheet">
          <string notr="true">background-color: rgb(173, 255, 138);
-border: 8px double #555;
-
-</string>
+border: 8px double #555;</string>
         </property>
        </widget>
       </item>
@@ -397,7 +395,7 @@ background-color: rgb(243, 255, 233);</string>
             <property name="frameShadow">
              <enum>QFrame::Raised</enum>
             </property>
-            <layout class="QGridLayout" name="gridLayout_8" rowstretch="1,6">
+            <layout class="QGridLayout" name="gridLayout_8" rowstretch="1,0">
              <property name="leftMargin">
               <number>0</number>
              </property>
@@ -489,7 +487,7 @@ background-color: rgb(243, 255, 233);</string>
                 <attribute name="title">
                  <string>Текущие параметры</string>
                 </attribute>
-                <layout class="QGridLayout" name="gridLayout_13">
+                <layout class="QGridLayout" name="gridLayout_13" rowstretch="8,3,0,0">
                  <property name="leftMargin">
                   <number>0</number>
                  </property>
@@ -506,20 +504,94 @@ background-color: rgb(243, 255, 233);</string>
                   <number>0</number>
                  </property>
                  <item row="0" column="0">
-                  <widget class="QTreeWidget" name="currentObjects">
-                   <property name="contextMenuPolicy">
-                    <enum>Qt::CustomContextMenu</enum>
+                  <widget class="QListWidget" name="objectList">
+                   <property name="selectionMode">
+                    <enum>QAbstractItemView::ExtendedSelection</enum>
                    </property>
-                   <column>
-                    <property name="text">
-                     <string>Объекты</string>
+                   <property name="viewMode">
+                    <enum>QListView::ListMode</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="0">
+                  <widget class="QPushButton" name="deleteButton">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">QPushButton {
+    border: 2px solid black #cccccc;
+}
+
+QPushButton:pressed {
+    margin-left: 1px;
+    margin-top: 1px;
+    margin-right: -1px;
+    margin-bottom: -1px;
+}</string>
+                   </property>
+                   <property name="text">
+                    <string>Удалить</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QScrollArea" name="scrollArea">
+                   <property name="autoFillBackground">
+                    <bool>false</bool>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">border: 1px solid black #cccccc;</string>
+                   </property>
+                   <property name="widgetResizable">
+                    <bool>true</bool>
+                   </property>
+                   <widget class="QWidget" name="objectParams">
+                    <property name="geometry">
+                     <rect>
+                      <x>0</x>
+                      <y>0</y>
+                      <width>254</width>
+                      <height>96</height>
+                     </rect>
                     </property>
-                   </column>
-                   <column>
-                    <property name="text">
-                     <string>Значения</string>
-                    </property>
-                   </column>
+                    <layout class="QGridLayout" name="gridLayout_18">
+                     <property name="leftMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>0</number>
+                     </property>
+                     <item row="0" column="0">
+                      <widget class="QLabel" name="infoLabel">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true"/>
+                       </property>
+                       <property name="text">
+                        <string/>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
                   </widget>
                  </item>
                 </layout>
@@ -1337,7 +1409,7 @@ background-color: rgb(243, 255, 233);</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>991</width>
+     <width>960</width>
      <height>26</height>
     </rect>
    </property>
@@ -1351,8 +1423,8 @@ background-color: rgb(243, 255, 233);</string>
     <property name="title">
      <string>Карта</string>
     </property>
-    <addaction name="choseMapAction"/>
-    <addaction name="SaveMapAction"/>
+    <addaction name="chooseMapAction"/>
+    <addaction name="saveMapAction"/>
     <addaction name="changeMapAction"/>
    </widget>
    <widget class="QMenu" name="params">
@@ -1384,12 +1456,12 @@ background-color: rgb(243, 255, 233);</string>
     <string>Запустить построение траектории</string>
    </property>
   </action>
-  <action name="choseMapAction">
+  <action name="chooseMapAction">
    <property name="text">
     <string>Выбрать карту</string>
    </property>
   </action>
-  <action name="SaveMapAction">
+  <action name="saveMapAction">
    <property name="text">
     <string>Сохранить карту</string>
    </property>
