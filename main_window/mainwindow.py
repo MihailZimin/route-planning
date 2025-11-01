@@ -258,12 +258,15 @@ class MainWindow(QMainWindow):
                     "Заполните все поля")
                 return False
             try:
-                float(param)
+                float_param = float(param)
             except ValueError:
                 QMessageBox.information(self, "Траектория БПЛА",
                     "Введите корректные данные")
                 return False
-
+            if float_param < 0 or float_param > 1000:
+                QMessageBox.information(self, "Траектория БПЛА",
+                    "Введите корректные данные")
+                return False
         return True
 
     def addPoint(self) -> None:
