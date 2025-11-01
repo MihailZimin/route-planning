@@ -82,8 +82,8 @@ class CircleDrawer(ABCDrawer, Circle):
         Return line parameters for GUI display.
         """
         return {
-            "Название:": self.name,
-            "X:": self.center.x,
-            "Y:": self.center.y,
-            "Радиус:": self.radius
+            "Название": self.name,
+            "X": self.center.x,
+            "Y": self.center.y,
+            "Радиус": self.radius
         }

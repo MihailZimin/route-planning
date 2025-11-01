@@ -76,7 +76,7 @@ class PolygonDrawer(Polygon, ABCDrawer):
         """
         Return polygon parameters for GUI display.
         """
-        params = {"Название:": self.name}
+        params = {"Название": self.name}
         for i, point in enumerate(self.points):
             point_label = "Точка " + str(i + 1)
             params[point_label] = str(point)

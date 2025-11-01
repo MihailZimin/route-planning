@@ -86,9 +86,9 @@ class LineDrawer(ABCDrawer, Line):
         Return line parameters for GUI display.
         """
         return {
-            "Название:": self.name,
-            "X1:": self.start.x,
-            "Y1:": self.start.y,
-            "X2:": self.end.x,
-            "Y2:": self.end.y
+            "Название": self.name,
+            "X1": self.start.x,
+            "Y1": self.start.y,
+            "X2": self.end.x,
+            "Y2": self.end.y
         }

@@ -240,7 +240,7 @@ class MainWindow(QMainWindow):
         for item in selected_objects:
             index = self.objectList.row(item)
             for param, value in self.geo_objects[index].parameters.items():
-                info += param + f"  {value}" + "\n"
+                info += param + ":" + f"  {value}" + "\n"
 
         self.infoLabel.setText(info)
 

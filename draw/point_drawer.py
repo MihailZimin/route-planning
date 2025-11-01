@@ -92,7 +92,7 @@ class PointDrawer(ABCDrawer, Point):
         Return line parameters for GUI display.
         """
         return {
-            "Название:": self.name,
-            "X:": self.x,
-            "Y:": self.y
+            "Название": self.name,
+            "X": self.x,
+            "Y": self.y
         }
