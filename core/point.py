@@ -2,6 +2,7 @@
 import json
 
 from .abstract_geometry import ABCGeo
+from .data_validator import GeometryValidator
 
 
 class Point(ABCGeo):
@@ -9,6 +10,7 @@ class Point(ABCGeo):
     Point core class.
     """
 
+    @GeometryValidator.validate("Point_init")
     def __init__(self, x: float = 0, y: float = 0) -> None:
         """
         Initialize 2D point.
@@ -49,6 +51,7 @@ class Point(ABCGeo):
         return self._x
 
     @x.setter
+    @GeometryValidator.validate("Point_x_setter")
     def x(self, x_coord: float) -> None:
         """
         Set x coordinate of point.
@@ -67,6 +70,7 @@ class Point(ABCGeo):
         return self._y
 
     @y.setter
+    @GeometryValidator.validate("Point_y_setter")
     def y(self, y_coord: float) -> None:
         """
         Set y coordinate of point.
