@@ -5,6 +5,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
+from tsp_algorithms.abstract_solver import SolutionExceptionError
 from tsp_algorithms.brute_force import BruteForceSolver
 
 
@@ -31,5 +32,9 @@ def test_on_data_from_file(sample_solver: BruteForceSolver) -> None:
         start = data["start"]
         expected_length = data["expected_length"]
 
-        _, length = sample_solver.solve(matrix, start)
-        assert length == expected_length
+        if expected_length == -1:
+            with pytest.raises(SolutionExceptionError):
+                sample_solver.solve(matrix, start)
+        else:
+            _, length = sample_solver.solve(matrix, start)
+            assert length == expected_length
