@@ -1,28 +1,29 @@
 """
-Circle edit window class.
+Point edit window class.
 
 This module provides:
-- CircleEditDialogWindow for editing circle.
+- PointEditDialogWindow for editing point.
 
 """
 
-from main_window.base_edit_dialog import EditDialogWindow
 
-from draw.circle_drawer import CircleDrawer
+from PyQt6.QtWidgets import QMessageBox, QWidget
 
-from PyQt6.QtWidgets import QWidget, QMessageBox
+from dialog_window.base_edit_dialog import EditDialogWindow
+
+from draw.point_drawer import PointDrawer
 
 
-class CircleEditDialogWindow(EditDialogWindow):
+class PointEditDialogWindow(EditDialogWindow):
     """
-    Class for edit circle window.
+    Class for edit point window.
     """
 
-    def __init__(self, point: CircleDrawer, parent: QWidget = None) -> None:
+    def __init__(self, point: PointDrawer, parent: QWidget = None) -> None:
         """
-        Create circle edit window.
+        Create point edit window.
         """
-        super().__init__(point, "main_window/circle_edit_dialog.ui", parent)
+        super().__init__(point, "dialog_window/point_edit_dialog.ui", parent)
 
     def validateAccept(self) -> None:
         """
@@ -30,16 +31,14 @@ class CircleEditDialogWindow(EditDialogWindow):
         """
         x_coord = self.xLineEdit.text()
         y_coord = self.yLineEdit.text()
-        radius = self.radiusLineEdit.text()
         if not x_coord or not y_coord:
             QMessageBox.information(self, "Траектория БПЛА", "Заполните все поля")
             return
         try:
             x_coord = float(x_coord)
             y_coord = float(y_coord)
-            rad = float(radius)
         except ValueError:
-            QMessageBox.information(self, "Траектория БПЛА", "Введите корректные параметры")
+            QMessageBox.information(self, "Траектория БПЛА", "Введите корректные координаты")
             return
         if x_coord < 0 or x_coord > 1000:
             QMessageBox.information(self, "Траектория БПЛА", "Введите корректные координаты")
@@ -47,29 +46,23 @@ class CircleEditDialogWindow(EditDialogWindow):
         if y_coord < 0 or y_coord > 1000:
             QMessageBox.information(self, "Траектория БПЛА", "Введите корректные координаты")
             return
-        if rad < 0 or rad > 500:
-            QMessageBox.information(self, "Траектория БПЛА", "Введите корректный радиус")
-            return
         self.accept()
 
     def loadParams(self) -> None:
         """
-        Load circle parameters.
+        Load point parameters.
         """
         self.nameLineEdit.setText(self._geo_object.parameters["Название"])
         self.xLineEdit.setText(str(self._geo_object.parameters["X"]))
         self.yLineEdit.setText(str(self._geo_object.parameters["Y"]))
-        self.radiusLineEdit.setText(str(self._geo_object.parameters["Радиус"]))
 
     def setChanges(self) -> None:
         """
-        Change circle parameters.
+        Change point parameters.
         """
         name = self.nameLineEdit.text()
         x = float(self.xLineEdit.text())
         y = float(self.yLineEdit.text())
-        r = float(self.radiusLineEdit.text())
         self._geo_object.name = name
-        self._geo_object.center.x = x
-        self._geo_object.center.y = y
-        self._geo_object.radius = r
+        self._geo_object.x = x
+        self._geo_object.y = y

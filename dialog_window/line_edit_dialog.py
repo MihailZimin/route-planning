@@ -6,7 +6,7 @@ This module provides:
 
 """
 
-from main_window.base_edit_dialog import EditDialogWindow
+from dialog_window.base_edit_dialog import EditDialogWindow
 
 from PyQt6.QtWidgets import QWidget, QMessageBox
 
@@ -21,7 +21,7 @@ class LineEditDialogWindow(EditDialogWindow):
         """
         Create line edit window.
         """
-        super().__init__(geo_object, "main_window/line_edit_dialog.ui", parent)
+        super().__init__(geo_object, "dialog_window/line_edit_dialog.ui", parent)
 
     def validateAccept(self) -> None:
         """

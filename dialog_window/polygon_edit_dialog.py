@@ -6,7 +6,7 @@ This module provides:
 
 """
 
-from main_window.base_edit_dialog import EditDialogWindow
+from dialog_window.base_edit_dialog import EditDialogWindow
 
 from PyQt6.QtWidgets import QWidget, QMessageBox, QLineEdit
 
@@ -22,7 +22,7 @@ class PolygonEditDialogWindow(EditDialogWindow):
         Create polygon edit window.
         """
         self._rows: dict = {}
-        super().__init__(geo_object, "main_window/polygon_edit_dialog.ui", parent)
+        super().__init__(geo_object, "dialog_window/polygon_edit_dialog.ui", parent)
 
     def InitializeWin(self, path):
         """
