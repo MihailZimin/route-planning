@@ -1,6 +1,7 @@
 """Line class for core."""
 
 from .abstract_geometry import ABCGeo
+from .data_validation.line_validator import LineValidator
 from .point import Point
 
 
@@ -9,6 +10,7 @@ class Line(ABCGeo):
     Line core class.
     """
 
+    @LineValidator.validate("Line_init")
     def __init__(self, start: Point, end: Point) -> None:
         """
         Initialize 2D line.
@@ -51,6 +53,7 @@ class Line(ABCGeo):
         return self._start
 
     @start.setter
+    @LineValidator.validate("Line_start_setter")
     def start(self, new_start: Point) -> None:
         """
         Set start point of line.
@@ -69,6 +72,7 @@ class Line(ABCGeo):
         return self._end
 
     @end.setter
+    @LineValidator.validate("Line_end_setter")
     def end(self, new_end: Point) -> None:
         """
         Set end point of line.
