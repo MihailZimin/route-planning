@@ -35,6 +35,13 @@ class PolygonDrawer(Polygon, ABCDrawer):
         """
         return self._name
 
+    @name.setter
+    def name(self, name: str) -> None:
+        """
+        Set polygon name.
+        """
+        self._name = name
+
     @property
     def type(self) -> str:
         """
