@@ -17,7 +17,7 @@ class GeometryValidator:
     MAXRADIUS:  float =  1000.0
 
     @staticmethod
-    def _get_radius_error_msg(radius: float | object) -> str:
+    def get_radius_error_msg(radius: float | object) -> str:
         """
         Get radius error message.
 
