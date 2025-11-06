@@ -1,20 +1,20 @@
 """
-Edit window class.
+Point edit window class.
 
 This module provides:
-- EditDialogWindow for editing geometry object.
+- PointEditDialogWindow for editing point.
 
 """
 
 
-from PyQt6 import uic
-from PyQt6.QtCore import QSize
-from PyQt6.QtWidgets import QDialog, QMessageBox, QWidget
+from PyQt6.QtWidgets import QMessageBox, QWidget
+
+from main_window.base_edit_dialog import EditDialogWindow
 
 from draw.point_drawer import PointDrawer
 
 
-class PointEditDialogWindow(QDialog):
+class PointEditDialogWindow(EditDialogWindow):
     """
     Class for edit point window.
     """
@@ -23,20 +23,7 @@ class PointEditDialogWindow(QDialog):
         """
         Create point edit window.
         """
-        super().__init__(parent)
-        self._point = point
-        self.InitializeUI()
-
-    def InitializeUI(self) -> None:
-        """
-        Initialize point edit dialog win.
-        """
-        uic.loadUi("main_window/point_edit_dialog.ui", self)
-        self.setMinimumSize(QSize(400, 210))
-        self.buttonBox.accepted.disconnect()
-        self.buttonBox.accepted.connect(self.validateAccept)
-        self.buttonBox.rejected.connect(self.reject)
-        self.loadParams()
+        super().__init__(point, "main_window/point_edit_dialog.ui", parent)
 
     def validateAccept(self) -> None:
         """
@@ -65,9 +52,9 @@ class PointEditDialogWindow(QDialog):
         """
         Load point parameters.
         """
-        self.nameLineEdit.setText(self._point.parameters["Название"])
-        self.xLineEdit.setText(str(self._point.parameters["X"]))
-        self.yLineEdit.setText(str(self._point.parameters["Y"]))
+        self.nameLineEdit.setText(self._geo_object.parameters["Название"])
+        self.xLineEdit.setText(str(self._geo_object.parameters["X"]))
+        self.yLineEdit.setText(str(self._geo_object.parameters["Y"]))
 
     def setChanges(self) -> None:
         """
@@ -76,6 +63,6 @@ class PointEditDialogWindow(QDialog):
         name = self.nameLineEdit.text()
         x = float(self.xLineEdit.text())
         y = float(self.yLineEdit.text())
-        self._point.name = name
-        self._point.x = x
-        self._point.y = y
+        self._geo_object.name = name
+        self._geo_object.x = x
+        self._geo_object.y = y
