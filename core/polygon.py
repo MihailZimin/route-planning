@@ -1,4 +1,7 @@
 """Polygon class for core."""
+import itertools
+
+import numpy as np
 
 from .abstract_geometry import ABCGeo
 from .point import Point
@@ -25,16 +28,21 @@ class Polygon(ABCGeo):
             points: list of Point objects
 
         """
-        if points[0] != points[-1]:
-            error_msg = "start point and end point must be the same"
-            raise ValueError(error_msg)
         self._points = points.copy()
+
+    def _ensure_closed(self, points: list[Point]) -> list[Point]:
+        """
+        Ensure that start point is equal to the end point.
+        """
+        if points[0] != points[-1]:
+            return [*points, points[0]]
+        return points.copy()
 
     def save(self) -> str:
         """
         Return JSON string representation of the object.
         """
-        points = [point.save() for point in self._points]
+        points = [point.save() for point in self.points]
         return "; ".join(points)
 
     @classmethod
@@ -57,7 +65,7 @@ class Polygon(ABCGeo):
         """
         Return list of vertices of polygon.
         """
-        return self._points
+        return self._ensure_closed(self._points)
 
     @points.setter
     def points(self, new_points: list[Point]) -> None:
@@ -74,16 +82,50 @@ class Polygon(ABCGeo):
         """
         Return string representation of Polygon.
         """
-        return "[" + " ".join([str(point) for point in self._points]) + "]"
+        return "[" + " ".join([str(point) for point in self.points]) + "]"
 
-    def get_points_copy(self) -> list[Point]:
+    def insert_point(self, point: Point, pos: int) -> None:
         """
-        Return copy of a list of vertices of polygon.
+        Add point in the end of list.
         """
-        return self._points.copy()
+        if pos >= 0:
+            self._points.insert(pos, point)
 
-    def add_point(self, point: Point) -> None:
+    @staticmethod
+    def check_on_convex(points: list[Point]) -> bool:
         """
-        Add a point in the end of a list.
+        Check if polygon is convex.
+
+        Args:
+            points: list of points that form polygon
+
+        Returns:
+            bool variable:
+                True if points form convex polygon
+                False otherwise
+
         """
-        self._points.append(point)
+        sides = list(itertools.pairwise(points))
+        pair_sides = list(itertools.pairwise(sides))
+        reference_vector = np.array([0, 0, 1])
+
+        def get_sign(side1: Point, side2: Point) -> int:
+            vec1 = np.array([side1[1].x - side1[0].x, side1[1].y - side1[0].y, 0])
+            vec2 = np.array([side2[1].x - side2[0].x, side2[1].y - side2[0].y, 0])
+            return np.sign(np.inner(np.cross(vec1, vec2), reference_vector))
+
+        sign = get_sign(*pair_sides[0])
+        return all(get_sign(side1, side2) == sign for side1, side2 in pair_sides)
+
+    def __getitem__(self, index: int) -> Point:
+        """
+        Allow to get element through '[]'.
+        """
+        return self._points[index]
+
+    def __setitem__(self, index: int, value: Point) -> None:
+        """
+        Allow to set new value through '[]'.
+        """
+        if 0 <= index < len(self._points):
+            self._points[index] = value

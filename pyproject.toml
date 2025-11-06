@@ -3,7 +3,11 @@ name = "route-planning"
 version = "0.1.0"
 description = "Add your description here"
 requires-python = ">=3.12"
-dependencies = ["PyQt6 >= 6.9.1", "QCustomPlot_PyQt6 >= 2.1.1.2"]
+dependencies = [
+    "numpy>=2.3.3",
+    "PyQt6 >= 6.9.1",
+    "QCustomPlot_PyQt6 >= 2.1.1.2"
+]
 
 # Same as Black.
 line-length = 88
@@ -70,4 +74,8 @@ docstring-code-line-length = "dynamic"
 [tool.pytest.ini_options]
 pythonpath = [
     "."
+]
+markers = [
+    "fast: fast running tests",
+    "slow: slow running tests (deselect with '-m \"not slow\"')",
 ]
