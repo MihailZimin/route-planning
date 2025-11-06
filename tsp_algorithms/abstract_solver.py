@@ -132,3 +132,25 @@ class TSPSolver(ABC):
             elements += component
 
         return elements
+
+    def _check_input_data(self, matrix: np.ndarray, start: int) -> None:
+        """
+        Check data correctness.
+
+        Data is incorrect if there is no solution of travel salesman problem.
+
+        Args:
+            matrix: matrix of distances,
+                where matrix[i][j] is length of path from i-th control point to j-th
+            start: start point of route
+
+        Raises:
+            SolutionExceptionError: if check fails
+
+        """
+        components = self._find_strongly_connected_components(matrix)
+        if len(components) > 1:
+            unreachable_elements = self._get_elements_not_in_main_component(components, start)
+            error_msg = (f"Can't build a route thruough every vertex\n"
+                         f"Those vertices are unreachable: {unreachable_elements}")
+            raise SolutionExceptionError(error_msg)
