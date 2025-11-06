@@ -20,14 +20,14 @@ class PointDrawer(ABCDrawer, Point):
     Class for drawing point.
     """
 
+    _point_size: int = 5
+    _type : str = "Point"
     def __init__(self, x: float = 0, y: float = 0, name: str = "") -> None:
         """
         Init point drawer.
         """
         super().__init__(x, y)
         self._name = name
-        self._point_size: int = 5
-        self._type : str = "Point"
 
     @property
     def name(self) -> str:
@@ -48,7 +48,7 @@ class PointDrawer(ABCDrawer, Point):
         """
         Return geo object type.
         """
-        return self._type
+        return PointDrawer._type
 
     def draw(self, map_view: qcp.QCustomPlot) -> None:
         """
@@ -74,13 +74,13 @@ class PointDrawer(ABCDrawer, Point):
         point_style.setShape(qcp.QCPScatterStyle.ScatterShape.ssCircle)
         point_style.setPen(pen)
         point_style.setBrush(QBrush(QColor(color)))
-        point_style.setSize(self._point_size)
+        point_style.setSize(PointDrawer._point_size)
 
         point.setScatterStyle(point_style)
 
         if self.name:
             text_item = qcp.QCPItemText(map_view)
-            text_item.position.setCoords(self.x + 2*self._point_size, self.y + 2*self._point_size)
+            text_item.position.setCoords(self.x + 2*PointDrawer._point_size, self.y + 2*PointDrawer._point_size)
             text_item.setText(self.name)
             text_item.setFont(QFont("Arial", 8))
 

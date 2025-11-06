@@ -20,13 +20,13 @@ class PolygonDrawer(Polygon, ABCDrawer):
     Class for drawing polygon.
     """
 
+    _type : str = "Polygon"
     def __init__(self, points: list[Point], name: str = "") -> None:
         """
         Init polygon drawer.
         """
         super().__init__(points)
         self._name = name
-        self._type : str = "Polygon"
 
     @property
     def name(self) -> str:
@@ -47,7 +47,7 @@ class PolygonDrawer(Polygon, ABCDrawer):
         """
         Return geo object type.
         """
-        return self._type
+        return PolygonDrawer._type
 
     def draw(self, map_view: qcp.QCustomPlot) -> None:
         """

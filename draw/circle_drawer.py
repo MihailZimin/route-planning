@@ -21,13 +21,13 @@ class CircleDrawer(ABCDrawer, Circle):
     Class for drawing circle.
     """
 
+    _type : str = "Circle"
     def __init__(self, center: Point, radius: float, name: str) -> None:
         """
         Init circle drawer.
         """
         super().__init__(center, radius)
         self._name = name
-        self._type : str = "Circle"
 
     @property
     def name(self) -> str:
@@ -48,7 +48,7 @@ class CircleDrawer(ABCDrawer, Circle):
         """
         Return geo object type.
         """
-        return self._type
+        return CircleDrawer._type
 
     def draw(self, map_view: qcp.QCustomPlot) -> None:
         """

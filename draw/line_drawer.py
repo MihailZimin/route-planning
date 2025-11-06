@@ -21,14 +21,14 @@ class LineDrawer(ABCDrawer, Line):
     Class for drawing line.
     """
 
+    _type : str = "Line"
+    _point_size : int = 5
     def __init__(self, start: Point, end: Point, name: str) -> None:
         """
         Init line drawer.
         """
         super().__init__(start, end)
         self._name = name
-        self._point_size : int = 5
-        self._type : str = "Line"
 
     @property
     def name(self) -> str:
@@ -49,7 +49,7 @@ class LineDrawer(ABCDrawer, Line):
         """
         Return geo object type.
         """
-        return self._type
+        return LineDrawer._type
 
     def draw(self, map_view: qcp.QCustomPlot) -> None:
         """
@@ -73,7 +73,7 @@ class LineDrawer(ABCDrawer, Line):
         point_style.setShape(qcp.QCPScatterStyle.ScatterShape.ssCircle)
         point_style.setPen(pen)
         point_style.setBrush(QBrush(color))
-        point_style.setSize(self._point_size)
+        point_style.setSize(LineDrawer._point_size)
 
         line.setScatterStyle(point_style)
         line.setPen(QPen(color, 2))
