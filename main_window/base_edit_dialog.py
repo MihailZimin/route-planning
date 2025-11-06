@@ -47,7 +47,6 @@ class EditDialogWindow(QDialog):
         self.buttonBox.accepted.disconnect()
         self.buttonBox.accepted.connect(self.validateAccept)
         self.buttonBox.rejected.connect(self.reject)
-        self.loadParams()
 
     def validateAccept() -> None:
         """
