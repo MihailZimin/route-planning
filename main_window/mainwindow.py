@@ -33,7 +33,7 @@ from draw.circle_drawer import CircleDrawer
 from draw.line_drawer import LineDrawer
 from draw.point_drawer import PointDrawer
 from draw.polygon_drawer import PolygonDrawer
-from main_window.dialogwindow import EditDialogWindow
+from main_window.point_edit_dialog import PointEditDialogWindow
 
 if TYPE_CHECKING:
     from draw.abstract_drawer import ABCDrawer
@@ -426,25 +426,11 @@ class MainWindow(QMainWindow):
         selected_objects = self.objectList.selectedItems()
         index = self.objectList.row(selected_objects[0])
         geo_object = self.geo_objects[index]
-        edit_win = EditDialogWindow(geo_object, self)
-        new_params = edit_win.getChanges()
+        if geo_object.type == "Point":
+            edit_win = PointEditDialogWindow(geo_object, self)
         if edit_win.exec() == QDialog.DialogCode.Accepted:
-            if geo_object.type == "Point":
-                geo_object.name = new_params["name"].text()
-                geo_object.x = float(new_params["x"].text())
-                geo_object.y = float(new_params["y"].text())
-            if geo_object.type == "Circle":
-                geo_object.name = new_params["name"].text()
-                geo_object.center.x = float(new_params["x"].text())
-                geo_object.center.y = float(new_params["y"].text())
-                geo_object.radius = float(new_params["R"].text())
-            if geo_object.type == "Line":
-                geo_object.name = new_params["name"].text()
-                geo_object.start.x = float(new_params["x1"].text())
-                geo_object.start.y = float(new_params["y1"].text())
-                geo_object.end.x = float(new_params["x2"].text())
-                geo_object.end.y = float(new_params["y2"].text())
-
+            edit_win.setChanges()
+            self.showObjectsParams()
             self.redraw()
             QMessageBox.information(self, "Траектория БПЛА",
                     "Объект обновлён")
