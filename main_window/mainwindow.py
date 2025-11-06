@@ -36,6 +36,7 @@ from draw.polygon_drawer import PolygonDrawer
 from main_window.point_edit_dialog import PointEditDialogWindow
 from main_window.circle_edit_dialog import CircleEditDialogWindow
 from main_window.line_edit_dialog import LineEditDialogWindow
+from main_window.polygon_edit_dialog import PolygonEditDialogWindow
 
 if TYPE_CHECKING:
     from draw.abstract_drawer import ABCDrawer
@@ -434,6 +435,8 @@ class MainWindow(QMainWindow):
             edit_win = CircleEditDialogWindow(geo_object, self)
         elif geo_object.type == "Line":
             edit_win = LineEditDialogWindow(geo_object, self)
+        elif geo_object.type == "Polygon":
+            edit_win = PolygonEditDialogWindow(geo_object, self)
 
         if edit_win.exec() == QDialog.DialogCode.Accepted:
             edit_win.setChanges()
