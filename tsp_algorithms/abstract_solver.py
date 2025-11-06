@@ -4,18 +4,25 @@ from abc import ABC, abstractmethod
 import numpy as np
 
 
+class SolutionExceptionError(Exception):
+    """
+    Custom exception for TSP.
+    """
+
+
 class TSPSolver(ABC):
     """
     Abstract TSP solver class.
     """
 
     @abstractmethod
-    def solve(self, data: np.ndarray, start: int) -> list[int]:
+    def solve(self, matrix: np.ndarray, start: int) -> list[int]:
         """
         Solve travel salesman problem.
 
         Args:
-            data: matrix of lengthes, where data[i][j] is length of path from i-th control point to j-th
+            matrix: matrix of distances,
+                where matrix[i][j] is length of path from i-th control point to j-th
             start: index of start control point
 
         Returns:
@@ -27,7 +34,7 @@ class TSPSolver(ABC):
             self,
             v: int,
             visited: list[int],
-            data: np.ndarray,
+            matrix: np.ndarray,
             order: list[int]
     ) -> None:
         """
@@ -39,18 +46,25 @@ class TSPSolver(ABC):
             v: start vertex
             visited: array where visited[i] equal to 1 if vertex with index i is visited
                 and 0 otherwise
-            data: matrix of distances
+            matrix: matrix of distances,
+                where matrix[i][j] is length of path from i-th control point to j-th
             order: array, where this method writes right order of elements
 
         """
         visited[v] = 1
-        for u in range(data.shape[0]):
-            if (visited[u] or data[v][u] == np.inf):
+        for u in range(matrix.shape[0]):
+            if (visited[u] or matrix[v][u] == np.inf):
                 continue
-            self._find_right_order(u, visited, data, order)
+            self._find_right_order(u, visited, matrix, order)
         order.append(v)
 
-    def _get_component(self, v: int, visited: list[int], component: list[int], data: np.ndarray) -> None:
+    def _get_component(
+            self,
+            v: int,
+            visited: list[int],
+            component: list[int],
+            matrix: np.ndarray
+        ) -> None:
         """
         Find strongly connected component.
 
@@ -58,26 +72,28 @@ class TSPSolver(ABC):
             v: start vertex
             visited: array where visited[i] equal to 1 if vertex with index i is visited
                 and 0 otherwise:
-            component: array, where this metthod writes elements of one strong connected component
-            data: matrix of distances
+            component: array, where this method writes elements of one strong connected component
+            matrix: matrix of distances,
+                where matrix[i][j] is length of path from i-th control point to j-th
 
         """
         visited[v] = 1
         component.append(v)
-        for u in range(data.shape[0]):
-            if (visited[u] or data.T[v][u] == np.inf):
+        for u in range(matrix.shape[0]):
+            if (visited[u] or matrix.T[v][u] == np.inf):
                 continue
-            self._get_component(u, visited, component, data)
+            self._get_component(u, visited, component, matrix)
 
-    def _find_strongly_connected_components(self, data: np.ndarray) -> list[list[int]]:
+    def _find_strongly_connected_components(self, matrix: np.ndarray) -> list[list[int]]:
         """
         Find every strongly connected component.
 
         Args:
-            data: matrix of distances
+            matrix: matrix of distances,
+                where matrix[i][j] is length of path from i-th control point to j-th
 
         """
-        size = data.shape[0]
+        size = matrix.shape[0]
         visited = [0] * size
         component = []
         order = []
@@ -85,12 +101,12 @@ class TSPSolver(ABC):
 
         for i in range(size):
             if not visited[i]:
-                self._find_right_order(i, visited, data, order)
+                self._find_right_order(i, visited, matrix, order)
         visited = [0] * size
         while order:
             v = order.pop()
             if not visited[v]:
-                self._get_component(v, visited, component, data)
+                self._get_component(v, visited, component, matrix)
                 components.append(component.copy())
                 component = []
 
