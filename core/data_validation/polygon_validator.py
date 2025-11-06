@@ -77,7 +77,7 @@ class PolygonValidator(GeometryValidator):
             raise PolygonExceptionError(error_msg)
 
     @staticmethod
-    def _check_on_convex(points: list[Point]) -> bool:
+    def check_on_convex(points: list[Point]) -> bool:
         """
         Check if polygon is convex.
 
