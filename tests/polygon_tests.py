@@ -1,6 +1,7 @@
 """Tests for core class Polygon."""
 import pytest
 
+from core.data_validation.polygon_validator import PolygonValidator
 from core.point import Point
 from core.polygon import Polygon
 
@@ -104,8 +105,8 @@ class TestPolygon:
         not_convex_list_of_points = [
             Point(0, 0), Point(1, 0), Point(1, 1), Point(0.5, 0.5), Point(0, 1), Point(0, 0)
         ]
-        assert Polygon.check_on_convex(convex_list_of_points)
-        assert not Polygon.check_on_convex(not_convex_list_of_points)
+        assert PolygonValidator.check_on_convex(convex_list_of_points)
+        assert not PolygonValidator.check_on_convex(not_convex_list_of_points)
 
     def test_getitem_attribute(self, sample_polygon: Polygon, sample_points: list[Point]) -> None:
         """
