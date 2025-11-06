@@ -6,18 +6,18 @@ This module provides:
 
 """
 
+from PyQt6.QtWidgets import QMessageBox, QWidget
+
 from dialog_window.base_edit_dialog import EditDialogWindow
-
-from PyQt6.QtWidgets import QWidget, QMessageBox
-
 from draw.line_drawer import LineDrawer
+
 
 class LineEditDialogWindow(EditDialogWindow):
     """
     Class for edit line window.
     """
 
-    def __init__(self, geo_object: LineDrawer, parent: QWidget = None):
+    def __init__(self, geo_object: LineDrawer, parent: QWidget = None) -> None:
         """
         Create line edit window.
         """

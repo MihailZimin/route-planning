@@ -6,11 +6,10 @@ This module provides:
 
 """
 
+from PyQt6.QtWidgets import QMessageBox, QWidget
+
 from dialog_window.base_edit_dialog import EditDialogWindow
-
 from draw.circle_drawer import CircleDrawer
-
-from PyQt6.QtWidgets import QWidget, QMessageBox
 
 
 class CircleEditDialogWindow(EditDialogWindow):

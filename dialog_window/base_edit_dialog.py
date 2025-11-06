@@ -24,10 +24,10 @@ class EditDialogWindow(QDialog):
         Create edit window object.
 
         Args:
-
             geo_object: geometry object which will be edited.
             path: path to the ui file with dialog window for current object.
             parent: parent window.
+
         """
         super().__init__(parent)
         self._geo_object = geo_object
@@ -39,8 +39,8 @@ class EditDialogWindow(QDialog):
         Initialize edit window.
 
         Args:
-
             path: path to the ui file with dialog window.
+
         """
         uic.loadUi(path, self)
         self.setMinimumSize(QSize(400, 210))

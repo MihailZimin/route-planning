@@ -35,7 +35,7 @@ class CircleDrawer(ABCDrawer, Circle):
         Return circle name.
         """
         return self._name
-    
+
     @name.setter
     def name(self, name : str) -> None:
         """

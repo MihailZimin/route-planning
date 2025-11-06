@@ -29,14 +29,14 @@ from core.circle import Circle
 from core.line import Line
 from core.point import Point
 from core.polygon import Polygon
+from dialog_window.circle_edit_dialog import CircleEditDialogWindow
+from dialog_window.line_edit_dialog import LineEditDialogWindow
+from dialog_window.point_edit_dialog import PointEditDialogWindow
+from dialog_window.polygon_edit_dialog import PolygonEditDialogWindow
 from draw.circle_drawer import CircleDrawer
 from draw.line_drawer import LineDrawer
 from draw.point_drawer import PointDrawer
 from draw.polygon_drawer import PolygonDrawer
-from dialog_window.point_edit_dialog import PointEditDialogWindow
-from dialog_window.circle_edit_dialog import CircleEditDialogWindow
-from dialog_window.line_edit_dialog import LineEditDialogWindow
-from dialog_window.polygon_edit_dialog import PolygonEditDialogWindow
 
 if TYPE_CHECKING:
     from draw.abstract_drawer import ABCDrawer

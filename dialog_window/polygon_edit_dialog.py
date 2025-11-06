@@ -1,20 +1,20 @@
 """
-Polygon edit dialog class
+Polygon edit dialog class.
 
 This module provides:
 - PolygonEditDialogWindow for editing polygon.
 
 """
 
+from PyQt6.QtWidgets import QLineEdit, QMessageBox, QWidget
+
 from dialog_window.base_edit_dialog import EditDialogWindow
-
-from PyQt6.QtWidgets import QWidget, QMessageBox, QLineEdit
-
 from draw.polygon_drawer import PolygonDrawer
+
 
 class PolygonEditDialogWindow(EditDialogWindow):
     """
-    Class for edit polygon window
+    Class for edit polygon window.
     """
 
     def __init__(self, geo_object: PolygonDrawer, parent: QWidget = None) -> None:
@@ -24,13 +24,13 @@ class PolygonEditDialogWindow(EditDialogWindow):
         self._rows: dict = {}
         super().__init__(geo_object, "dialog_window/polygon_edit_dialog.ui", parent)
 
-    def InitializeWin(self, path):
+    def InitializeWin(self, path: str) -> None:
         """
         Initialize polygon edit dialog window.
 
         Args:
             path: path to the ui file.
- 
+
         """
         super().InitializeWin(path)
         self._rows["Название"] = QLineEdit()

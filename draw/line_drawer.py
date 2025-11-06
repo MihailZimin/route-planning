@@ -36,7 +36,7 @@ class LineDrawer(ABCDrawer, Line):
         Return line name.
         """
         return self._name
-    
+
     @name.setter
     def name(self, name: str) -> None:
         """

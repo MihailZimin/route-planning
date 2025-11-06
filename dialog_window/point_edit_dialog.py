@@ -10,7 +10,6 @@ This module provides:
 from PyQt6.QtWidgets import QMessageBox, QWidget
 
 from dialog_window.base_edit_dialog import EditDialogWindow
-
 from draw.point_drawer import PointDrawer
 
 
