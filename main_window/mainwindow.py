@@ -34,6 +34,7 @@ from draw.line_drawer import LineDrawer
 from draw.point_drawer import PointDrawer
 from draw.polygon_drawer import PolygonDrawer
 from main_window.point_edit_dialog import PointEditDialogWindow
+from main_window.circle_edit_dialog import CircleEditDialogWindow
 
 if TYPE_CHECKING:
     from draw.abstract_drawer import ABCDrawer
@@ -428,6 +429,9 @@ class MainWindow(QMainWindow):
         geo_object = self.geo_objects[index]
         if geo_object.type == "Point":
             edit_win = PointEditDialogWindow(geo_object, self)
+        elif geo_object.type == "Circle":
+            edit_win = CircleEditDialogWindow(geo_object, self)
+
         if edit_win.exec() == QDialog.DialogCode.Accepted:
             edit_win.setChanges()
             self.showObjectsParams()
