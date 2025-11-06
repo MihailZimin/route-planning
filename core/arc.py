@@ -87,13 +87,15 @@ class Arc(ABCGeo):
                 radius: radius of Arc
 
         """
-        p_start = Point()
-        p_start.x = center.x + radius * math.sin(angle_start)
-        p_start.y = center.y + radius * math.cos(angle_start)
+        p_start = Point(
+            center.x + radius * math.sin(angle_start),
+            center.y + radius * math.cos(angle_start),
+        )
 
-        p_end = Point()
-        p_end.x = center.x + radius * math.sin(angle_end)
-        p_end.y = center.y + radius * math.cos(angle_end)
+        p_end = Point(
+            center.x + radius * math.sin(angle_end),
+            center.y + radius * math.cos(angle_end),
+        )
 
         return cls(center, p_start, p_end, precision)
 
