@@ -80,7 +80,10 @@ class PointDrawer(ABCDrawer, Point):
 
         if self.name:
             text_item = qcp.QCPItemText(map_view)
-            text_item.position.setCoords(self.x + 2*PointDrawer._point_size, self.y + 2*PointDrawer._point_size)
+            text_item.position.setCoords(
+                self.x + 2*PointDrawer._point_size,
+                self.y + 2*PointDrawer._point_size
+            )
             text_item.setText(self.name)
             text_item.setFont(QFont("Arial", 8))
 

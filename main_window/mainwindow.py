@@ -247,12 +247,19 @@ class MainWindow(QMainWindow):
 
         self.infoLabel.setText(info)
 
-    def validateParamets(self, params: list[str]) -> bool:
+    def validateParamets(
+            self,
+            params: list[str],
+            min_coord: float = 0,
+            max_coord: float = 1000
+        ) -> bool:
         """
         Validate given paramets of object.
 
         Args:
             params: list of object paramets in string representation
+            min_coord: minimum value of coordinate on the map.
+            max_coord: maximum value of coordinate on the map.
 
         """
         for param in params:
@@ -266,7 +273,7 @@ class MainWindow(QMainWindow):
                 QMessageBox.information(self, "Траектория БПЛА",
                     "Введите корректные данные")
                 return False
-            if float_param < 0 or float_param > 1000:
+            if float_param < min_coord or float_param > max_coord:
                 QMessageBox.information(self, "Траектория БПЛА",
                     "Введите корректные данные")
                 return False

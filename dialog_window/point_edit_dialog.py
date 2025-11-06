@@ -24,9 +24,22 @@ class PointEditDialogWindow(EditDialogWindow):
         """
         super().__init__(point, "dialog_window/point_edit_dialog.ui", parent)
 
-    def validateAccept(self) -> None:
+    def validateAccept(
+            self,
+            min_x_coord: float = 0,
+            max_x_coord: float = 1000,
+            min_y_coord: float = 0,
+            max_y_coord: float = 1000
+        ) -> None:
         """
         Slot for accept button with validation of parameters.
+
+        Args:
+            min_x_coord: minimum value of x coordinate on the map.
+            max_x_coord: maximum value of x coordinate on the map.
+            min_y_coord: minimum value of y coordinate on the map.
+            max_y_coord: maximum value of y coordinate on the map.
+
         """
         x_coord = self.xLineEdit.text()
         y_coord = self.yLineEdit.text()
@@ -39,10 +52,10 @@ class PointEditDialogWindow(EditDialogWindow):
         except ValueError:
             QMessageBox.information(self, "Траектория БПЛА", "Введите корректные координаты")
             return
-        if x_coord < 0 or x_coord > 1000:
+        if x_coord < min_x_coord or x_coord > max_x_coord:
             QMessageBox.information(self, "Траектория БПЛА", "Введите корректные координаты")
             return
-        if y_coord < 0 or y_coord > 1000:
+        if y_coord < min_y_coord or y_coord > max_y_coord:
             QMessageBox.information(self, "Траектория БПЛА", "Введите корректные координаты")
             return
         self.accept()

@@ -23,9 +23,22 @@ class LineEditDialogWindow(EditDialogWindow):
         """
         super().__init__(geo_object, "dialog_window/line_edit_dialog.ui", parent)
 
-    def validateAccept(self) -> None:
+    def validateAccept(
+            self,
+            min_x_coord: float = 0,
+            max_x_coord: float = 1000,
+            min_y_coord: float = 0,
+            max_y_coord: float = 1000
+        ) -> None:
         """
         Slot for accept button with validation of parameters.
+
+        Args:
+            min_x_coord: minimum value of x coordinate on the map.
+            max_x_coord: maximum value of x coordinate on the map.
+            min_y_coord: minimum value of y coordinate on the map.
+            max_y_coord: maximum value of y coordinate on the map.
+
         """
         x1_coord = self.x1LineEdit.text()
         y1_coord = self.y1LineEdit.text()
@@ -42,16 +55,16 @@ class LineEditDialogWindow(EditDialogWindow):
         except ValueError:
             QMessageBox.information(self, "Траектория БПЛА", "Введите корректные координаты")
             return
-        if x1_coord < 0 or x1_coord > 1000:
+        if x1_coord < min_x_coord or x1_coord > max_x_coord:
             QMessageBox.information(self, "Траектория БПЛА", "Введите корректные координаты")
             return
-        if y1_coord < 0 or y1_coord > 1000:
+        if y1_coord < min_y_coord or y1_coord > max_y_coord:
             QMessageBox.information(self, "Траектория БПЛА", "Введите корректные координаты")
             return
-        if x2_coord < 0 or x2_coord > 1000:
+        if x2_coord < min_x_coord or x2_coord > max_x_coord:
             QMessageBox.information(self, "Траектория БПЛА", "Введите корректные координаты")
             return
-        if y2_coord < 0 or y2_coord > 1000:
+        if y2_coord < min_y_coord or y2_coord > max_y_coord:
             QMessageBox.information(self, "Траектория БПЛА", "Введите корректные координаты")
             return
         self.accept()
