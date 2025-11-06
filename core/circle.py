@@ -1,6 +1,7 @@
 """Circle class for core."""
 
 from .abstract_geometry import ABCGeo
+from .data_validation.circle_validator import CircleValidator
 from .point import Point
 
 
@@ -9,6 +10,7 @@ class Circle(ABCGeo):
     Circle core class.
     """
 
+    @CircleValidator.validate("Circle_init")
     def __init__(self, center: Point, radius: float) -> None:
         """
         Initialize 2D circle.
@@ -51,6 +53,7 @@ class Circle(ABCGeo):
         return self._radius
 
     @radius.setter
+    @CircleValidator.validate("Circle_radius_setter")
     def radius(self, new_radius: float) -> None:
         """
         Set radius of circle.
@@ -69,6 +72,7 @@ class Circle(ABCGeo):
         return self._center
 
     @center.setter
+    @CircleValidator.validate("Circle_center_setter")
     def center(self, new_center: Point) -> None:
         """
         Set center of circle.
