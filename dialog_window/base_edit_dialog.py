@@ -11,8 +11,8 @@ from PyQt6 import uic
 from PyQt6.QtCore import QSize
 from PyQt6.QtWidgets import QDialog, QWidget
 
-from draw.abstract_drawer import ABCDrawer
 from core.abstract_geometry import ABCGeo
+from draw.abstract_drawer import ABCDrawer
 
 
 class EditDialogWindow(QDialog):
