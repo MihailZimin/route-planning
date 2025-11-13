@@ -7,9 +7,9 @@ class BasicValidationFunctions:
     """
 
     X_MAX_COORDS: float =  1000.0
-    X_MIN_COORDS: float = -1000.0
+    X_MIN_COORDS: float =     0.0
     Y_MAX_COORDS: float =  1000.0
-    Y_MIN_COORDS: float = -1000.0
+    Y_MIN_COORDS: float =     0.0
     MIN_RADIUS:   float =     0.0
     MAX_RADIUS:   float =  1000.0
 
