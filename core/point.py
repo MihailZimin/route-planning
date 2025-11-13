@@ -10,11 +10,6 @@ class Point(ABCGeo):
     Point core class.
     """
 
-    X_MAX_COORDS: float =  1000.0
-    X_MIN_COORDS: float = -1000.0
-    Y_MAX_COORDS: float =  1000.0
-    Y_MIN_COORDS: float = -1000.0
-
     def __init__(self, x: float = 0, y: float = 0) -> None:
         """
         Initialize 2D point.
