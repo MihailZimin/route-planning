@@ -41,7 +41,7 @@ class PolygonEditDialogWindow(EditDialogWindow):
             point_layout = QHBoxLayout(point_widget)
             point_layout.setContentsMargins(0, 0, 0, 0)
 
-            point_label = QLabel("Точка " + str(i + 1) + "")
+            point_label = QLabel("Точка " + str(i + 1) + ":")
             point_layout.addWidget(point_label)
 
             x_coord_label = QLabel("X: ")
