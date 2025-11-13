@@ -23,25 +23,17 @@ class CircleEditDialogWindow(EditDialogWindow):
         """
         super().__init__(point, "dialog_window/circle_edit_dialog.ui", parent)
 
-    def validateAccept(
-            self,
-            min_x_coord: float = 0,
-            max_x_coord: float = 1000,
-            min_y_coord: float = 0,
-            max_y_coord: float = 1000,
-            max_rad: float = 500
-        ) -> None:
+    def validateAccept(self) -> None:
         """
         Slot for accept button with validation of parameters.
-
-        Args:
-            min_x_coord: minimum value of x coordinate on the map.
-            max_x_coord: maximum value of x coordinate on the map.
-            min_y_coord: minimum value of y coordinate on the map.
-            max_y_coord: maximum value of y coordinate on the map.
-            max_rad: maximum value of radius.
-
         """
+        min_x_coord = 0
+        max_x_coord = 1000
+        min_y_coord = 0
+        max_y_coord = 1000
+        max_rad = 500
+        min_rad = 0
+
         x_coord = self.xLineEdit.text()
         y_coord = self.yLineEdit.text()
         radius = self.radiusLineEdit.text()
@@ -61,7 +53,7 @@ class CircleEditDialogWindow(EditDialogWindow):
         if y_coord < min_y_coord or y_coord > max_y_coord:
             QMessageBox.information(self, "Траектория БПЛА", "Введите корректные координаты")
             return
-        if rad < 0 or rad > max_rad:
+        if rad < min_rad or rad > max_rad:
             QMessageBox.information(self, "Траектория БПЛА", "Введите корректный радиус")
             return
         self.accept()

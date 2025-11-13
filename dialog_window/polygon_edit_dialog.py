@@ -41,23 +41,15 @@ class PolygonEditDialogWindow(EditDialogWindow):
             self.formLayout.addRow("X" + str(i + 1), self._rows["X" + str(i + 1)])
             self.formLayout.addRow("Y" + str(i + 1), self._rows["Y" + str(i + 1)])
 
-    def validateAccept(
-            self,
-            min_x_coord: float = 0,
-            max_x_coord: float = 1000,
-            min_y_coord: float = 0,
-            max_y_coord: float = 1000
-        ) -> None:
+    def validateAccept(self) -> None:
         """
         Slot for accept button with validation of parameters.
-
-        Args:
-            min_x_coord: minimum value of x coordinate on the map.
-            max_x_coord: maximum value of x coordinate on the map.
-            min_y_coord: minimum value of y coordinate on the map.
-            max_y_coord: maximum value of y coordinate on the map.
-
         """
+        min_x_coord = 0
+        max_x_coord = 1000
+        min_y_coord = 0
+        max_y_coord = 1000
+ 
         for i in range(len(self._geo_object.points)):
             x_coord = self._rows["X" + str(i + 1)].text()
             y_coord = self._rows["Y" + str(i + 1)].text()
