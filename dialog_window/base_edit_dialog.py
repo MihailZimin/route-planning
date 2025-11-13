@@ -12,6 +12,7 @@ from PyQt6.QtCore import QSize
 from PyQt6.QtWidgets import QDialog, QWidget
 
 from draw.abstract_drawer import ABCDrawer
+from core.abstract_geometry import ABCGeo
 
 
 class EditDialogWindow(QDialog):
@@ -19,7 +20,7 @@ class EditDialogWindow(QDialog):
     Edit window class for editing geo objects.
     """
 
-    def __init__(self, geo_object : ABCDrawer, path: str, parent: QWidget = None) -> None:
+    def __init__(self, geo_object : ABCDrawer | ABCGeo, path: str, parent: QWidget = None) -> None:
         """
         Create edit window object.
 
@@ -48,7 +49,7 @@ class EditDialogWindow(QDialog):
         self.buttonBox.accepted.connect(self.validateAccept)
         self.buttonBox.rejected.connect(self.reject)
 
-    def validateAccept() -> None:
+    def validateAccept(self) -> None:
         """
         Slot for accept button with validation of object parameters.
         """
