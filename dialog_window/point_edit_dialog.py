@@ -56,9 +56,9 @@ class PointEditDialogWindow(EditDialogWindow):
         """
         Load point parameters.
         """
-        self.nameLineEdit.setText(self._geo_object.parameters["Название"])
-        self.xLineEdit.setText(str(self._geo_object.parameters["X"]))
-        self.yLineEdit.setText(str(self._geo_object.parameters["Y"]))
+        self.nameLineEdit.setText(self._geo_object.name)
+        self.xLineEdit.setText(str(self._geo_object.x))
+        self.yLineEdit.setText(str(self._geo_object.y))
 
     def setChanges(self) -> None:
         """

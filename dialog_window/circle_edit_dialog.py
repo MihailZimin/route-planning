@@ -62,10 +62,10 @@ class CircleEditDialogWindow(EditDialogWindow):
         """
         Load circle parameters.
         """
-        self.nameLineEdit.setText(self._geo_object.parameters["Название"])
-        self.xLineEdit.setText(str(self._geo_object.parameters["X"]))
-        self.yLineEdit.setText(str(self._geo_object.parameters["Y"]))
-        self.radiusLineEdit.setText(str(self._geo_object.parameters["Радиус"]))
+        self.nameLineEdit.setText(self._geo_object.name)
+        self.xLineEdit.setText(str(self._geo_object.center.x))
+        self.yLineEdit.setText(str(self._geo_object.center.y))
+        self.radiusLineEdit.setText(str(self._geo_object.radius))
 
     def setChanges(self) -> None:
         """
