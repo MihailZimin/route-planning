@@ -6,15 +6,17 @@ This module provides:
 
 """
 
+from math import cos, pi, sin
+
 import QCustomPlot_PyQt6 as qcp
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QPen
 
 from core.arc import Arc
 from core.point import Point
 
-from .abstract_drawer import ABCDrawer
 
-
-class ArcDrawer(Arc, ABCDrawer):
+class ArcDrawer(Arc):
     """
     Class for drawing arc.
     """
@@ -25,7 +27,40 @@ class ArcDrawer(Arc, ABCDrawer):
         """
         super().__init__(center, p_start, p_end)
 
+    def convert_angle_to_horizontal(self, angle: float) -> float:
+        """
+        Convert angle to count it from the horizontal.
+
+        Args:
+            angle: angle which needs to be converted.
+
+        """
+        return pi / 2 - angle if angle >= 0 and angle <= pi / 2 else 2 * pi - (angle - pi / 2)
+
     def draw(self, map_view: qcp.QCustomPlot) -> None:
         """
         Draw arc.
         """
+        arc = qcp.QCPCurve(map_view.xAxis, map_view.yAxis)
+        point_count = 500
+
+        start_angle = self.convert_angle_to_horizontal(self.a_start)
+        end_angle = self.convert_angle_to_horizontal(self.a_end)
+        x0 = self.center.x
+        y0 = self.center.y
+        rad = self.radius
+        x_coord = []
+        y_coord = []
+        for i in range(point_count):
+            delta_t = (end_angle - start_angle) / (point_count - 1)
+            t = start_angle + i * delta_t
+            x = x0 + rad * cos(t)
+            y = y0 + rad * sin(t)
+            x_coord.append(x)
+            y_coord.append(y)
+
+        arc.setData(x_coord, y_coord)
+
+        arc.setPen(QPen(Qt.GlobalColor.red, 2))
+
+        map_view.replot()
