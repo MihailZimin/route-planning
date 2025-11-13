@@ -6,7 +6,7 @@ This module provides:
 
 """
 
-from PyQt6.QtWidgets import QLineEdit, QMessageBox, QWidget
+from PyQt6.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QMessageBox, QWidget
 
 from dialog_window.base_edit_dialog import EditDialogWindow
 from draw.polygon_drawer import PolygonDrawer
@@ -35,11 +35,28 @@ class PolygonEditDialogWindow(EditDialogWindow):
         super().initializeWin(path)
         self._rows["Название"] = QLineEdit()
         self.formLayout.addRow("Название", self._rows["Название"])
+
         for i in range(len(self._geo_object.points)):
+            point_widget = QWidget()
+            point_layout = QHBoxLayout(point_widget)
+            point_layout.setContentsMargins(0, 0, 0, 0)
+
+            point_label = QLabel("Точка " + str(i + 1) + "")
+            point_layout.addWidget(point_label)
+
+            x_coord_label = QLabel("X: ")
+            point_layout.addWidget(x_coord_label)
             self._rows["X" + str(i + 1)] = QLineEdit()
+            point_layout.addWidget(self._rows["X" + str(i + 1)])
+
+            y_coord_label = QLabel("Y: ")
+            point_layout.addWidget(y_coord_label)
             self._rows["Y" + str(i + 1)] = QLineEdit()
-            self.formLayout.addRow("X" + str(i + 1), self._rows["X" + str(i + 1)])
-            self.formLayout.addRow("Y" + str(i + 1), self._rows["Y" + str(i + 1)])
+            point_layout.addWidget(self._rows["Y" + str(i + 1)])
+
+            point_layout.addStretch()
+
+            self.formLayout.addRow(point_widget)
 
     def validateAccept(self) -> None:
         """
@@ -49,7 +66,7 @@ class PolygonEditDialogWindow(EditDialogWindow):
         max_x_coord = 1000
         min_y_coord = 0
         max_y_coord = 1000
- 
+
         for i in range(len(self._geo_object.points)):
             x_coord = self._rows["X" + str(i + 1)].text()
             y_coord = self._rows["Y" + str(i + 1)].text()
