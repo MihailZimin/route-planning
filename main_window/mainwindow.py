@@ -47,6 +47,13 @@ class MainWindow(QMainWindow):
     Main window class.
     """
 
+    dialogs = {
+        "Point": PointEditDialogWindow,
+        "Circle": CircleEditDialogWindow,
+        "Line": LineEditDialogWindow,
+        "Polygon": PolygonEditDialogWindow
+    }
+
     def __init__(self) -> None:
         """
         Initialize MainWindow object.
@@ -436,14 +443,7 @@ class MainWindow(QMainWindow):
         selected_objects = self.objectList.selectedItems()
         index = self.objectList.row(selected_objects[0])
         geo_object = self.geo_objects[index]
-        if geo_object.type == "Point":
-            edit_win = PointEditDialogWindow(geo_object, self)
-        elif geo_object.type == "Circle":
-            edit_win = CircleEditDialogWindow(geo_object, self)
-        elif geo_object.type == "Line":
-            edit_win = LineEditDialogWindow(geo_object, self)
-        elif geo_object.type == "Polygon":
-            edit_win = PolygonEditDialogWindow(geo_object, self)
+        edit_win = MainWindow.dialogs[geo_object.type](geo_object, self)
 
         if edit_win.exec() == QDialog.DialogCode.Accepted:
             edit_win.setChanges()
