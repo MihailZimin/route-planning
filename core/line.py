@@ -17,7 +17,11 @@ class Line(ABCGeo):
             start: start point of line
             end: end point of line
 
+        Raises:
+            TypeError if start or end parameters are not Point type
+
         """
+        Point.check_point_instance(start, end)
         self._start = start
         self._end = end
 
@@ -58,7 +62,11 @@ class Line(ABCGeo):
         Args:
             new_start: new start of line
 
+        Raises:
+            TypeError if new_start parameter is not Point type
+
         """
+        Point.check_point_instance(new_start)
         self._start = new_start
 
     @property
@@ -76,7 +84,11 @@ class Line(ABCGeo):
         Args:
             new_end: new end of line
 
+        Raises:
+            TypeError if new_end parameter is not Point type
+
         """
+        Point.check_point_instance(new_end)
         self._end = new_end
 
     def __str__(self) -> str:
