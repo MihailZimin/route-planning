@@ -32,10 +32,10 @@ class LineEditDialogWindow(EditDialogWindow):
         min_y_coord = 0
         max_y_coord = 1000
 
-        x1_coord = self.x1LineEdit.text()
-        y1_coord = self.y1LineEdit.text()
-        x2_coord = self.x2LineEdit.text()
-        y2_coord = self.y2LineEdit.text()
+        x1_coord = self.xBegCoordLineEdit.text()
+        y1_coord = self.yBegCoordLineEdit.text()
+        x2_coord = self.xEndCoordLineEdit.text()
+        y2_coord = self.yEndCoordLineEdit.text()
         if not x1_coord or not y1_coord or not x2_coord or not y2_coord:
             QMessageBox.information(self, "Траектория БПЛА", "Заполните все поля")
             return
@@ -65,21 +65,21 @@ class LineEditDialogWindow(EditDialogWindow):
         """
         Load line parameters.
         """
-        self.nameLineEdit.setText(self._geo_object.parameters["Название"])
-        self.x1LineEdit.setText(str(self._geo_object.parameters["X1"]))
-        self.y1LineEdit.setText(str(self._geo_object.parameters["Y1"]))
-        self.x2LineEdit.setText(str(self._geo_object.parameters["X2"]))
-        self.y2LineEdit.setText(str(self._geo_object.parameters["Y2"]))
+        self.nameLineEdit.setText(self._geo_object.name)
+        self.xBegCoordLineEdit.setText(str(self._geo_object.start.x))
+        self.yBegCoordLineEdit.setText(str(self._geo_object.start.y))
+        self.xEndCoordLineEdit.setText(str(self._geo_object.end.x))
+        self.yEndCoordLineEdit.setText(str(self._geo_object.end.y))
 
     def setChanges(self) -> None:
         """
         Change line parameters.
         """
         name = self.nameLineEdit.text()
-        x1 = float(self.x1LineEdit.text())
-        y1 = float(self.y1LineEdit.text())
-        x2 = float(self.x2LineEdit.text())
-        y2 = float(self.y2LineEdit.text())
+        x1 = float(self.xBegCoordLineEdit.text())
+        y1 = float(self.yBegCoordLineEdit.text())
+        x2 = float(self.xEndCoordLineEdit.text())
+        y2 = float(self.yEndCoordLineEdit.text())
         self._geo_object.name = name
         self._geo_object.start.x = x1
         self._geo_object.start.y = y1
