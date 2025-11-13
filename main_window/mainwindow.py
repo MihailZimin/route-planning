@@ -23,6 +23,7 @@ from PyQt6.QtWidgets import (
     QMessageBox,
     QTreeWidgetItem,
     QVBoxLayout,
+    QLineEdit
 )
 
 from core.circle import Circle
@@ -244,18 +245,28 @@ class MainWindow(QMainWindow):
 
         self.infoLabel.setText(info)
 
+    @staticmethod
+    def clearLineEdit(line_edits: list[QLineEdit]) -> None:
+        """
+        Clear current lineEdits after adding geo object.
+
+        Args:
+            line_edits: lineEdits which will be cleared.
+
+        """
+        for line_edit in line_edits:
+            line_edit.clear()
+
     def validateParamets(self, params: list[str]) -> bool:
         """
         Validate given paramets of object.
 
         Args:
-            params: list of object paramets in string representation
-            min_coord: minimum value of coordinate on the map.
-            max_coord: maximum value of coordinate on the map.
+            params: list of object paramets in string representation.
 
         """
-        min_coord: float = 0,
-        max_coord: float = 1000
+        min_coord = 0
+        max_coord = 1000
         for param in params:
             if not param:
                 QMessageBox.information(self, "Траектория БПЛА",
@@ -293,6 +304,10 @@ class MainWindow(QMainWindow):
         point.draw(self.custom_plot)
         self.updateObjectList()
 
+        MainWindow.clearLineEdit(
+            [self.pointNameLineEdit, self.XCoordLineEditPoint, self.YCoordLineEditPoint]
+        )
+
         self.objectList.setCurrentRow(len(self.geo_objects) - 1)
 
         QMessageBox.information(self, "Траектория БПЛА",
@@ -320,6 +335,15 @@ class MainWindow(QMainWindow):
         self.geo_objects.append(circle)
         circle.draw(self.custom_plot)
         self.updateObjectList()
+
+        MainWindow.clearLineEdit(
+            [
+                self.circleNameLineEdit,
+                self.XCoordLineEditCircle,
+                self.YCoordLineEditCircle,
+                self.radiusLineEditCircle
+            ]
+        )
 
         self.objectList.setCurrentRow(len(self.geo_objects) - 1)
 
@@ -351,6 +375,16 @@ class MainWindow(QMainWindow):
         line.draw(self.custom_plot)
         self.updateObjectList()
 
+        MainWindow.clearLineEdit(
+            [
+                self.lineNameLineEdit,
+                self.XCoordLineEditBegin,
+                self.YCoordLineEditBegin,
+                self.XCoordLineEditEnd,
+                self.YCoordLineEditEnd
+            ]
+        )
+
         self.objectList.setCurrentRow(len(self.geo_objects) - 1)
 
         QMessageBox.information(self, "Траектория БПЛА",
@@ -372,6 +406,13 @@ class MainWindow(QMainWindow):
         QTreeWidgetItem(point, ["X:", x_coord])
         QTreeWidgetItem(point, ["Y:", y_coord])
         self.pointsPolygon.addTopLevelItem(point)
+        MainWindow.clearLineEdit(
+            [
+                self.XCoordLineEditPolygon,
+                self.YCoordLineEditPolygon
+            ]
+        )
+
         QMessageBox.information(self, "Траектория БПЛА",
                 "Точка многоугольника добавлена")
 
@@ -411,6 +452,7 @@ class MainWindow(QMainWindow):
         QMessageBox.information(self, "Траектория БПЛА",
                 "Многоугольник добавлен")
         self.pointsPolygon.clear()
+        MainWindow.clearLineEdit([self.polygonNameLineEdit])
 
     def redraw(self) -> None:
         """
