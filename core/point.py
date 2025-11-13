@@ -2,12 +2,18 @@
 import json
 
 from .abstract_geometry import ABCGeo
+from .basic_validation_functions import BasicValidationFunctions
 
 
 class Point(ABCGeo):
     """
     Point core class.
     """
+
+    X_MAX_COORDS: float =  1000.0
+    X_MIN_COORDS: float = -1000.0
+    Y_MAX_COORDS: float =  1000.0
+    Y_MIN_COORDS: float = -1000.0
 
     def __init__(self, x: float = 0, y: float = 0) -> None:
         """
@@ -17,7 +23,12 @@ class Point(ABCGeo):
             x: X-coordinate of the point
             y: Y-coordinate of the point
 
+        Raises:
+            ValueError if coordinates do not fit in certain range
+
         """
+        BasicValidationFunctions.check_coord(x, "x")
+        BasicValidationFunctions.check_coord(y, "y")
         self._x = x
         self._y = y
 
@@ -54,9 +65,13 @@ class Point(ABCGeo):
         Set x coordinate of point.
 
         Args:
-            x_coord: new X-coordinate of the point
+            x_coord: new x-coordinate of the point
+
+        Raises:
+            ValueError if x coordinate does not fit in certain range
 
         """
+        BasicValidationFunctions.check_coord(x_coord, "x")
         self._x = x_coord
 
     @property
@@ -72,9 +87,13 @@ class Point(ABCGeo):
         Set y coordinate of point.
 
         Args:
-            y_coord: new Y-coordinate of the point
+            y_coord: new y-coordinate of the point
+
+        Raises:
+            ValueError if y coordinate does not fit in certain range
 
         """
+        BasicValidationFunctions.check_coord(y_coord, "y")
         self._y = y_coord
 
     def __str__(self) -> str:
@@ -87,8 +106,6 @@ class Point(ABCGeo):
         """
         Compare two points.
         """
-        if not isinstance(other, Point):
-            return False
         return self.x == other.x and self.y == other.y
 
     def __hash__(self) -> int:
@@ -102,3 +119,22 @@ class Point(ABCGeo):
         Calculate distance between two points.
         """
         return ((self.x - point.x) ** 2 + (self.y - point.y) ** 2) ** 0.5
+
+    @staticmethod
+    def check_point_instance(*args: object) -> None:
+        """
+        Compare object type to Point type.
+
+        Args:
+            args: set of objects which type want to be checked
+
+        Raises:
+            TypeError if type of any object is not Point.
+
+        """
+        error_msg = ""
+        for arg in args:
+            if not isinstance(arg, Point):
+                error_msg += f"object type: {type(arg)} is not Point type\n"
+        if error_msg:
+            raise TypeError(error_msg)
