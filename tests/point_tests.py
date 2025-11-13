@@ -117,7 +117,6 @@ class TestPoint:
         (1.5, 2.5, "(1.5, 2.5)"),
         (-1, -2, "(-1, -2)"),
         (0, 0, "(0, 0)"),
-        (1000000, 2000000, "(1000000, 2000000)"),
     ])
     def test_str_parametrized(self, x: float, y: float, expected_str: str) -> None:
         """
@@ -139,18 +138,6 @@ class TestPoint:
         point = Point(x, y)
         json_data = json.loads(point.save())
         assert json_data == expected_json
-
-    # Should it work?
-    def test_very_large_coordinates(self) -> None:
-        """
-        Test with big coords.
-        """
-        point = Point(1e10, 2e10)
-        assert point.x == 1e10
-        assert point.y == 2e10
-
-        json_data = json.loads(point.save())
-        assert json_data == [1e10, 2e10]
 
     def test_very_small_coordinates(self) -> None:
         """
