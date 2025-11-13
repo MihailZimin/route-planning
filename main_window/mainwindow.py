@@ -9,7 +9,7 @@ This module provides:
 
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import ClassVar
 
 import QCustomPlot_PyQt6 as qcp
 from PyQt6 import uic
@@ -33,13 +33,11 @@ from dialog_window.circle_edit_dialog import CircleEditDialogWindow
 from dialog_window.line_edit_dialog import LineEditDialogWindow
 from dialog_window.point_edit_dialog import PointEditDialogWindow
 from dialog_window.polygon_edit_dialog import PolygonEditDialogWindow
+from draw.abstract_drawer import ABCDrawer
 from draw.circle_drawer import CircleDrawer
 from draw.line_drawer import LineDrawer
 from draw.point_drawer import PointDrawer
 from draw.polygon_drawer import PolygonDrawer
-
-if TYPE_CHECKING:
-    from draw.abstract_drawer import ABCDrawer
 
 
 class MainWindow(QMainWindow):
@@ -47,7 +45,7 @@ class MainWindow(QMainWindow):
     Main window class.
     """
 
-    dialogs = {
+    dialogs: ClassVar[dict[str, ABCDrawer]] = {
         "Point": PointEditDialogWindow,
         "Circle": CircleEditDialogWindow,
         "Line": LineEditDialogWindow,
@@ -181,15 +179,7 @@ class MainWindow(QMainWindow):
                 with Path(file_name).open("w", encoding="utf-8") as file:
                     for obj in self.geo_objects:
                         obj_params = obj.save()
-                        obj_type = ""
-                        if isinstance(obj, PointDrawer):
-                            obj_type = "Point"
-                        elif isinstance(obj, CircleDrawer):
-                            obj_type = "Circle"
-                        elif isinstance(obj, LineDrawer):
-                            obj_type = "Line"
-                        elif isinstance(obj, PolygonDrawer):
-                            obj_type = "Polygon"
+                        obj_type = obj.type
                         obj_string = obj_type + "|" + obj_params + "|" + obj.name
                         file.write(obj_string + "\n")
                 self.statusBar.showMessage("Карта сохранена")
