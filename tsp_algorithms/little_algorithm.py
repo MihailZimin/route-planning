@@ -325,9 +325,7 @@ class LittleAlgorithm(TSPSolver):
         sz = matrix.shape[0]
         nodes = []
 
-        components = self._find_strongly_connected_components(matrix)
-        if len(components) > 1:
-            return self._get_elements_not_in_main_component(components, start), -1
+        self._check_input_data(matrix, start)
 
         root_matrix = matrix.copy()
         lower_bound = (self.__reduce_matrix_by_rows(root_matrix) +
