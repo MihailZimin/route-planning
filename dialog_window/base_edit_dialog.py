@@ -31,10 +31,10 @@ class EditDialogWindow(QDialog):
         """
         super().__init__(parent)
         self._geo_object = geo_object
-        self.InitializeWin(path)
+        self.initializeWin(path)
         self.loadParams()
 
-    def InitializeWin(self, path: str) -> None:
+    def initializeWin(self, path: str) -> None:
         """
         Initialize edit window.
 

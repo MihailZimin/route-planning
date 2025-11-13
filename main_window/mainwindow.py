@@ -68,7 +68,7 @@ class MainWindow(QMainWindow):
         self.chooseMapAction.triggered.connect(self.chooseMap)
         self.changeMapAction.triggered.connect(self.changeMap)
         self.startAction.triggered.connect(self.startTrajectory)
-        self.saveMapAction.triggered.connect(self.SaveMap)
+        self.saveMapAction.triggered.connect(self.saveMap)
 
         self.addPointButton.clicked.connect(self.addPoint)
         self.addCircleButton.clicked.connect(self.addCircle)
@@ -159,7 +159,7 @@ class MainWindow(QMainWindow):
             self.redraw()
             self.statusBar.showMessage(f"Выбран файл: {file_path}")
 
-    def SaveMap(self) -> None:
+    def saveMap(self) -> None:
         """
         Slot for saving map.
         """

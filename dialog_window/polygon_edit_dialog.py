@@ -24,7 +24,7 @@ class PolygonEditDialogWindow(EditDialogWindow):
         self._rows: dict = {}
         super().__init__(geo_object, "dialog_window/polygon_edit_dialog.ui", parent)
 
-    def InitializeWin(self, path: str) -> None:
+    def initializeWin(self, path: str) -> None:
         """
         Initialize polygon edit dialog window.
 
@@ -32,7 +32,7 @@ class PolygonEditDialogWindow(EditDialogWindow):
             path: path to the ui file.
 
         """
-        super().InitializeWin(path)
+        super().initializeWin(path)
         self._rows["Название"] = QLineEdit()
         self.formLayout.addRow("Название", self._rows["Название"])
         for i in range(len(self._geo_object.points)):
