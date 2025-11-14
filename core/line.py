@@ -96,3 +96,7 @@ class Line(ABCGeo):
         Return string representation of line.
         """
         return f"{self._start!s}, {self._end!s}"
+
+    def length(self) -> float:
+        """TODO: Implement."""
+        raise NotImplementedError
