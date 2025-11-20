@@ -5,7 +5,10 @@ import pytest
 
 from core.arc import Arc
 from core.point import Point
+from core.basic_validation_functions import BasicValidationFunctions
 
+BasicValidationFunctions.X_MIN_COORDS = -100
+BasicValidationFunctions.Y_MIN_COORDS = -100
 
 @pytest.fixture
 def sample_arc() -> Arc:
@@ -47,19 +50,19 @@ class TestArc:
         assert arc.p_end == p_end
         assert math.isclose(arc.radius, 1.0, abs_tol=arc.precision)
 
-    def test_a_start_property(self, sample_arc: Arc) -> None:
+    def test_angle_start_property(self, sample_arc: Arc) -> None:
         """
-        Test a_start getter.
+        Test angle_start getter.
         """
-        assert math.isclose(sample_arc.a_start, math.pi / 2, abs_tol=1e-5)
+        assert math.isclose(sample_arc.angle_start, 0, abs_tol=1e-5)
 
     @pytest.mark.parametrize(("new_start", "expected_angle"), [
-        (Point(-1.0, 0), 1.5 * math.pi),
-        (Point(math.cos(math.pi / 3), math.sin(math.pi / 3)), math.pi / 6),
-        (Point(math.cos(-math.pi / 3), math.sin(-math.pi / 3)), 5 * math.pi / 6),
-        (Point(math.cos(-2 * math.pi / 3), math.sin(-2 * math.pi / 3)), math.pi / 2 + 2 * math.pi / 3),
-        (Point(math.cos(-math.pi), math.sin(-math.pi)), 1.5 * math.pi),
-        (Point(math.cos(-4 * math.pi / 3), math.sin(-4 * math.pi / 3)), 4 * math.pi / 3 + math.pi / 2),
+        (Point(-1.0, 0), math.pi),
+        (Point(math.cos(math.pi / 3), math.sin(math.pi / 3)), math.pi / 3),
+        (Point(math.cos(-math.pi / 3), math.sin(-math.pi / 3)), -math.pi / 3),
+        (Point(math.cos(-2 * math.pi / 3), math.sin(-2 * math.pi / 3)), -2 * math.pi / 3),
+        (Point(math.cos(-math.pi), math.sin(-math.pi)), -math.pi),
+        (Point(math.cos(-4 * math.pi / 3), math.sin(-4 * math.pi / 3)), 2 * math.pi / 3),
     ])
     def test_p_start_property(self, sample_arc: Arc, new_start: Point, expected_angle: float) -> None:
         """
@@ -69,21 +72,21 @@ class TestArc:
         """
         sample_arc.p_start = new_start
         assert sample_arc.p_start == new_start
-        assert math.isclose(sample_arc.a_start, expected_angle, abs_tol=1e-5)
+        assert math.isclose(sample_arc.angle_start, expected_angle, abs_tol=1e-5)
 
-    def test_a_end_property(self, sample_arc: Arc) -> None:
+    def test_angle_end_property(self, sample_arc: Arc) -> None:
         """
-        Test a_end getter.
+        Test angle_end getter.
         """
-        assert math.isclose(sample_arc.a_end, 0, abs_tol=1e-5)
+        assert math.isclose(sample_arc.angle_end, math.pi / 2, abs_tol=1e-5)
 
     @pytest.mark.parametrize(("new_end", "expected_angle"), [
-        (Point(-1.0, 0), 1.5 * math.pi),
-        (Point(math.cos(math.pi / 3), math.sin(math.pi / 3)), math.pi / 6),
-        (Point(math.cos(-math.pi / 3), math.sin(-math.pi / 3)), 5 * math.pi / 6),
-        (Point(math.cos(-2 * math.pi / 3), math.sin(-2 * math.pi / 3)), math.pi / 2 + 2 * math.pi / 3),
-        (Point(math.cos(-math.pi), math.sin(-math.pi)), 1.5 * math.pi),
-        (Point(math.cos(-4 * math.pi / 3), math.sin(-4 * math.pi / 3)), 4 * math.pi / 3 + math.pi / 2),
+        (Point(-1.0, 0), math.pi),
+        (Point(math.cos(math.pi / 3), math.sin(math.pi / 3)), math.pi / 3),
+        (Point(math.cos(-math.pi / 3), math.sin(-math.pi / 3)), -math.pi / 3),
+        (Point(math.cos(-2 * math.pi / 3), math.sin(-2 * math.pi / 3)), -2 * math.pi / 3),
+        (Point(math.cos(-math.pi), math.sin(-math.pi)), -math.pi),
+        (Point(math.cos(-4 * math.pi / 3), math.sin(-4 * math.pi / 3)), 2 * math.pi / 3),
     ])
     def test_p_end_property(self, sample_arc: Arc, new_end: Point, expected_angle: float) -> None:
         """
@@ -93,7 +96,7 @@ class TestArc:
         """
         sample_arc.p_end = new_end
         assert sample_arc.p_end == new_end
-        assert math.isclose(sample_arc.a_end, expected_angle, abs_tol=1e-5)
+        assert math.isclose(sample_arc.angle_end, expected_angle, abs_tol=1e-5)
 
     @pytest.mark.parametrize(("new_radius"), [
         (2), (3), (4), (5), (6), (7),
@@ -151,8 +154,8 @@ class TestArc:
             """{
     "center": [0, 0],
     "radius": 1.0,
-    "a_start": 1.5707963267948966,
-    "a_end": 0.0,
+    "angle_start": 0.0,
+    "angle_end": 1.5707963267948966,
     "precision": 1e-05
 }"""
         )
@@ -164,8 +167,8 @@ class TestArc:
         string_data = """{
             "center": [0, 0],
             "radius": 1.0,
-            "a_start": 1.5707963267948966,
-            "a_end": 0.0,
+            "angle_start": 0.0,
+            "angle_end": 1.5707963267948966,
             "precision": 1e-05
         }"""
 
@@ -175,8 +178,8 @@ class TestArc:
         assert math.isclose(arc.p_start.distance_to(Point(1, 0)), 0, abs_tol=1e-5)
         assert math.isclose(arc.p_end.distance_to(Point(0, 1)), 0, abs_tol=1e-5)
         assert arc.precision == 1e-5
-        assert arc.a_start == math.pi / 2
-        assert arc.a_end == 0
+        assert arc.angle_start == 0
+        assert math.isclose(arc.angle_end, math.pi / 2, abs_tol=1e-5)
 
     def test_creation_with_invalid_points(self) -> None:
         """

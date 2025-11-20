@@ -98,5 +98,7 @@ class Line(ABCGeo):
         return f"{self._start!s}, {self._end!s}"
 
     def length(self) -> float:
-        """TODO: Implement."""
-        raise NotImplementedError
+        """
+        Return length of line.
+        """
+        return self._start.distance_to(self._end)
