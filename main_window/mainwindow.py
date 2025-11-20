@@ -9,12 +9,12 @@ This module provides:
 
 import sys
 from pathlib import Path
-from typing import ClassVar
+from typing import TYPE_CHECKING, ClassVar
 
 import QCustomPlot_PyQt6 as qcp
 from PyQt6 import uic
 from PyQt6.QtCore import QSize, Qt
-from PyQt6.QtGui import QColor, QPen, QActionGroup, QAction
+from PyQt6.QtGui import QAction, QActionGroup, QColor, QPen
 from PyQt6.QtWidgets import (
     QApplication,
     QDialog,
@@ -39,8 +39,19 @@ from draw.circle_drawer import CircleDrawer
 from draw.line_drawer import LineDrawer
 from draw.point_drawer import PointDrawer
 from draw.polygon_drawer import PolygonDrawer
+from draw.trajectory_drawer import TrajectoryDrawer
 
-from tsp_algorithms.abstract_solver import TSPSolver
+from tsp_algorithms.little_algorithm import LittleAlgorithm
+from tsp_algorithms.brute_force import BruteForceSolver
+
+from pathfinding.pathfinding import route_calculation, matrix_calculation
+
+from enum import Enum
+
+
+class Algorithm(Enum):
+    LITTLE = 0
+    BRUTE_FORCE = 1
 
 
 class MainWindow(QMainWindow):
@@ -62,7 +73,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.geo_objects: list[ABCDrawer] = []
         self.points_polygon: list[Point] = []
-        self.algorithm: TSPSolver = None
+        self.algorithm: Algorithm = 0
         self.initializeUI()
 
     def initializeUI(self) -> None:
@@ -205,6 +216,29 @@ class MainWindow(QMainWindow):
         """
         Slot for starting animation of flight.
         """
+        control_points = []
+        obstacles = []
+        for geo_object in self.geo_objects:
+            if geo_object.type == "Point":
+                control_points.append(geo_object)
+            else:
+                obstacles.append(geo_object)
+
+        routes = route_calculation(control_points, obstacles)
+        matrix = matrix_calculation(routes)
+
+        if self.algorithm == Algorithm.LITTLE:
+            solver = LittleAlgorithm()
+            path, _ = solver.solve(matrix, 0)
+        else:
+            solver = BruteForceSolver()
+            path, _ = solver.solve(matrix, 0)
+
+        for i in range(len(path) - 1):
+            cur_path = routes[path[i]][path[i + 1]]
+            trajectory = TrajectoryDrawer(cur_path)
+            trajectory.draw(self.custom_plot)
+
         self.statusBar.showMessage("Процесс построения траектории запущен")
 
     def chooseAlgorithm(self, action: QAction) -> None:
@@ -213,10 +247,13 @@ class MainWindow(QMainWindow):
 
         Args:
             action: selected algorithm menu button.
+
         """
         if action == self.algoLittle:
+            self.algorithm = Algorithm.LITTLE
             self.statusBar.showMessage("Выбран алгоритм Литтла")
         else:
+            self.algorithm = Algorithm.BRUTE_FORCE
             self.statusBar.showMessage("Выбран переборный алгоритм")
 
     def updateObjectList(self) -> None:
