@@ -4,13 +4,17 @@ from itertools import product
 
 import numpy as np
 
-from core import Arc, Circle, Line, Point, Polygon
+from core.arc import Arc
+from core.circle import Circle
+from core.line import Line
+from core.point import Point
+from core.polygon import Polygon
 
 
 class Route:
     """TODO: description of class."""
 
-    def __init__(self, route: [Line | Arc]):
+    def __init__(self, route: list[Line | Arc]):
         """TODO: description of method."""
         self.route = route
 
@@ -18,7 +22,7 @@ class Route:
     def length(self) -> float:
         return sum([x.length() for x in self.route])
 
-def point_to_point(start:Point, end:Point, obstacles:set[Circle | Line | Polygon]) -> Route:
+def point_to_point(start: Point, end: Point, obstacles: set[Circle | Line | Polygon]) -> Route:
     """TODO: description of function."""
     path = []
     position = start
@@ -42,14 +46,14 @@ def point_to_point(start:Point, end:Point, obstacles:set[Circle | Line | Polygon
 
     return Route(path)
 
-def route_calculation(points: [Point], obstacles:set[Circle | Line | Polygon]) -> [[Route]]:
+def route_calculation(points: list[Point], obstacles: set[Circle | Line | Polygon]) -> Route:
     """TODO: description of function."""
     matrix = [[None for j in range(len(points))] for i in range(len(points))]
     for i, j in product(range(len(points)), range(len(points))):
         matrix[i][j] = point_to_point(points[i], points[j], obstacles)
     return matrix
 
-def matrix_calculation(routes: [[Route]]) -> np.ndarray:
+def matrix_calculation(routes: list[list[Route]]) -> np.ndarray:
     """TODO: description of function."""
     return np.array([[routes[i][j].length for j in range(len(routes))] for i in range(len(routes))])
 
