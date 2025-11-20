@@ -292,3 +292,9 @@ class Arc(ABCGeo):
 
         """
         return math.isclose(self._center.distance_to(point), self._radius, abs_tol=self._precision)
+
+    def length(self) -> float:
+        """
+        Return length of line.
+        """
+        return abs(self.angle_start - self.angle_end) * self.radius
