@@ -28,27 +28,15 @@ class PointEditDialogWindow(EditDialogWindow):
         """
         Slot for accept button with validation of parameters.
         """
-        min_x_coord = 0
-        max_x_coord = 1000
-        min_y_coord = 0
-        max_y_coord = 1000
-
-        x_coord = self.xLineEdit.text()
-        y_coord = self.yLineEdit.text()
-        if not x_coord or not y_coord:
-            QMessageBox.information(self, "Траектория БПЛА", "Заполните все поля")
-            return
+        name = self.nameLineEdit.text()
         try:
-            x_coord = float(x_coord)
-            y_coord = float(y_coord)
-        except ValueError:
-            QMessageBox.information(self, "Траектория БПЛА", "Введите корректные координаты")
-            return
-        if x_coord < min_x_coord or x_coord > max_x_coord:
-            QMessageBox.information(self, "Траектория БПЛА", "Введите корректные координаты")
-            return
-        if y_coord < min_y_coord or y_coord > max_y_coord:
-            QMessageBox.information(self, "Траектория БПЛА", "Введите корректные координаты")
+            x = float(self.xLineEdit.text())
+            y = float(self.yLineEdit.text())
+            self._geo_object.name = name
+            self._geo_object.x = x
+            self._geo_object.y = y
+        except ValueError as error:
+            QMessageBox.information(self, "Траектория БПЛА", str(error))
             return
         self.accept()
 
@@ -59,14 +47,3 @@ class PointEditDialogWindow(EditDialogWindow):
         self.nameLineEdit.setText(self._geo_object.name)
         self.xLineEdit.setText(str(self._geo_object.x))
         self.yLineEdit.setText(str(self._geo_object.y))
-
-    def setChanges(self) -> None:
-        """
-        Change point parameters.
-        """
-        name = self.nameLineEdit.text()
-        x = float(self.xLineEdit.text())
-        y = float(self.yLineEdit.text())
-        self._geo_object.name = name
-        self._geo_object.x = x
-        self._geo_object.y = y

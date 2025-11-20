@@ -292,33 +292,6 @@ class MainWindow(QMainWindow):
         for line_edit in line_edits:
             line_edit.clear()
 
-    def validateParamets(self, params: list[str]) -> bool:
-        """
-        Validate given paramets of object.
-
-        Args:
-            params: list of object paramets in string representation.
-
-        """
-        min_coord = 0
-        max_coord = 1000
-        for param in params:
-            if not param:
-                QMessageBox.information(self, "Траектория БПЛА",
-                    "Заполните все поля")
-                return False
-            try:
-                float_param = float(param)
-            except ValueError:
-                QMessageBox.information(self, "Траектория БПЛА",
-                    "Введите корректные данные")
-                return False
-            if float_param < min_coord or float_param > max_coord:
-                QMessageBox.information(self, "Траектория БПЛА",
-                    "Введите корректные данные")
-                return False
-        return True
-
     def addPoint(self) -> None:
         """
         Add point to the list of current objects.
@@ -327,14 +300,15 @@ class MainWindow(QMainWindow):
         x_coord = self.XCoordLineEditPoint.text()
         y_coord = self.YCoordLineEditPoint.text()
 
-        params = [x_coord, y_coord]
-        if not self.validateParamets(params):
-            return
-
         if not name:
             name = "Точка"
 
-        point = PointDrawer(float(x_coord), float(y_coord), name)
+        try:
+            point = PointDrawer(float(x_coord), float(y_coord), name)
+        except ValueError as error:
+            QMessageBox.information(self, "Траектория БПЛА", str(error))
+            return
+
         self.geo_objects.append(point)
         point.draw(self.custom_plot)
         self.updateObjectList()
@@ -357,16 +331,16 @@ class MainWindow(QMainWindow):
         y_coord = self.YCoordLineEditCircle.text()
         radius = self.radiusLineEditCircle.text()
 
-        params = [x_coord, y_coord, radius]
-        if not self.validateParamets(params):
-            return
-
         if not name:
             name = "Окружность"
 
-        center = Point(float(x_coord), float(y_coord))
+        try:
+            center = Point(float(x_coord), float(y_coord))
+            circle = CircleDrawer(center, float(radius), name)
+        except ValueError as error:
+            QMessageBox.information(self, "Траектория БПЛА", str(error))
+            return
 
-        circle = CircleDrawer(center, float(radius), name)
         self.geo_objects.append(circle)
         circle.draw(self.custom_plot)
         self.updateObjectList()
@@ -395,15 +369,15 @@ class MainWindow(QMainWindow):
         x_coord_end = self.XCoordLineEditEnd.text()
         y_coord_end = self.YCoordLineEditEnd.text()
 
-        params = [x_coord_beg, y_coord_beg, x_coord_end, y_coord_end]
-        if not self.validateParamets(params):
-            return
-
         if not name:
             name = "Отрезок"
 
-        point_begin = PointDrawer(float(x_coord_beg), float(y_coord_beg))
-        point_end = PointDrawer(float(x_coord_end), float(y_coord_end))
+        try:
+            point_begin = PointDrawer(float(x_coord_beg), float(y_coord_beg))
+            point_end = PointDrawer(float(x_coord_end), float(y_coord_end))
+        except ValueError as error:
+            QMessageBox.information(self, "Траектория БПЛА", str(error))
+            return
 
         line = LineDrawer(point_begin, point_end, name)
         self.geo_objects.append(line)
@@ -432,11 +406,13 @@ class MainWindow(QMainWindow):
         x_coord = self.XCoordLineEditPolygon.text()
         y_coord = self.YCoordLineEditPolygon.text()
 
-        params = [x_coord, y_coord]
-        if not self.validateParamets(params):
+        try:
+            polygon_point = Point(float(x_coord), float(y_coord))
+        except ValueError as error:
+            QMessageBox.information(self, "Траектория БПЛА", str(error))
             return
 
-        self.points_polygon.append(Point(float(x_coord), float(y_coord)))
+        self.points_polygon.append(polygon_point)
         self.updatePointsPolygonList()
 
         MainWindow.clearLineEdit(
@@ -464,7 +440,12 @@ class MainWindow(QMainWindow):
         if not name:
             name = "Многоугольник"
 
-        polygon = PolygonDrawer(self.points_polygon, name)
+        try:
+            polygon = PolygonDrawer(self.points_polygon, name)
+        except ValueError as error:
+            QMessageBox.information(self, "Траектория БПЛА", str(error))
+            return
+
         self.geo_objects.append(polygon)
         polygon.draw(self.custom_plot)
         self.updateObjectList()
@@ -498,7 +479,6 @@ class MainWindow(QMainWindow):
         edit_win = MainWindow.dialogs[geo_object.type](geo_object, self)
 
         if edit_win.exec() == QDialog.DialogCode.Accepted:
-            edit_win.setChanges()
             self.showObjectsParams()
             self.redraw()
             QMessageBox.information(self, "Траектория БПЛА",
@@ -514,7 +494,6 @@ class MainWindow(QMainWindow):
         edit_point_win = PolygonPointEditDialogWindow(point, "Точка " + str(index + 1), self)
 
         if edit_point_win.exec() == QDialog.DialogCode.Accepted:
-            edit_point_win.setChanges()
             QMessageBox.information(self, "Траектория БПЛА",
                     "Точка обновлена")
 
