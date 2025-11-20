@@ -37,9 +37,16 @@ class ArcDrawer(Arc):
         """
         return pi / 2 - angle if angle >= 0 and angle <= pi / 2 else 2 * pi - (angle - pi / 2)
 
-    def draw(self, map_view: qcp.QCustomPlot) -> None:
+    def draw(self, map_view: qcp.QCustomPlot, color:Qt.GlobalColor=Qt.GlobalColor.red) -> None:
         """
         Draw arc.
+
+        Args:
+            map_view: widget where arc will be drawn.
+            color: color of arc.
+
+        Default arc color: Red.
+
         """
         arc = qcp.QCPCurve(map_view.xAxis, map_view.yAxis)
         point_count = 500
@@ -58,6 +65,6 @@ class ArcDrawer(Arc):
 
         arc.setData(x_coord, y_coord)
 
-        arc.setPen(QPen(Qt.GlobalColor.red, 2))
+        arc.setPen(QPen(color, 2))
 
         map_view.replot()

@@ -6,6 +6,7 @@ This module provides:
 """
 
 import QCustomPlot_PyQt6 as qcp
+from PyQt6.QtCore import Qt
 
 from core.line import Line
 from draw.arc_drawer import ArcDrawer
@@ -35,13 +36,15 @@ class TrajectoryDrawer:
                 arc = ArcDrawer(curve.center, curve.p_start, curve.p_end)
                 self.route_drawer.append(arc)
 
-    def draw(self, map_view: qcp.QCustomPlot) -> None:
+    def draw(self, map_view: qcp.QCustomPlot, color:Qt.GlobalColor=Qt.GlobalColor.red) -> None:
         """
         Draw trajectory.
 
         Args:
             map_view: widget where trajectory will be drawn.
+            color: color of trajectory.
 
+        Default color: red.
         """
         for curve in self.route_drawer:
-            curve.draw(map_view) 
+            curve.draw(map_view, color)

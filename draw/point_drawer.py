@@ -8,6 +8,7 @@ This module provides:
 
 
 import QCustomPlot_PyQt6 as qcp
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QBrush, QColor, QFont, QPen
 
 from core.point import Point
@@ -50,21 +51,17 @@ class PointDrawer(ABCDrawer, Point):
         """
         return PointDrawer._type
 
-    def draw(self, map_view: qcp.QCustomPlot) -> None:
+    def draw(self, map_view: qcp.QCustomPlot, color:Qt.GlobalColor=Qt.GlobalColor.red) -> None:
         """
         Draw point.
 
         Args:
             map_view: widget where point will be drawn.
-            x: x-coordinate of point.
-            y: y-coordinate of point.
-            name: point name.
-            point_size: point size (default: 5)
+            color: color of point.
 
         Default point color: Red.
 
         """
-        color = QColor(255, 0, 0)
         point = map_view.addGraph()
         point.setData([self.x], [self.y])
 

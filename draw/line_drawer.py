@@ -8,6 +8,7 @@ This module provides:
 
 
 import QCustomPlot_PyQt6 as qcp
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QBrush, QColor, QPen
 
 from core.line import Line
@@ -51,17 +52,17 @@ class LineDrawer(ABCDrawer, Line):
         """
         return LineDrawer._type
 
-    def draw(self, map_view: qcp.QCustomPlot) -> None:
+    def draw(self, map_view: qcp.QCustomPlot, color:Qt.GlobalColor=Qt.GlobalColor.red) -> None:
         """
         Draw line.
 
         Args:
             map_view: widget where line will be drawn.
+            color: color of line.
 
         Default line color: Red.
 
         """
-        color = QColor(255, 0, 0)
         line = map_view.addGraph()
         line.setData([self.start.x, self.end.x], [self.start.y, self.end.y])
 
