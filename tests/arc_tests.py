@@ -4,8 +4,8 @@ import math
 import pytest
 
 from core.arc import Arc
-from core.point import Point
 from core.basic_validation_functions import BasicValidationFunctions
+from core.point import Point
 
 BasicValidationFunctions.X_MIN_COORDS = -100
 BasicValidationFunctions.Y_MIN_COORDS = -100

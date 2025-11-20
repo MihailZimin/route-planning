@@ -323,7 +323,6 @@ class LittleAlgorithm(TSPSolver):
         """
         np.fill_diagonal(matrix, np.inf)
         matrix = np.where(matrix == -1, np.inf, matrix)
-        print(matrix)
         sz = matrix.shape[0]
         nodes = []
 
