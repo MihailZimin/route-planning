@@ -3,6 +3,7 @@ import json
 import math
 
 from .abstract_geometry import ABCGeo
+from .basic_validation_functions import BasicValidationFunctions
 from .point import Point
 
 
@@ -33,7 +34,12 @@ class Arc(ABCGeo):
                 angle2: angle in radians from horisontal to end point
                 radius: radius of Arc
 
+        Raises:
+            TypeError if center, p_start or p_end is not Point type
+            ValueError if radius can not be determined definitely
+
         """
+        Point.check_point_instance(center, p_start, p_end)
         self.__errormsg = ("Invalid input points, distance between"
                          "center and first point is not equal to"
                          "distance between center and second point")
@@ -49,7 +55,6 @@ class Arc(ABCGeo):
         self._angle_end = math.atan2(p_end.y - center.y, p_end.x - center.x)
         self._p_start = p_start
         self._p_end = p_end
-
 
     @classmethod
     def from_angle(
@@ -149,7 +154,11 @@ class Arc(ABCGeo):
         Args:
             new_radius: new radius value
 
+        Raises:
+            ValueError if new_radius does not fit in certain range
+
         """
+        BasicValidationFunctions.check_radius(new_radius)
         self._radius = new_radius
         self.__adjust_start_point()
         self.__adjust_end_point()
@@ -171,7 +180,11 @@ class Arc(ABCGeo):
         Args:
             new_center: new center point
 
+        Raises:
+            TypeError if new_center is not type of Point
+
         """
+        Point.check_point_instance(new_center)
         self._center = new_center
         self.__adjust_start_point()
         self.__adjust_end_point()
@@ -207,7 +220,12 @@ class Arc(ABCGeo):
         Args:
             new_start: new start position in radians.
 
+        Raises:
+            ValueError if calculated radius is not the same as setted
+            TypeError if new_start is not type of Point
+
         """
+        Point.check_point_instance(new_start)
         if not self.__compare_radius_and_distance(new_start):
             raise ValueError(self.__errormsg)
 
@@ -234,7 +252,12 @@ class Arc(ABCGeo):
         Args:
             new_end: new end position in radians.
 
+        Raises:
+            ValueError if calculated radius is not the same as setted
+            TypeError if new_end is not type of Point
+
         """
+        Point.check_point_instance(new_end)
         if not self.__compare_radius_and_distance(new_end):
             raise ValueError(self.__errormsg)
 
