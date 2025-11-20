@@ -3,7 +3,6 @@ import json
 import math
 
 from .abstract_geometry import ABCGeo
-from .basic_validation_functions import BasicValidationFunctions
 from .point import Point
 
 
@@ -30,20 +29,15 @@ class Arc(ABCGeo):
                 center: center of Arc
                 p_start: coordinate(point) of start of Arc
                 p_end: coordinate(point) of end of Arc
-                angle1: angle in radians between center-to-top-point line and center-to-p_start line
-                angle2: angle in radians between center-to-top-point line and center-to-p_end line
+                angle1: angle in radians from horisontal to start point
+                angle2: angle in radians from horisontal to end point
                 radius: radius of Arc
 
-        Raises:
-            TypeError if center, p_start or p_end is not Point type
-            ValueError if radius can not be determined definitely
-
         """
-        Point.check_point_instance(center, p_start, p_end)
-        self._precision = precision
         self.__errormsg = ("Invalid input points, distance between"
                          "center and first point is not equal to"
                          "distance between center and second point")
+        self._precision = precision
 
         radius = center.distance_to(p_start)
         self._radius = radius
@@ -51,18 +45,14 @@ class Arc(ABCGeo):
         if not self.__compare_radius_and_distance(p_end):
             raise ValueError(self.__errormsg)
 
-        self._a_start = math.acos((p_start.y - center.y) / radius)
-        if (p_start.x < center.x):
-            self._a_start = 2 * math.pi - self._a_start
-        self._a_end = math.acos((p_end.y - center.y) / radius)
-        if (p_end.x < center.x):
-            self._a_end = 2 * math.pi - self._a_end
+        self._angle_start = math.atan2(p_start.y - center.y, p_start.x - center.x)
+        self._angle_end = math.atan2(p_end.y - center.y, p_end.x - center.x)
         self._p_start = p_start
         self._p_end = p_end
 
 
     @classmethod
-    def _from_angle(
+    def from_angle(
         cls,
         center: Point,
         radius: float,
@@ -94,13 +84,13 @@ class Arc(ABCGeo):
 
         """
         p_start = Point(
-            center.x + radius * math.sin(angle_start),
-            center.y + radius * math.cos(angle_start),
+            center.x + radius * math.cos(angle_start),
+            center.y + radius * math.sin(angle_start)
         )
 
         p_end = Point(
-            center.x + radius * math.sin(angle_end),
-            center.y + radius * math.cos(angle_end),
+            center.x + radius * math.cos(angle_end),
+            center.y + radius * math.sin(angle_end)
         )
 
         return cls(center, p_start, p_end, precision)
@@ -115,8 +105,8 @@ class Arc(ABCGeo):
         '{\n'
         f'    "center": {center_str},\n'
         f'    "radius": {self._radius},\n'
-        f'    "a_start": {self._a_start},\n'
-        f'    "a_end": {self._a_end},\n'
+        f'    "angle_start": {self._angle_start},\n'
+        f'    "angle_end": {self._angle_end},\n'
         f'    "precision": {self._precision}\n'
         '}'
     )
@@ -134,11 +124,11 @@ class Arc(ABCGeo):
 
         """
         data = json.loads(json_data)
-        return cls._from_angle(
+        return cls.from_angle(
             Point.load(str(data["center"])),
             data["radius"],
-            data["a_start"],
-            data["a_end"],
+            data["angle_start"],
+            data["angle_end"],
             data["precision"],
         )
 
@@ -159,11 +149,7 @@ class Arc(ABCGeo):
         Args:
             new_radius: new radius value
 
-        Raises:
-            ValueError if new_radius does not fit in certain range
-
         """
-        BasicValidationFunctions.check_radius(new_radius)
         self._radius = new_radius
         self.__adjust_start_point()
         self.__adjust_end_point()
@@ -185,28 +171,24 @@ class Arc(ABCGeo):
         Args:
             new_center: new center point
 
-        Raises:
-            TypeError if new_center is not type of Point
-
         """
-        Point.check_point_instance(new_center)
         self._center = new_center
         self.__adjust_start_point()
         self.__adjust_end_point()
 
     @property
-    def a_start(self) -> float:
+    def angle_start(self) -> float:
         """
         Return the angle of the arc in radians.
         """
-        return self._a_start
+        return self._angle_start
 
     @property
-    def a_end(self) -> float:
+    def angle_end(self) -> float:
         """
         Return the angle of the arc in radians.
         """
-        return self._a_end
+        return self._angle_end
 
     @property
     def p_start(self) -> Point:
@@ -225,19 +207,15 @@ class Arc(ABCGeo):
         Args:
             new_start: new start position in radians.
 
-        Raises:
-            ValueError if calculated radius is not the same as setted
-            TypeError if new_start is not type of Point
-
         """
-        Point.check_point_instance(new_start)
         if not self.__compare_radius_and_distance(new_start):
             raise ValueError(self.__errormsg)
 
         self._p_start = new_start
-        self._a_start = math.acos((self._p_start.y - self._center.y) / self._radius)
-        if (self._p_start.x < self._center.x):
-            self._a_start = 2 * math.pi - self._a_start
+        self._angle_start = math.atan2(
+            self._p_start.y - self._center.y,
+            self._p_start.x - self._center.x
+        )
 
     @property
     def p_end(self) -> Point:
@@ -256,19 +234,12 @@ class Arc(ABCGeo):
         Args:
             new_end: new end position in radians.
 
-        Raises:
-            ValueError if calculated radius is not the same as setted
-            TypeError if new_end is not type of Point
-
         """
-        Point.check_point_instance(new_end)
         if not self.__compare_radius_and_distance(new_end):
             raise ValueError(self.__errormsg)
 
         self._p_end = new_end
-        self._a_end = math.acos((self._p_end.y - self._center.y) / self._radius)
-        if (self._p_end.x < self._center.x):
-            self._a_end = 2 * math.pi - self._a_end
+        self._angle_end = math.atan2(self._p_end.y - self._center.y, self._p_end.x - self._center.x)
 
     @property
     def precision(self) -> float:
@@ -292,15 +263,15 @@ class Arc(ABCGeo):
         """
         Adjust start point coordinates according to changes.
         """
-        self._p_start.x = self._center.x + self._radius * math.sin(self._a_start)
-        self._p_start.y = self._center.y + self._radius * math.cos(self._a_start)
+        self._p_start.x = self._center.x + self._radius * math.sin(self._angle_start)
+        self._p_start.y = self._center.y + self._radius * math.cos(self._angle_start)
 
     def __adjust_end_point(self) -> None:
         """
         Adjust end point coordinates according to changes.
         """
-        self._p_end.x = self._center.x + self._radius * math.sin(self._a_end)
-        self._p_end.y = self._center.y + self._radius * math.cos(self._a_end)
+        self._p_end.x = self._center.x + self._radius * math.sin(self._angle_end)
+        self._p_end.y = self._center.y + self._radius * math.cos(self._angle_end)
 
     def __str__(self) -> str:
         """
