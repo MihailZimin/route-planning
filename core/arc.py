@@ -321,3 +321,7 @@ class Arc(ABCGeo):
 
         """
         return math.isclose(self._center.distance_to(point), self._radius, abs_tol=self._precision)
+
+    def length(self) -> float:
+        """TODO: Implement."""
+        raise NotImplementedError
