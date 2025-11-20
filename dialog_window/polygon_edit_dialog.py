@@ -11,6 +11,8 @@ from PyQt6.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QMessageBox, QWidget
 from dialog_window.base_edit_dialog import EditDialogWindow
 from draw.polygon_drawer import PolygonDrawer
 
+from core.point import Point
+
 
 class PolygonEditDialogWindow(EditDialogWindow):
     """
@@ -63,10 +65,12 @@ class PolygonEditDialogWindow(EditDialogWindow):
         Slot for accept button with validation of parameters.
         """
         self._geo_object.name = self._rows["Название"].text()
-        for i, point in enumerate(self._geo_object.points):
+        for i in range(len(self._geo_object.points)):
             try:
-                point.x = float(self._rows["X" + str(i + 1)].text())
-                point.y = float(self._rows["Y" + str(i + 1)].text())
+                self._geo_object[i] = Point(
+                        float(self._rows["X" + str(i + 1)].text()),
+                        float(self._rows["Y" + str(i + 1)].text())
+                )
             except ValueError as error:
                 QMessageBox.information(self, "Траектория БПЛА", str(error))
                 return
