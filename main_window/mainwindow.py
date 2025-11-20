@@ -14,7 +14,7 @@ from typing import ClassVar
 import QCustomPlot_PyQt6 as qcp
 from PyQt6 import uic
 from PyQt6.QtCore import QSize, Qt
-from PyQt6.QtGui import QColor, QPen
+from PyQt6.QtGui import QColor, QPen, QActionGroup, QAction
 from PyQt6.QtWidgets import (
     QApplication,
     QDialog,
@@ -40,6 +40,8 @@ from draw.line_drawer import LineDrawer
 from draw.point_drawer import PointDrawer
 from draw.polygon_drawer import PolygonDrawer
 
+from tsp_algorithms.abstract_solver import TSPSolver
+
 
 class MainWindow(QMainWindow):
     """
@@ -60,6 +62,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.geo_objects: list[ABCDrawer] = []
         self.points_polygon: list[Point] = []
+        self.algorithm: TSPSolver = None
         self.initializeUI()
 
     def initializeUI(self) -> None:
@@ -89,6 +92,12 @@ class MainWindow(QMainWindow):
 
         self.polygonPoints.itemDoubleClicked.connect(self.editPolygonPoint)
         self.deletePointButton.clicked.connect(self.deletePolygonPoint)
+
+        self.algo_group = QActionGroup(self)
+        self.algo_group.setExclusive(True)
+        self.algo_group.addAction(self.algoLittle)
+        self.algo_group.addAction(self.algoBruteForce)
+        self.algo_group.triggered.connect(self.chooseAlgorithm)
 
         self.initializeCustomPlot()
 
@@ -197,6 +206,18 @@ class MainWindow(QMainWindow):
         Slot for starting animation of flight.
         """
         self.statusBar.showMessage("Процесс построения траектории запущен")
+
+    def chooseAlgorithm(self, action: QAction) -> None:
+        """
+        Slot for choosing tsp algorithm.
+
+        Args:
+            action: selected algorithm menu button.
+        """
+        if action == self.algoLittle:
+            self.statusBar.showMessage("Выбран алгоритм Литтла")
+        else:
+            self.statusBar.showMessage("Выбран переборный алгоритм")
 
     def updateObjectList(self) -> None:
         """

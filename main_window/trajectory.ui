@@ -664,7 +664,7 @@ QPushButton:pressed {
                     <item row="1" column="0">
                      <widget class="QStackedWidget" name="stackedWidget_param">
                       <property name="currentIndex">
-                       <number>2</number>
+                       <number>0</number>
                       </property>
                       <widget class="QWidget" name="page_1_point">
                        <layout class="QGridLayout" name="gridLayout_9">
@@ -1454,7 +1454,15 @@ background-color: rgb(243, 255, 233);</string>
     </property>
     <addaction name="exitAction"/>
    </widget>
+   <widget class="QMenu" name="algorithm">
+    <property name="title">
+     <string>Алгоритм</string>
+    </property>
+    <addaction name="algoLittle"/>
+    <addaction name="algoBruteForce"/>
+   </widget>
    <addaction name="start"/>
+   <addaction name="algorithm"/>
    <addaction name="map"/>
    <addaction name="params"/>
    <addaction name="stat"/>
@@ -1501,6 +1509,25 @@ background-color: rgb(243, 255, 233);</string>
    </property>
    <property name="toolTip">
     <string>Удалить выбранный объект</string>
+   </property>
+  </action>
+  <action name="algoLittle">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Алгоритм Литтла</string>
+   </property>
+  </action>
+  <action name="algoBruteForce">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Переборный Алгоритм</string>
    </property>
   </action>
  </widget>
