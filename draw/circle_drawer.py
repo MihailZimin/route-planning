@@ -22,7 +22,7 @@ class CircleDrawer(ABCDrawer, Circle):
     """
 
     _type : str = "Circle"
-    def __init__(self, center: Point, radius: float, name: str) -> None:
+    def __init__(self, center: Point, radius: float, name: str = "") -> None:
         """
         Init circle drawer.
         """

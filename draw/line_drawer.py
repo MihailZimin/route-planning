@@ -23,7 +23,7 @@ class LineDrawer(ABCDrawer, Line):
 
     _type : str = "Line"
     _point_size : int = 5
-    def __init__(self, start: Point, end: Point, name: str) -> None:
+    def __init__(self, start: Point, end: Point, name: str = "") -> None:
         """
         Init line drawer.
         """
@@ -57,8 +57,6 @@ class LineDrawer(ABCDrawer, Line):
 
         Args:
             map_view: widget where line will be drawn.
-            begin: tuple of coordinates of line begin.
-            end: tuple of coordinates of line end.
 
         Default line color: Red.
 
