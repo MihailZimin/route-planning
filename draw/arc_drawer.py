@@ -43,17 +43,14 @@ class ArcDrawer(Arc):
         """
         arc = qcp.QCPCurve(map_view.xAxis, map_view.yAxis)
         point_count = 500
-
-        start_angle = self.convert_angle_to_horizontal(self.a_start)
-        end_angle = self.convert_angle_to_horizontal(self.a_end)
         x0 = self.center.x
         y0 = self.center.y
         rad = self.radius
         x_coord = []
         y_coord = []
         for i in range(point_count):
-            delta_t = (end_angle - start_angle) / (point_count - 1)
-            t = start_angle + i * delta_t
+            delta_t = (self.angle_end - self.angle_start) / (point_count - 1)
+            t = self.angle_start + i * delta_t
             x = x0 + rad * cos(t)
             y = y0 + rad * sin(t)
             x_coord.append(x)
