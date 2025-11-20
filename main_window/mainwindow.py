@@ -8,8 +8,9 @@ This module provides:
 
 
 import sys
+from enum import Enum
 from pathlib import Path
-from typing import TYPE_CHECKING, ClassVar
+from typing import ClassVar
 
 import QCustomPlot_PyQt6 as qcp
 from PyQt6 import uic
@@ -40,16 +41,16 @@ from draw.line_drawer import LineDrawer
 from draw.point_drawer import PointDrawer
 from draw.polygon_drawer import PolygonDrawer
 from draw.trajectory_drawer import TrajectoryDrawer
-
-from tsp_algorithms.little_algorithm import LittleAlgorithm
+from pathfinding.pathfinding import matrix_calculation, route_calculation
 from tsp_algorithms.brute_force import BruteForceSolver
-
-from pathfinding.pathfinding import route_calculation, matrix_calculation
-
-from enum import Enum
+from tsp_algorithms.little_algorithm import LittleAlgorithm
 
 
 class Algorithm(Enum):
+    """
+    Enum for algorithm choice.
+    """
+
     LITTLE = 0
     BRUTE_FORCE = 1
 
@@ -224,6 +225,11 @@ class MainWindow(QMainWindow):
             else:
                 obstacles.append(geo_object)
 
+        if not control_points:
+            QMessageBox.information(self, "Траектория БПЛА",
+                "На карте нет контрольных точек")
+            return
+
         routes = route_calculation(control_points, obstacles)
         matrix = matrix_calculation(routes)
 
@@ -237,7 +243,7 @@ class MainWindow(QMainWindow):
         for i in range(len(path) - 1):
             cur_path = routes[path[i]][path[i + 1]]
             trajectory = TrajectoryDrawer(cur_path)
-            trajectory.draw(self.custom_plot)
+            trajectory.draw(self.custom_plot, Qt.GlobalColor.blue)
 
         self.statusBar.showMessage("Процесс построения траектории запущен")
 
