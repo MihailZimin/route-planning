@@ -8,10 +8,9 @@ This module provides:
 
 from PyQt6.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QMessageBox, QWidget
 
+from core.point import Point
 from dialog_window.base_edit_dialog import EditDialogWindow
 from draw.polygon_drawer import PolygonDrawer
-
-from core.point import Point
 
 
 class PolygonEditDialogWindow(EditDialogWindow):

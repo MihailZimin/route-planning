@@ -6,12 +6,10 @@ This module provides:
 
 """
 
-from PyQt6.QtWidgets import QWidget
+from PyQt6.QtWidgets import QMessageBox, QWidget
 
 from core.point import Point
 from dialog_window.base_edit_dialog import EditDialogWindow
-
-from PyQt6.QtWidgets import QMessageBox
 
 
 class PolygonPointEditDialogWindow(EditDialogWindow):
