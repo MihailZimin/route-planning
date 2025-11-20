@@ -6,7 +6,7 @@ This module provides:
 
 """
 
-from PyQt6.QtWidgets import QLineEdit, QMessageBox, QWidget
+from PyQt6.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QMessageBox, QWidget
 
 from dialog_window.base_edit_dialog import EditDialogWindow
 from draw.polygon_drawer import PolygonDrawer
@@ -24,7 +24,7 @@ class PolygonEditDialogWindow(EditDialogWindow):
         self._rows: dict = {}
         super().__init__(geo_object, "dialog_window/polygon_edit_dialog.ui", parent)
 
-    def InitializeWin(self, path: str) -> None:
+    def initializeWin(self, path: str) -> None:
         """
         Initialize polygon edit dialog window.
 
@@ -32,32 +32,41 @@ class PolygonEditDialogWindow(EditDialogWindow):
             path: path to the ui file.
 
         """
-        super().InitializeWin(path)
+        super().initializeWin(path)
         self._rows["Название"] = QLineEdit()
         self.formLayout.addRow("Название", self._rows["Название"])
-        for i in range(len(self._geo_object.points)):
-            self._rows["X" + str(i + 1)] = QLineEdit()
-            self._rows["Y" + str(i + 1)] = QLineEdit()
-            self.formLayout.addRow("X" + str(i + 1), self._rows["X" + str(i + 1)])
-            self.formLayout.addRow("Y" + str(i + 1), self._rows["Y" + str(i + 1)])
 
-    def validateAccept(
-            self,
-            min_x_coord: float = 0,
-            max_x_coord: float = 1000,
-            min_y_coord: float = 0,
-            max_y_coord: float = 1000
-        ) -> None:
+        for i in range(len(self._geo_object.points)):
+            point_widget = QWidget()
+            point_layout = QHBoxLayout(point_widget)
+            point_layout.setContentsMargins(0, 0, 0, 0)
+
+            point_label = QLabel("Точка " + str(i + 1) + ":")
+            point_layout.addWidget(point_label)
+
+            x_coord_label = QLabel("X: ")
+            point_layout.addWidget(x_coord_label)
+            self._rows["X" + str(i + 1)] = QLineEdit()
+            point_layout.addWidget(self._rows["X" + str(i + 1)])
+
+            y_coord_label = QLabel("Y: ")
+            point_layout.addWidget(y_coord_label)
+            self._rows["Y" + str(i + 1)] = QLineEdit()
+            point_layout.addWidget(self._rows["Y" + str(i + 1)])
+
+            point_layout.addStretch()
+
+            self.formLayout.addRow(point_widget)
+
+    def validateAccept(self) -> None:
         """
         Slot for accept button with validation of parameters.
-
-        Args:
-            min_x_coord: minimum value of x coordinate on the map.
-            max_x_coord: maximum value of x coordinate on the map.
-            min_y_coord: minimum value of y coordinate on the map.
-            max_y_coord: maximum value of y coordinate on the map.
-
         """
+        min_x_coord = 0
+        max_x_coord = 1000
+        min_y_coord = 0
+        max_y_coord = 1000
+
         for i in range(len(self._geo_object.points)):
             x_coord = self._rows["X" + str(i + 1)].text()
             y_coord = self._rows["Y" + str(i + 1)].text()
