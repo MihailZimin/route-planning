@@ -465,6 +465,29 @@ class MainWindow(QMainWindow):
 
         self.updatePointsPolygonList()
 
+    def deletePolygonPoint(self) -> None:
+        """
+        Delete selected geo object.
+        """
+        selected_objects = self.polygonPoints.selectedItems()
+
+        if not selected_objects:
+            QMessageBox.information(self, "Траектория БПЛА",
+                "Выберите точку")
+            return
+
+        items_index = []
+
+        for item in selected_objects:
+            index = self.polygonPoints.row(item)
+            items_index.append(index)
+
+        items_index.sort(reverse=True)
+        for i in items_index:
+            self.points_polygon.pop(i)
+
+        self.updatePointsPolygonList()
+
     def showObjectsParams(self) -> None:
         """
         Show parameters of selected objects.
@@ -708,6 +731,20 @@ class MainWindow(QMainWindow):
         edit_point_win = PolygonPointEditDialogWindow(point, "Точка " + str(index + 1), self)
 
         if edit_point_win.exec() == QDialog.DialogCode.Accepted:
+            QMessageBox.information(self, "Траектория БПЛА",
+                    "Точка обновлена")
+
+    def editPolygonPoint(self) -> None:
+        """
+        Edit selected polygon point.
+        """
+        selected_objects = self.polygonPoints.selectedItems()
+        index = self.polygonPoints.row(selected_objects[0])
+        point = self.points_polygon[index]
+        edit_point_win = PolygonPointEditDialogWindow(point, "Точка " + str(index + 1), self)
+
+        if edit_point_win.exec() == QDialog.DialogCode.Accepted:
+            edit_point_win.setChanges()
             QMessageBox.information(self, "Траектория БПЛА",
                     "Точка обновлена")
 

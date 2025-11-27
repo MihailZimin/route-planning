@@ -795,7 +795,7 @@ QPushButton:pressed {
                     <item row="1" column="0">
                      <widget class="QStackedWidget" name="stackedWidget_param">
                       <property name="currentIndex">
-                       <number>0</number>
+                       <number>2</number>
                       </property>
                       <widget class="QWidget" name="page_1_point">
                        <layout class="QGridLayout" name="gridLayout_9">
