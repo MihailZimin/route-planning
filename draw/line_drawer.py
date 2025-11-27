@@ -79,6 +79,29 @@ class LineDrawer(ABCDrawer, Line):
 
         map_view.replot()
 
+    def get_progress_points(self, progress: float) -> list[Point]:
+        """
+        Get points for animation drawing.
+
+        Args:
+            progress: animation progress (0 <= progress <= 1).
+
+        Returns:
+            Points of line from start to animation progress (if progress == 0 returns start point).
+
+        """
+        start_x = self.start.x
+        start_y = self.start.y
+
+        if (progress == 0):
+            return [Point(start_x, start_y)]
+
+        current_x = self.start.x + (self.end.x - self.start.x) * progress
+        current_y = self.start.y + (self.end.y - self.start.y) * progress
+
+        return [Point(start_x, start_y), Point(current_x, current_y)]
+
+
     @property
     def parameters(self) -> dict:
         """
