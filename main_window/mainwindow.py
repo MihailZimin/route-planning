@@ -14,7 +14,7 @@ from typing import ClassVar
 
 import QCustomPlot_PyQt6 as qcp
 from PyQt6 import uic
-from PyQt6.QtCore import QSize, Qt
+from PyQt6.QtCore import QSize, Qt, QTimer
 from PyQt6.QtGui import QAction, QActionGroup, QColor, QPen
 from PyQt6.QtWidgets import (
     QApplication,
@@ -41,7 +41,7 @@ from draw.line_drawer import LineDrawer
 from draw.point_drawer import PointDrawer
 from draw.polygon_drawer import PolygonDrawer
 from draw.trajectory_drawer import TrajectoryDrawer
-from pathfinding.pathfinding import matrix_calculation, route_calculation
+from pathfinding.pathfinding import Route, matrix_calculation, route_calculation
 from tsp_algorithms.brute_force import BruteForceSolver
 from tsp_algorithms.little_algorithm import LittleAlgorithm
 
@@ -75,6 +75,9 @@ class MainWindow(QMainWindow):
         self.geo_objects: list[ABCDrawer] = []
         self.points_polygon: list[Point] = []
         self.algorithm: Algorithm = Algorithm.LITTLE
+        self.trajectory_drawer: TrajectoryDrawer = None
+        self.ui_timer: QTimer = None
+        self.is_calculated = False
         self.initializeUI()
 
     def initializeUI(self) -> None:
@@ -85,12 +88,13 @@ class MainWindow(QMainWindow):
         self.setGeometry(300, 100, 900, 650)
         self.setMinimumSize(QSize(400, 300))
 
-        self.showStatAction.triggered.connect(self.showStatistic)
         self.showParamsAction.triggered.connect(self.showParams)
         self.chooseMapAction.triggered.connect(self.chooseMap)
         self.changeMapAction.triggered.connect(self.changeMap)
-        self.startAction.triggered.connect(self.startTrajectory)
+        self.trajectoryAction.triggered.connect(self.controlTrajectory)
         self.saveMapAction.triggered.connect(self.saveMap)
+
+        self.calculate.clicked.connect(self.calculateTrajectory)
 
         self.addPointButton.clicked.connect(self.addPoint)
         self.addCircleButton.clicked.connect(self.addCircle)
@@ -111,7 +115,131 @@ class MainWindow(QMainWindow):
         self.algo_group.addAction(self.algoBruteForce)
         self.algo_group.triggered.connect(self.chooseAlgorithm)
 
+        self.setupAnimation()
         self.initializeCustomPlot()
+
+    def setupAnimation(self) -> None:
+        """
+        Initialize animation.
+        """
+        self.startAnimation.clicked.connect(self.start_animation)
+        self.pauseAnimation.clicked.connect(self.pause_animation)
+        self.resumeAnimation.clicked.connect(self.resume_animation)
+        self.resetAnimation.clicked.connect(self.reset_animation)
+        self.slider.valueChanged.connect(self.on_progress_slider_changed)
+
+        self.ui_update_timer = QTimer()
+        self.ui_update_timer.timeout.connect(self.update_animation_ui)
+        self.ui_update_timer.start(50)
+
+        self.set_animation_buttons_state(enabled=False)
+
+    def set_animation_buttons_state(self, *, enabled: bool) -> None:
+        """
+        Set default animation buttons state.
+        """
+        self.startAnimation.setEnabled(enabled)
+        self.pauseAnimation.setEnabled(False)
+        self.resumeAnimation.setEnabled(False)
+        self.resetAnimation.setEnabled(enabled)
+        self.slider.setEnabled(enabled)
+
+    def update_buttons_for_ready_state(self) -> None:
+        """
+        Update buttons for ready animation state.
+        """
+        self.startAnimation.setEnabled(True)
+        self.pauseAnimation.setEnabled(False)
+        self.resumeAnimation.setEnabled(False)
+        self.resetAnimation.setEnabled(True)
+
+    def update_buttons_for_running_state(self) -> None:
+        """
+        Update buttons for running animation state.
+        """
+        self.startAnimation.setEnabled(False)
+        self.pauseAnimation.setEnabled(True)
+        self.resumeAnimation.setEnabled(False)
+        self.resetAnimation.setEnabled(True)
+
+    def update_buttons_for_paused_state(self) -> None:
+        """
+        Update buttons for paused animation state.
+        """
+        self.startAnimation.setEnabled(False)
+        self.pauseAnimation.setEnabled(False)
+        self.resumeAnimation.setEnabled(True)
+        self.resetAnimation.setEnabled(True)
+
+    def update_buttons_for_finished_state(self) -> None:
+        """
+        Update buttons for finished animation state.
+        """
+        self.startAnimation.setEnabled(True)
+        self.pauseAnimation.setEnabled(False)
+        self.resumeAnimation.setEnabled(False)
+        self.resetAnimation.setEnabled(True)
+
+    def start_animation(self) -> None:
+        """
+        Start animation.
+        """
+        if self.trajectory_drawer:
+            success = self.trajectory_drawer.start_animation()
+            if success:
+                self.statusBar.showMessage("Анимация траектории запущена")
+                self.update_buttons_for_running_state()
+            else:
+                QMessageBox.information(self, "Траектория БПЛА",
+                "He удалось запустить анимацию траектории")
+
+    def pause_animation(self) -> None:
+        """
+        Pause animation.
+        """
+        if self.trajectory_drawer:
+            self.trajectory_drawer.pause_animation()
+            self.update_buttons_for_paused_state()
+
+    def resume_animation(self) -> None:
+        """
+        Resume animation.
+        """
+        if self.trajectory_drawer:
+            self.trajectory_drawer.resume_animation()
+            self.update_buttons_for_running_state()
+
+    def reset_animation(self) -> None:
+        """
+        Reset animation.
+        """
+        if self.trajectory_drawer:
+            self.trajectory_drawer.reset_animation()
+            self.update_buttons_for_ready_state()
+
+    def on_progress_slider_changed(self, value: int) -> None:
+        """
+        Change slider progress.
+        """
+        if self.trajectory_drawer:
+            self.slider.blockSignals(True)
+            progress = value / 100.0
+            self.trajectory_drawer.set_progress(progress)
+            self.slider.blockSignals(False)
+
+    def update_animation_ui(self) -> None:
+        """
+        Update animation via mainwindow timer.
+        """
+        if self.trajectory_drawer:
+            progress = self.trajectory_drawer.get_current_progress()
+
+            self.slider.blockSignals(True)
+            self.slider.setValue(int(progress * 100))
+            self.slider.blockSignals(False)
+
+            if progress >= 1.0 and not self.trajectory_drawer.is_animating:
+                self.update_buttons_for_finished_state()
 
     def initializeCustomPlot(self) -> None:
         """
@@ -135,12 +263,6 @@ class MainWindow(QMainWindow):
         Slot for closing app.
         """
         self.close()
-
-    def showStatistic(self) -> None:
-        """
-        Slot for showing statistic of flight.
-        """
-        self.stackedWidget.setCurrentIndex(0)
 
     def showParams(self) -> None:
         """
@@ -213,10 +335,21 @@ class MainWindow(QMainWindow):
             QMessageBox.information(self, "Траектория БПЛА",
                 "Ha карте нет объектов для сохранения")
 
-    def startTrajectory(self) -> None:
+    def controlTrajectory(self) -> None:
         """
-        Slot for starting animation of flight.
+        Slot for showing trajectory control menu.
         """
+        self.stackedWidget.setCurrentIndex(0)
+
+    def calculateTrajectory(self) -> None:
+        """
+        Slot for calculation trajectory for animation.
+        """
+        if self.is_calculated:
+            QMessageBox.information(self, "Траектория БПЛА",
+                "Оптимальный маршрут для данной карты уже был вычислен")
+            return
+
         control_points = []
         obstacles = []
         for geo_object in self.geo_objects:
@@ -227,7 +360,7 @@ class MainWindow(QMainWindow):
 
         if not control_points:
             QMessageBox.information(self, "Траектория БПЛА",
-                "На карте нет контрольных точек")
+                "Ha карте нет контрольных точек")
             return
 
         routes = route_calculation(control_points, obstacles)
@@ -240,12 +373,17 @@ class MainWindow(QMainWindow):
             solver = BruteForceSolver()
             path, _ = solver.solve(matrix, 0)
 
+        total_path_list = []
         for i in range(len(path) - 1):
             cur_path = routes[path[i]][path[i + 1]]
-            trajectory = TrajectoryDrawer(cur_path)
-            trajectory.draw(self.custom_plot, Qt.GlobalColor.blue)
+            total_path_list.extend(cur_path.route)
 
-        self.statusBar.showMessage("Процесс построения траектории запущен")
+        total_path = Route(total_path_list)
+        self.trajectory_drawer = TrajectoryDrawer(total_path, self.custom_plot)
+        self.set_animation_buttons_state(enabled=True)
+        QMessageBox.information(self, "Траектория БПЛА",
+                "Оптимальный маршрут посчитан")
+        self.is_calculated = True
 
     def chooseAlgorithm(self, action: QAction) -> None:
         """
@@ -301,6 +439,8 @@ class MainWindow(QMainWindow):
 
         self.updateObjectList()
         self.redraw()
+        self.is_calculated = False
+        self.set_animation_buttons_state(False)
 
     def deletePolygonPoint(self) -> None:
         """
@@ -385,6 +525,8 @@ class MainWindow(QMainWindow):
 
         QMessageBox.information(self, "Траектория БПЛА",
                 "Точка добавлена")
+        self.is_calculated = False
+        self.set_animation_buttons_state(False)
 
     def addCircle(self) -> None:
         """
@@ -422,6 +564,8 @@ class MainWindow(QMainWindow):
 
         QMessageBox.information(self, "Траектория БПЛА",
                 "Окружность добавлена")
+        self.is_calculated = False
+        self.set_animation_buttons_state(False)
 
     def addLine(self) -> None:
         """
@@ -462,6 +606,8 @@ class MainWindow(QMainWindow):
 
         QMessageBox.information(self, "Траектория БПЛА",
                 "Отрезок добавлен")
+        self.is_calculated = False
+        self.set_animation_buttons_state(False)
 
     def addPolygonPoint(self) -> None:
         """
@@ -521,6 +667,8 @@ class MainWindow(QMainWindow):
         MainWindow.clearLineEdit([self.polygonNameLineEdit])
         QMessageBox.information(self, "Траектория БПЛА",
                 "Многоугольник добавлен")
+        self.is_calculated = False
+        self.set_animation_buttons_state(False)
 
     def redraw(self) -> None:
         """
@@ -547,6 +695,8 @@ class MainWindow(QMainWindow):
             self.redraw()
             QMessageBox.information(self, "Траектория БПЛА",
                     "Объект обновлён")
+            self.is_calculated = False
+            self.set_animation_buttons_state(enabled=False)
 
     def editPolygonPoint(self) -> None:
         """
