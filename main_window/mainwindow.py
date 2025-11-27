@@ -74,7 +74,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.geo_objects: list[ABCDrawer] = []
         self.points_polygon: list[Point] = []
-        self.algorithm: Algorithm = 0
+        self.algorithm: Algorithm = Algorithm.LITTLE
         self.initializeUI()
 
     def initializeUI(self) -> None:
