@@ -249,7 +249,7 @@ class LittleAlgorithm(TSPSolver):
         """
         result = []
         edges = route.copy()
-        min_elements_form_circle = 2
+        min_elements_form_circle = 1
 
         while len(edges):
             length = 1
