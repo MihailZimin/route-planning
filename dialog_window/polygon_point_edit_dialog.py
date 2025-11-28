@@ -6,7 +6,7 @@ This module provides:
 
 """
 
-from PyQt6.QtWidgets import QWidget
+from PyQt6.QtWidgets import QMessageBox, QWidget
 
 from core.point import Point
 from dialog_window.base_edit_dialog import EditDialogWindow
@@ -28,6 +28,14 @@ class PolygonPointEditDialogWindow(EditDialogWindow):
         """
         Slot for accept button with parameters validation.
         """
+        try:
+            x_coord = float(self.xCoordLineEdit.text())
+            y_coord = float(self.yCoordLineEdit.text())
+            self._geo_object.x = x_coord
+            self._geo_object.y = y_coord
+        except ValueError as error:
+            QMessageBox.information(self, "Траектория БПЛА", str(error))
+            return
         self.accept()
 
     def loadParams(self) -> None:
@@ -36,12 +44,3 @@ class PolygonPointEditDialogWindow(EditDialogWindow):
         """
         self.xCoordLineEdit.setText(str(self._geo_object.x))
         self.yCoordLineEdit.setText(str(self._geo_object.y))
-
-    def setChanges(self) -> None:
-        """
-        Change point parameters.
-        """
-        x_coord = float(self.xCoordLineEdit.text())
-        y_coord = float(self.yCoordLineEdit.text())
-        self._geo_object.x = x_coord
-        self._geo_object.y = y_coord

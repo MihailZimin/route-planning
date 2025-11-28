@@ -96,3 +96,9 @@ class Line(ABCGeo):
         Return string representation of line.
         """
         return f"{self._start!s}, {self._end!s}"
+
+    def length(self) -> float:
+        """
+        Return length of line.
+        """
+        return self._start.distance_to(self._end)

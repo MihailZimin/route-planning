@@ -27,34 +27,17 @@ class CircleEditDialogWindow(EditDialogWindow):
         """
         Slot for accept button with validation of parameters.
         """
-        min_x_coord = 0
-        max_x_coord = 1000
-        min_y_coord = 0
-        max_y_coord = 1000
-        max_rad = 500
-        min_rad = 0
-
-        x_coord = self.xLineEdit.text()
-        y_coord = self.yLineEdit.text()
-        radius = self.radiusLineEdit.text()
-        if not x_coord or not y_coord:
-            QMessageBox.information(self, "Траектория БПЛА", "Заполните все поля")
-            return
+        name = self.nameLineEdit.text()
         try:
-            x_coord = float(x_coord)
-            y_coord = float(y_coord)
-            rad = float(radius)
-        except ValueError:
-            QMessageBox.information(self, "Траектория БПЛА", "Введите корректные параметры")
-            return
-        if x_coord < min_x_coord or x_coord > max_x_coord:
-            QMessageBox.information(self, "Траектория БПЛА", "Введите корректные координаты")
-            return
-        if y_coord < min_y_coord or y_coord > max_y_coord:
-            QMessageBox.information(self, "Траектория БПЛА", "Введите корректные координаты")
-            return
-        if rad < min_rad or rad > max_rad:
-            QMessageBox.information(self, "Траектория БПЛА", "Введите корректный радиус")
+            x = float(self.xLineEdit.text())
+            y = float(self.yLineEdit.text())
+            r = float(self.radiusLineEdit.text())
+            self._geo_object.name = name
+            self._geo_object.center.x = x
+            self._geo_object.center.y = y
+            self._geo_object.radius = r
+        except ValueError as error:
+            QMessageBox.information(self, "Траектория БПЛА", str(error))
             return
         self.accept()
 
@@ -66,16 +49,3 @@ class CircleEditDialogWindow(EditDialogWindow):
         self.xLineEdit.setText(str(self._geo_object.center.x))
         self.yLineEdit.setText(str(self._geo_object.center.y))
         self.radiusLineEdit.setText(str(self._geo_object.radius))
-
-    def setChanges(self) -> None:
-        """
-        Change circle parameters.
-        """
-        name = self.nameLineEdit.text()
-        x = float(self.xLineEdit.text())
-        y = float(self.yLineEdit.text())
-        r = float(self.radiusLineEdit.text())
-        self._geo_object.name = name
-        self._geo_object.center.x = x
-        self._geo_object.center.y = y
-        self._geo_object.radius = r

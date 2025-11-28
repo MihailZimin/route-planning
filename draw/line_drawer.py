@@ -8,6 +8,7 @@ This module provides:
 
 
 import QCustomPlot_PyQt6 as qcp
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QBrush, QColor, QPen
 
 from core.line import Line
@@ -23,7 +24,7 @@ class LineDrawer(ABCDrawer, Line):
 
     _type : str = "Line"
     _point_size : int = 5
-    def __init__(self, start: Point, end: Point, name: str) -> None:
+    def __init__(self, start: Point, end: Point, name: str = "") -> None:
         """
         Init line drawer.
         """
@@ -51,19 +52,17 @@ class LineDrawer(ABCDrawer, Line):
         """
         return LineDrawer._type
 
-    def draw(self, map_view: qcp.QCustomPlot) -> None:
+    def draw(self, map_view: qcp.QCustomPlot, color:Qt.GlobalColor=Qt.GlobalColor.red) -> None:
         """
         Draw line.
 
         Args:
             map_view: widget where line will be drawn.
-            begin: tuple of coordinates of line begin.
-            end: tuple of coordinates of line end.
+            color: color of line.
 
         Default line color: Red.
 
         """
-        color = QColor(255, 0, 0)
         line = map_view.addGraph()
         line.setData([self.start.x, self.end.x], [self.start.y, self.end.y])
 
@@ -79,6 +78,29 @@ class LineDrawer(ABCDrawer, Line):
         line.setPen(QPen(color, 2))
 
         map_view.replot()
+
+    def get_progress_points(self, progress: float) -> list[Point]:
+        """
+        Get points for animation drawing.
+
+        Args:
+            progress: animation progress (0 <= progress <= 1).
+
+        Returns:
+            Points of line from start to animation progress (if progress == 0 returns start point).
+
+        """
+        start_x = self.start.x
+        start_y = self.start.y
+
+        if (progress == 0):
+            return [Point(start_x, start_y)]
+
+        current_x = self.start.x + (self.end.x - self.start.x) * progress
+        current_y = self.start.y + (self.end.y - self.start.y) * progress
+
+        return [Point(start_x, start_y), Point(current_x, current_y)]
+
 
     @property
     def parameters(self) -> dict:

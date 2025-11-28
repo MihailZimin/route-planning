@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>960</width>
-    <height>649</height>
+    <width>936</width>
+    <height>654</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -65,10 +65,13 @@ border: 8px double #555;</string>
          <string notr="true">border: 2px solid black #cccccc;</string>
         </property>
         <property name="currentIndex">
-         <number>2</number>
+         <number>0</number>
         </property>
-        <widget class="QWidget" name="page_1">
-         <layout class="QGridLayout" name="gridLayout_2">
+        <widget class="QWidget" name="page_3">
+         <layout class="QVBoxLayout" name="verticalLayout" stretch="1,5,1,2">
+          <property name="spacing">
+           <number>0</number>
+          </property>
           <property name="leftMargin">
            <number>0</number>
           </property>
@@ -81,8 +84,182 @@ border: 8px double #555;</string>
           <property name="bottomMargin">
            <number>0</number>
           </property>
-          <item row="0" column="0">
-           <widget class="QFrame" name="page_1_frame">
+          <item>
+           <widget class="QLabel" name="trajectoryLabel">
+            <property name="styleSheet">
+             <string notr="true">font: 75 12pt &quot;Microsoft Tai Le&quot;;
+border: 2px solid black #cccccc;
+background-color: rgb(243, 255, 233);</string>
+            </property>
+            <property name="text">
+             <string>Управление траекторией</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QFrame" name="frame">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_19">
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <property name="horizontalSpacing">
+              <number>5</number>
+             </property>
+             <property name="verticalSpacing">
+              <number>3</number>
+             </property>
+             <item row="4" column="0">
+              <widget class="QPushButton" name="resumeAnimation">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QPushButton {
+    border: 2px solid black #cccccc;
+	border-radius: 10px;
+}
+
+QPushButton:pressed {
+    margin-left: 1px;
+    margin-top: 1px;
+    margin-right: -1px;
+    margin-bottom: -1px;
+}</string>
+               </property>
+               <property name="text">
+                <string>Продолжить</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QPushButton" name="resetAnimation">
+               <property name="styleSheet">
+                <string notr="true">QPushButton {
+    border: 2px solid black #cccccc;
+	border-radius: 10px;
+}
+
+QPushButton:pressed {
+    margin-left: 1px;
+    margin-top: 1px;
+    margin-right: -1px;
+    margin-bottom: -1px;
+}</string>
+               </property>
+               <property name="text">
+                <string>Сбросить траекторию</string>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="0">
+              <widget class="QSlider" name="slider">
+               <property name="styleSheet">
+                <string notr="true">QSlider::groove:horizontal {
+    height: 4px;
+    background: #e0e0e0;
+    border-radius: 2px;
+}
+
+QSlider::handle:horizontal {
+    background: #ffffff;
+    border: 2px solid #2196F3;
+    width: 16px;
+    height: 16px;
+    margin: -6px 0;
+    border-radius: 8px;
+}</string>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QPushButton" name="startAnimation">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QPushButton {
+    border: 2px solid black #cccccc;
+	border-radius: 10px;
+}
+
+QPushButton:pressed {
+    margin-left: 1px;
+    margin-top: 1px;
+    margin-right: -1px;
+    margin-bottom: -1px;
+}</string>
+               </property>
+               <property name="text">
+                <string>Запустить траекторию</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QPushButton" name="pauseAnimation">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QPushButton {
+    border: 2px solid black #cccccc;
+	border-radius: 10px;
+}
+
+QPushButton:pressed {
+    margin-left: 1px;
+    margin-top: 1px;
+    margin-right: -1px;
+    margin-bottom: -1px;
+}</string>
+               </property>
+               <property name="text">
+                <string>Пауза</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QPushButton" name="calculate">
+               <property name="styleSheet">
+                <string notr="true">QPushButton {
+    border: 2px solid black #cccccc;
+	border-radius: 10px;
+}
+
+QPushButton:pressed {
+    margin-left: 1px;
+    margin-top: 1px;
+    margin-right: -1px;
+    margin-bottom: -1px;
+}</string>
+               </property>
+               <property name="text">
+                <string>Посчитать оптимальную траекторию</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="stat_label">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
               <horstretch>0</horstretch>
@@ -90,39 +267,29 @@ border: 8px double #555;</string>
              </sizepolicy>
             </property>
             <property name="styleSheet">
-             <string notr="true"/>
+             <string notr="true">font: 75 12pt &quot;Microsoft Tai Le&quot;;
+border: 2px solid black #cccccc;
+background-color: rgb(243, 255, 233);</string>
             </property>
+            <property name="text">
+             <string>Статистика</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QFrame" name="frame_3">
             <property name="frameShape">
              <enum>QFrame::StyledPanel</enum>
             </property>
             <property name="frameShadow">
              <enum>QFrame::Raised</enum>
             </property>
-            <layout class="QGridLayout" name="gridLayout_3" rowstretch="1,2,2,2">
-             <item row="0" column="0" colspan="2">
-              <widget class="QLabel" name="stat_label">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">font: 75 12pt &quot;Microsoft Tai Le&quot;;
-border: 2px solid black #cccccc;
-border-radius: 10px;
-background-color: rgb(243, 255, 233);</string>
-               </property>
-               <property name="text">
-                <string>Статистика</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="cur_points_amount_label">
+            <layout class="QGridLayout" name="gridLayout_3">
+             <item row="0" column="0">
+              <widget class="QLabel" name="curPointsAmount">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                  <horstretch>0</horstretch>
@@ -133,31 +300,35 @@ background-color: rgb(243, 255, 233);</string>
                 <string notr="true">font: 75 9pt &quot;Microsoft Tai Le&quot;;
 border: 2px solid black #cccccc;
 border-radius: 10px;
-background-color: rgb(243, 255, 233);</string>
+</string>
                </property>
                <property name="text">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Количество&lt;br/&gt;достигнутых &lt;br&gt; целей:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>Количество достигнутых целей:</string>
                </property>
                <property name="textFormat">
                 <enum>Qt::RichText</enum>
                </property>
+               <property name="wordWrap">
+                <bool>true</bool>
+               </property>
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QLabel" name="label">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>2</string>
+              <widget class="QLineEdit" name="curDistanceLineEdit">
+               <property name="enabled">
+                <bool>false</bool>
                </property>
               </widget>
              </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="cur_distance_label">
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="curPointsLineEdit">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="curDistanceLabel">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                  <horstretch>0</horstretch>
@@ -167,59 +338,16 @@ background-color: rgb(243, 255, 233);</string>
                <property name="styleSheet">
                 <string notr="true">font: 75 9pt &quot;Microsoft Tai Le&quot;;
 border: 2px solid black #cccccc;
-border-radius: 10px;
-background-color: rgb(243, 255, 233);</string>
+border-radius: 10px;</string>
                </property>
                <property name="midLineWidth">
                 <number>-1</number>
                </property>
                <property name="text">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Пройденное&lt;br/&gt;расстояние (м):&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>Пройденное расстояние (м):</string>
                </property>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <widget class="QLabel" name="label_2">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>500</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="0">
-              <widget class="QLabel" name="sum_distance_label">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">font: 75 9pt &quot;Microsoft Tai Le&quot;;
-border: 2px solid black #cccccc;
-border-radius: 10px;
-background-color: rgb(243, 255, 233);</string>
-               </property>
-               <property name="text">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Суммарное&lt;br/&gt;пройденное &lt;br/&gt;расстояние (м):&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="1">
-              <widget class="QLabel" name="label_3">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>1500</string>
+               <property name="wordWrap">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
@@ -228,7 +356,7 @@ background-color: rgb(243, 255, 233);</string>
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="page_2">
+        <widget class="QWidget" name="page_1">
          <layout class="QGridLayout" name="gridLayout_10">
           <property name="leftMargin">
            <number>0</number>
@@ -370,7 +498,7 @@ background-color: rgb(243, 255, 233);</string>
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="page_3">
+        <widget class="QWidget" name="page_2">
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <property name="leftMargin">
            <number>0</number>
@@ -408,6 +536,9 @@ background-color: rgb(243, 255, 233);</string>
              <property name="bottomMargin">
               <number>0</number>
              </property>
+             <property name="spacing">
+              <number>0</number>
+             </property>
              <item row="0" column="0">
               <widget class="QLabel" name="change_param_label">
                <property name="enabled">
@@ -422,8 +553,8 @@ background-color: rgb(243, 255, 233);</string>
                <property name="styleSheet">
                 <string notr="true">font: 75 12pt &quot;Microsoft Tai Le&quot;;
 border: 2px solid black #cccccc;
-border-radius: 10px;
-background-color: rgb(243, 255, 233);</string>
+background-color: rgb(243, 255, 233);
+</string>
                </property>
                <property name="text">
                 <string>Изменение параметров карты</string>
@@ -554,7 +685,7 @@ QPushButton:pressed {
                      <rect>
                       <x>0</x>
                       <y>0</y>
-                      <width>254</width>
+                      <width>247</width>
                       <height>105</height>
                      </rect>
                     </property>
@@ -1418,15 +1549,15 @@ background-color: rgb(243, 255, 233);</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>960</width>
+     <width>936</width>
      <height>26</height>
     </rect>
    </property>
-   <widget class="QMenu" name="start">
+   <widget class="QMenu" name="trajectoryBtn">
     <property name="title">
-     <string> Старт</string>
+     <string>Траектория</string>
     </property>
-    <addaction name="startAction"/>
+    <addaction name="trajectoryAction"/>
    </widget>
    <widget class="QMenu" name="map">
     <property name="title">
@@ -1442,27 +1573,28 @@ background-color: rgb(243, 255, 233);</string>
     </property>
     <addaction name="showParamsAction"/>
    </widget>
-   <widget class="QMenu" name="stat">
-    <property name="title">
-     <string>Статистика</string>
-    </property>
-    <addaction name="showStatAction"/>
-   </widget>
    <widget class="QMenu" name="exit">
     <property name="title">
      <string>Выход</string>
     </property>
     <addaction name="exitAction"/>
    </widget>
-   <addaction name="start"/>
+   <widget class="QMenu" name="algo">
+    <property name="title">
+     <string>Алгоритм</string>
+    </property>
+    <addaction name="algoLittle"/>
+    <addaction name="algoBruteForce"/>
+   </widget>
+   <addaction name="trajectoryBtn"/>
+   <addaction name="algo"/>
    <addaction name="map"/>
    <addaction name="params"/>
-   <addaction name="stat"/>
    <addaction name="exit"/>
   </widget>
-  <action name="startAction">
+  <action name="trajectoryAction">
    <property name="text">
-    <string>Запустить построение траектории</string>
+    <string>Управление траекторией</string>
    </property>
   </action>
   <action name="chooseMapAction">
@@ -1501,6 +1633,25 @@ background-color: rgb(243, 255, 233);</string>
    </property>
    <property name="toolTip">
     <string>Удалить выбранный объект</string>
+   </property>
+  </action>
+  <action name="algoLittle">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Алгоритм Литтла</string>
+   </property>
+  </action>
+  <action name="algoBruteForce">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Переборный Алгоритм</string>
    </property>
   </action>
  </widget>

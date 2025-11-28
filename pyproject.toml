@@ -34,7 +34,7 @@ line-length = 105
 
 [tool.ruff.lint]
 select = ["ALL"]
-ignore = ["D203", "COM812", "D200", "D212", "N802"]
+ignore = ["D203", "COM812", "D200", "D212", "N802", "FBT003"]
 
 
 # Allow fix for all enabled rules (when `--fix`) is provided.
