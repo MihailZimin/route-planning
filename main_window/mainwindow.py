@@ -440,7 +440,7 @@ class MainWindow(QMainWindow):
         self.updateObjectList()
         self.redraw()
         self.is_calculated = False
-        self.set_animation_buttons_state(False)
+        self.set_animation_buttons_state(enabled=False)
 
     def deletePolygonPoint(self) -> None:
         """
@@ -526,7 +526,7 @@ class MainWindow(QMainWindow):
         QMessageBox.information(self, "Траектория БПЛА",
                 "Точка добавлена")
         self.is_calculated = False
-        self.set_animation_buttons_state(False)
+        self.set_animation_buttons_state(enabled=False)
 
     def addCircle(self) -> None:
         """
@@ -565,7 +565,7 @@ class MainWindow(QMainWindow):
         QMessageBox.information(self, "Траектория БПЛА",
                 "Окружность добавлена")
         self.is_calculated = False
-        self.set_animation_buttons_state(False)
+        self.set_animation_buttons_state(enabled=False)
 
     def addLine(self) -> None:
         """
@@ -607,7 +607,7 @@ class MainWindow(QMainWindow):
         QMessageBox.information(self, "Траектория БПЛА",
                 "Отрезок добавлен")
         self.is_calculated = False
-        self.set_animation_buttons_state(False)
+        self.set_animation_buttons_state(enabled=False)
 
     def addPolygonPoint(self) -> None:
         """
@@ -668,7 +668,7 @@ class MainWindow(QMainWindow):
         QMessageBox.information(self, "Траектория БПЛА",
                 "Многоугольник добавлен")
         self.is_calculated = False
-        self.set_animation_buttons_state(False)
+        self.set_animation_buttons_state(enabled=False)
 
     def redraw(self) -> None:
         """
