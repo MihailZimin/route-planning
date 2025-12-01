@@ -77,7 +77,6 @@ class MainWindow(QMainWindow):
         self.algorithm: Algorithm = Algorithm.LITTLE
         self.trajectory_drawer: TrajectoryDrawer = None
         self.ui_timer: QTimer = None
-        self.is_calculated = False
         self.initializeUI()
 
     def initializeUI(self) -> None:
@@ -345,10 +344,6 @@ class MainWindow(QMainWindow):
         """
         Slot for calculation trajectory for animation.
         """
-        if self.is_calculated:
-            QMessageBox.information(self, "Траектория БПЛА",
-                "Оптимальный маршрут для данной карты уже был вычислен")
-            return
 
         control_points = []
         obstacles = []
@@ -383,7 +378,6 @@ class MainWindow(QMainWindow):
         self.set_animation_buttons_state(enabled=True)
         QMessageBox.information(self, "Траектория БПЛА",
                 "Оптимальный маршрут посчитан")
-        self.is_calculated = True
 
     def chooseAlgorithm(self, action: QAction) -> None:
         """
@@ -439,7 +433,6 @@ class MainWindow(QMainWindow):
 
         self.updateObjectList()
         self.redraw()
-        self.is_calculated = False
         self.set_animation_buttons_state(enabled=False)
 
     def deletePolygonPoint(self) -> None:
@@ -548,7 +541,6 @@ class MainWindow(QMainWindow):
 
         QMessageBox.information(self, "Траектория БПЛА",
                 "Точка добавлена")
-        self.is_calculated = False
         self.set_animation_buttons_state(enabled=False)
 
     def addCircle(self) -> None:
@@ -587,7 +579,6 @@ class MainWindow(QMainWindow):
 
         QMessageBox.information(self, "Траектория БПЛА",
                 "Окружность добавлена")
-        self.is_calculated = False
         self.set_animation_buttons_state(enabled=False)
 
     def addLine(self) -> None:
@@ -629,7 +620,6 @@ class MainWindow(QMainWindow):
 
         QMessageBox.information(self, "Траектория БПЛА",
                 "Отрезок добавлен")
-        self.is_calculated = False
         self.set_animation_buttons_state(enabled=False)
 
     def addPolygonPoint(self) -> None:
@@ -690,7 +680,6 @@ class MainWindow(QMainWindow):
         MainWindow.clearLineEdit([self.polygonNameLineEdit])
         QMessageBox.information(self, "Траектория БПЛА",
                 "Многоугольник добавлен")
-        self.is_calculated = False
         self.set_animation_buttons_state(enabled=False)
 
     def redraw(self) -> None:
@@ -718,7 +707,6 @@ class MainWindow(QMainWindow):
             self.redraw()
             QMessageBox.information(self, "Траектория БПЛА",
                     "Объект обновлён")
-            self.is_calculated = False
             self.set_animation_buttons_state(enabled=False)
 
     def editPolygonPoint(self) -> None:
