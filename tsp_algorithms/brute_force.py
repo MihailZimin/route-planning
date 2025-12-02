@@ -19,6 +19,7 @@ class BruteForceSolver(TSPSolver):
             matrix: matrix of lengthes,
                 where matrix[i][j] is length of path from i-th control point to j-th
             start: index of start control point
+            salesmen_count: count of salesmen
 
         Returns:
             sequence(list) of points in optimal order.
@@ -30,7 +31,7 @@ class BruteForceSolver(TSPSolver):
         self._check_input_data(matrix, start)
 
         matrix = self._transform_matrix_for_multiple_salesmen(matrix, start, salesmen_count)
-        
+
         modified_size = matrix.shape[0]
 
         permutated_vertices = [i for i in range(modified_size) if i != start]
@@ -50,5 +51,5 @@ class BruteForceSolver(TSPSolver):
                 optimal_path = [start, *permutation, start]
 
         self._optimal_length = optimal_length
-        final_routes = self._unravel_multiple_salesmen_routes(optimal_path, salesmen_count, origin_size, start)
+        final_routes = self._unravel_multiple_salesmen_routes(optimal_path, origin_size, start)
         return final_routes, optimal_length

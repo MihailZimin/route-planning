@@ -1,8 +1,8 @@
 """Class TSPSolver for easier data processing."""
+import itertools
 from abc import ABC, abstractmethod
 
 import numpy as np
-import itertools
 
 
 class SolutionExceptionError(Exception):
@@ -155,8 +155,13 @@ class TSPSolver(ABC):
             error_msg = (f"Can't build a route thruough every vertex\n"
                          f"Those vertices are unreachable: {unreachable_elements}")
             raise SolutionExceptionError(error_msg)
-        
-    def _transform_matrix_for_multiple_salesmen(self, matrix: np.ndarray, start_point: int, salesmen_count: int) -> np.ndarray:
+
+    def _transform_matrix_for_multiple_salesmen(
+            self,
+            matrix: np.ndarray,
+            start_point: int,
+            salesmen_count: int
+        ) -> np.ndarray:
         """
         Transform matrix of distances with one control point to matrix with multiple control points.
 
@@ -167,29 +172,32 @@ class TSPSolver(ABC):
 
         Returns:
             Expanded matrix for muptiple salesmen logic
-        """
 
+        """
         original_size = matrix.shape[0]
         result_size = original_size + salesmen_count - 1
         result_matrix = np.full(shape=(result_size, result_size), fill_value=np.inf)
         result_matrix[:original_size, :original_size] = matrix
         for copy_start_point in range(original_size, result_size):
-            for intermediate_point in range(original_size):
-                result_matrix[copy_start_point, intermediate_point] = matrix[start_point, intermediate_point]
-                result_matrix[intermediate_point, copy_start_point] = matrix[intermediate_point, start_point]
+            result_matrix[copy_start_point, :original_size] = matrix[start_point, :]
+            result_matrix[:original_size, copy_start_point] = matrix[:, start_point]
 
         return result_matrix
 
-    def _unravel_multiple_salesmen_routes(self, mixed_route: list[int], salesmen_count: int, points_count: int, start_point: int) -> list[list[int]]:
+    def _unravel_multiple_salesmen_routes(
+            self,
+            mixed_route: list[int],
+            points_count: int,
+            start_point: int
+        ) -> list[list[int]]:
         """
         Divide raw route to multiple routes for each salesman.
 
         Args:
             mixed_route: route with mixed salesmen pathes
-            salesmen_count: count of salesmen
             points_count: count of control points
             start_point: start point
-        
+
         Returns:
             list of lists of routes for each salesman
 
@@ -197,9 +205,10 @@ class TSPSolver(ABC):
         single_route = []
         result_routes = []
         for current_point, next_point in itertools.pairwise(mixed_route):
-            if current_point >= points_count:
-                current_point = start_point
-            single_route.append(current_point)
+            point_to_add = current_point
+            if point_to_add >= points_count:
+                point_to_add = start_point
+            single_route.append(point_to_add)
             if next_point >= points_count or next_point == start_point:
                 single_route.append(single_route[0])
                 result_routes.append(single_route.copy())
