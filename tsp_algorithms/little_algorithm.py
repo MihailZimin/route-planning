@@ -308,7 +308,7 @@ class LittleAlgorithm(TSPSolver):
 
         return left_child, right_child
 
-    def solve(self, matrix: np.ndarray, start: int) -> list[int]:
+    def solve(self, matrix: np.ndarray, start: int, salesmen_count: int = 1) -> list[int]:
         """
         Representation method of Little's algorithm.
 
@@ -316,16 +316,21 @@ class LittleAlgorithm(TSPSolver):
             matrix: matrix of lengthes,
                 where matrix[i][j] is length of path from i-th control point to j-th
             start: index of start control point
+            salesmen_count: count of salesmen
 
         Returns:
             list of indices of points which form circle for the most optimal TSP solution
 
         """
         matrix = np.where(matrix == -1, np.inf, matrix)
-        sz = matrix.shape[0]
+        origin_size = matrix.shape[0]
         nodes = []
 
         self._check_input_data(matrix, start)
+
+        matrix = self._transform_matrix_for_multiple_salesmen(matrix, start, salesmen_count)
+
+        modified_size = matrix.shape[0]
 
         root_matrix = matrix.copy()
         lower_bound = (self.__reduce_matrix_by_rows(root_matrix) +
@@ -342,11 +347,11 @@ class LittleAlgorithm(TSPSolver):
             if optimal_length <= cur_node.lower_bound:
                 continue
 
-            if len(cur_node.route) == sz - 1:
+            if len(cur_node.route) == modified_size - 1:
                 final_edge = self.__get_close_edges(cur_node.route)
                 cur_node.route.append(*final_edge)
 
-            if optimal_length > cur_node.lower_bound and len(cur_node.route) == sz:
+            if optimal_length > cur_node.lower_bound and len(cur_node.route) == modified_size:
                 optimal_length = cur_node.lower_bound
                 optimal_route = cur_node.route
                 continue
@@ -356,4 +361,6 @@ class LittleAlgorithm(TSPSolver):
             self.__add_node(nodes, right_child)
 
         self._optimal_length = optimal_length
-        return self.__unravel_edges(start, optimal_route), optimal_length
+        mixed_route = self.__unravel_edges(start, optimal_route)
+        final_routes = self._unravel_multiple_salesmen_routes(mixed_route, origin_size, start)
+        return final_routes, optimal_length
