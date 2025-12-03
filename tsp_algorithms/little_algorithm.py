@@ -331,6 +331,24 @@ class LittleAlgorithm(TSPSolver):
 
         return left_child, right_child
 
+    def __finish_node(self, cur_node: Node, modified_size: int) -> None:
+        """
+        Finish node route.
+
+        Args:
+            cur_node: current node
+            modified_size: size of modified matrix of distances
+
+        """
+        for row in range(modified_size):
+            for column in range(modified_size):
+                if cur_node.matrix[row, column] != np.inf:
+                    cur_node.lower_bound += cur_node.matrix[row, column]
+                    cur_node.route.append((row, column))
+        final_edge = self.__get_close_edges(cur_node.route)
+        if final_edge[0][0] != final_edge[0][1]:
+            cur_node.lower_bound = np.inf
+
     def solve(
             self,
             matrix: np.ndarray,
@@ -379,18 +397,18 @@ class LittleAlgorithm(TSPSolver):
             if optimal_length <= cur_node.lower_bound:
                 continue
 
-            if len(cur_node.route) == modified_size - 1:
-                final_edge = self.__get_close_edges(cur_node.route)
-                cur_node.route.append(*final_edge)
+            if len(cur_node.route) == modified_size - 2:
+                self.__finish_node(cur_node, modified_size)
 
             if optimal_length > cur_node.lower_bound and len(cur_node.route) == modified_size:
                 optimal_length = cur_node.lower_bound
                 optimal_route = cur_node.route
                 continue
 
-            left_child, right_child = self.__make_children(cur_node)
-            self.__add_node(nodes, left_child)
-            self.__add_node(nodes, right_child)
+            if len(cur_node.route) < modified_size:
+                left_child, right_child = self.__make_children(cur_node)
+                self.__add_node(nodes, left_child)
+                self.__add_node(nodes, right_child)
 
         self._optimal_length = optimal_length
         mixed_route = self.__unravel_edges(start, optimal_route)
