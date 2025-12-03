@@ -7,56 +7,110 @@ This module provides:
 """
 
 
+import QCustomPlot_PyQt6 as qcp
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QBrush, QColor, QPen
-from PyQt6.QtWidgets import QGraphicsLineItem, QGraphicsView
+
+from core.line import Line
+from core.point import Point
 
 from .abstract_drawer import ABCDrawer
 
 
-class LineDrawer(ABCDrawer):
+class LineDrawer(ABCDrawer, Line):
     """
     Class for drawing line.
     """
 
-    def __init__(self) -> None:
+    _type : str = "Line"
+    _point_size : int = 5
+    def __init__(self, start: Point, end: Point, name: str = "") -> None:
         """
         Init line drawer.
         """
-        super().__init__()
-        self.graphicsItem: QGraphicsLineItem = QGraphicsLineItem()
+        super().__init__(start, end)
+        self._name = name
 
-    def draw(
-        self,
-        map_view: QGraphicsView,
-        begin: tuple[float, float],
-        end: tuple[float, float]
-    ) -> None:
+    @property
+    def name(self) -> str:
+        """
+        Return line name.
+        """
+        return self._name
+
+    @name.setter
+    def name(self, name: str) -> None:
+        """
+        Set line name.
+        """
+        self._name = name
+
+    @property
+    def type(self) -> str:
+        """
+        Return geo object type.
+        """
+        return LineDrawer._type
+
+    def draw(self, map_view: qcp.QCustomPlot, color:Qt.GlobalColor=Qt.GlobalColor.red) -> None:
         """
         Draw line.
 
         Args:
             map_view: widget where line will be drawn.
-            begin: tuple of coordinates of line begin.
-            end: tuple of coordinates of line end.
+            color: color of line.
 
         Default line color: Red.
-        """
-        color = QColor(255, 0, 0)
-        scene = map_view.scene()
-        self.graphicsItem = scene.addLine(
-            begin[0],
-            begin[1],
-            end[0],
-            end[1],
-            QPen(color)
-        )
 
-    def delete(self, map_view: QGraphicsView) -> None:
         """
-        Delete line.
+        line = map_view.addGraph()
+        line.setData([self.start.x, self.end.x], [self.start.y, self.end.y])
+
+        pen = QPen(QColor(0, 0, 0))
+        pen.setWidth(1)
+        point_style = qcp.QCPScatterStyle()
+        point_style.setShape(qcp.QCPScatterStyle.ScatterShape.ssCircle)
+        point_style.setPen(pen)
+        point_style.setBrush(QBrush(color))
+        point_style.setSize(LineDrawer._point_size)
+
+        line.setScatterStyle(point_style)
+        line.setPen(QPen(color, 2))
+
+        map_view.replot()
+
+    def get_progress_points(self, progress: float) -> list[Point]:
+        """
+        Get points for animation drawing.
 
         Args:
-            map_view: widget where line is located.
+            progress: animation progress (0 <= progress <= 1).
+
+        Returns:
+            Points of line from start to animation progress (if progress == 0 returns start point).
+
         """
-        scene = map_view.scene()
-        scene.removeItem(self.graphicsItem)
+        start_x = self.start.x
+        start_y = self.start.y
+
+        if (progress == 0):
+            return [Point(start_x, start_y)]
+
+        current_x = self.start.x + (self.end.x - self.start.x) * progress
+        current_y = self.start.y + (self.end.y - self.start.y) * progress
+
+        return [Point(start_x, start_y), Point(current_x, current_y)]
+
+
+    @property
+    def parameters(self) -> dict:
+        """
+        Return line parameters for GUI display.
+        """
+        return {
+            "Название": self.name,
+            "X1": self.start.x,
+            "Y1": self.start.y,
+            "X2": self.end.x,
+            "Y2": self.end.y
+        }

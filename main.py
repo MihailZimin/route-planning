@@ -1,4 +1,5 @@
-"""Entry point.
+"""
+Entry point.
 
 This is the entrance to the app.
 """

@@ -7,70 +7,92 @@ This module provides:
 """
 
 
-from PyQt6.QtGui import QBrush, QColor, QPen
-from PyQt6.QtWidgets import QGraphicsEllipseItem, QGraphicsTextItem, QGraphicsView
+import QCustomPlot_PyQt6 as qcp
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QBrush, QColor, QFont, QPen
+
+from core.point import Point
 
 from .abstract_drawer import ABCDrawer
 
 
-class PointDrawer(ABCDrawer):
+class PointDrawer(ABCDrawer, Point):
     """
     Class for drawing point.
     """
 
-    def __init__(self) -> None:
+    _point_size: int = 5
+    _type : str = "Point"
+    def __init__(self, x: float = 0, y: float = 0, name: str = "") -> None:
         """
         Init point drawer.
         """
-        super().__init__()
-        self.graphicsItem: QGraphicsEllipseItem = QGraphicsEllipseItem()
-        self.graphicsText: QGraphicsTextItem = QGraphicsTextItem()
+        super().__init__(x, y)
+        self._name = name
 
-    def draw(
-        self,
-        map_view: QGraphicsView,
-        x: float,
-        y: float,
-        name: str,
-        point_size: int = 5,
-    ) -> None:
+    @property
+    def name(self) -> str:
+        """
+        Return point name.
+        """
+        return self._name
+
+    @name.setter
+    def name(self, name: str) -> None:
+        """
+        Set point name.
+        """
+        self._name = name
+
+    @property
+    def type(self) -> str:
+        """
+        Return geo object type.
+        """
+        return PointDrawer._type
+
+    def draw(self, map_view: qcp.QCustomPlot, color:Qt.GlobalColor=Qt.GlobalColor.red) -> None:
         """
         Draw point.
 
         Args:
             map_view: widget where point will be drawn.
-            x: x-coordinate of point.
-            y: y-coordinate of point.
-            name: point name.
-            point_size: point size (default: 5)
+            color: color of point.
 
         Default point color: Red.
 
         """
-        scene = map_view.scene()
-        color = QColor(255, 0, 0)
-        self.graphicsItem = scene.addEllipse(
-            x - point_size / 2,
-            y - point_size / 2,
-            point_size,
-            point_size,
-            QPen(color),
-            QBrush(color)
-        )
+        point = map_view.addGraph()
+        point.setData([self.x], [self.y])
 
-        if name:
-            self.graphicsText = scene.addText(name)
-            self.graphicsText.setPos(x + point_size, y - point_size)
-            self.graphicsText.setDefaultTextColor(color)
+        pen = QPen(QColor(0, 0, 0))
+        pen.setWidth(1)
+        point_style = qcp.QCPScatterStyle()
+        point_style.setShape(qcp.QCPScatterStyle.ScatterShape.ssCircle)
+        point_style.setPen(pen)
+        point_style.setBrush(QBrush(QColor(color)))
+        point_style.setSize(PointDrawer._point_size)
 
-    def delete(self, map_view: QGraphicsView) -> None:
+        point.setScatterStyle(point_style)
+
+        if self.name:
+            text_item = qcp.QCPItemText(map_view)
+            text_item.position.setCoords(
+                self.x + 2*PointDrawer._point_size,
+                self.y + 2*PointDrawer._point_size
+            )
+            text_item.setText(self.name)
+            text_item.setFont(QFont("Arial", 8))
+
+        map_view.replot()
+
+    @property
+    def parameters(self) -> dict:
         """
-        Delete point from map.
-
-        Args:
-            map_view: widget where point is located.
-
+        Return line parameters for GUI display.
         """
-        scene = map_view.scene()
-        scene.removeItem(self.graphicsItem)
-        scene.removeItem(self.graphicsText)
+        return {
+            "Название": self.name,
+            "X": self.x,
+            "Y": self.y
+        }

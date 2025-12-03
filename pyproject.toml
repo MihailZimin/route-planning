@@ -6,6 +6,7 @@ requires-python = ">=3.12"
 dependencies = [
     "numpy>=2.3.3",
     "PyQt6 >= 6.9.1",
+    "QCustomPlot_PyQt6 >= 2.1.1.2"
 ]
 
 # Same as Black.
@@ -33,7 +34,7 @@ line-length = 105
 
 [tool.ruff.lint]
 select = ["ALL"]
-ignore = ["D203", "COM812", "D200", "D212", "N802"]
+ignore = ["D203", "COM812", "D200", "D212", "N802", "FBT003"]
 
 
 # Allow fix for all enabled rules (when `--fix`) is provided.

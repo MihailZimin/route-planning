@@ -7,61 +7,81 @@ This module provides:
 """
 
 
+import QCustomPlot_PyQt6 as qcp
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QBrush, QColor, QPen
-from PyQt6.QtWidgets import QGraphicsEllipseItem, QGraphicsView
+
+from core.circle import Circle
+from core.point import Point
 
 from .abstract_drawer import ABCDrawer
 
 
-class CircleDrawer(ABCDrawer):
+class CircleDrawer(ABCDrawer, Circle):
     """
     Class for drawing circle.
     """
 
-    def __init__(self) -> None:
+    _type : str = "Circle"
+    def __init__(self, center: Point, radius: float, name: str = "") -> None:
         """
         Init circle drawer.
         """
-        super().__init__()
-        self.graphicsItem: QGraphicsEllipseItem = QGraphicsEllipseItem()
+        super().__init__(center, radius)
+        self._name = name
 
-    def draw(
-        self,
-        map_view: QGraphicsView,
-        x: float,
-        y: float,
-        rad: float
-    ) -> None:
+    @property
+    def name(self) -> str:
+        """
+        Return circle name.
+        """
+        return self._name
+
+    @name.setter
+    def name(self, name : str) -> None:
+        """
+        Set circle name.
+        """
+        self._name = name
+
+    @property
+    def type(self) -> str:
+        """
+        Return geo object type.
+        """
+        return CircleDrawer._type
+
+    def draw(self, map_view: qcp.QCustomPlot, color: Qt.GlobalColor=Qt.GlobalColor.red) -> None:
         """
         Draw circle.
 
         Args:
             map_view: widget where circle will be drawn.
-            x: x-coordinate of circle.
-            y: y-coordinate of circle.
-            rad: circle radius.
+            color: color of circle.
 
         Default circle color: Red.
 
         """
-        scene = map_view.scene()
-        color = QColor(255, 0, 0)
-        self.graphicsItem = scene.addEllipse(
-            x - rad / 2,
-            y - rad / 2,
-            rad,
-            rad,
-            QPen(color),
-            QBrush(color)
-        )
+        circle = qcp.QCPItemEllipse(map_view)
 
-    def delete(self, map_view: QGraphicsView) -> None:
+        circle.topLeft.setCoords(self.center.x - self.radius, self.center.y + self.radius)
+        circle.bottomRight.setCoords(self.center.x + self.radius, self.center.y - self.radius)
+
+        pen = QPen(QColor(0, 0, 0))
+        pen.setWidth(2)
+        circle.setPen(pen)
+        circle.setBrush(QBrush(QColor(color)))
+
+        map_view.replot()
+
+    @property
+    def parameters(self) -> dict:
         """
-        Delete Circle.
-
-        Args:
-            map_view: widget where circle is located.
-
+        Return line parameters for GUI display.
         """
-        scene = map_view.scene()
-        scene.removeItem(self.graphicsItem)
+        return {
+            "Название": self.name,
+            "X": self.center.x,
+            "Y": self.center.y,
+            "Радиус": self.radius
+        }

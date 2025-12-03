@@ -18,6 +18,8 @@ class Polygon(ABCGeo):
 
     """
 
+    CHECK_ON_CONVEX = False
+
     def __init__(self, points: list[Point]) -> None:
         """
         Initialize 2D polygon.
@@ -27,7 +29,14 @@ class Polygon(ABCGeo):
         Args:
             points: list of Point objects
 
+        Raises:
+            TypeError if any point in points list is not Point type
+            ::Optional:: ValueError if points do not form convex figure
+                This check will occur if CHECK_ON_CONVEX constant is True
+
         """
+        Point.check_point_instance(*points)
+        Polygon._raise_if_not_convex(self._ensure_closed(points))
         self._points = points.copy()
 
     def _ensure_closed(self, points: list[Point]) -> list[Point]:
@@ -75,7 +84,14 @@ class Polygon(ABCGeo):
         Args:
             new_points: new coordinates(points) of vertices
 
+        Raises:
+            TypeError if any point in new_points list is not Point type
+            ::Optional:: ValueError if points do not form convex figure
+                This check will occur if CHECK_ON_CONVEX constant is True
+
         """
+        Point.check_point_instance(*new_points)
+        Polygon._raise_if_not_convex(self._ensure_closed(new_points))
         self._points = new_points.copy()
 
     def __str__(self) -> str:
@@ -87,9 +103,17 @@ class Polygon(ABCGeo):
     def insert_point(self, point: Point, pos: int) -> None:
         """
         Add point in the end of list.
+
+        Raises:
+            TypeError point parameter is not Point type
+            ::Optional:: ValueError if points after changing do not form convex figure
+                This check will occur if CHECK_ON_CONVEX constant is True
+
         """
         if pos >= 0:
-            self._points.insert(pos, point)
+            temp_points = self._points.copy()
+            temp_points.insert(pos, point)
+            self.points = temp_points           #double copying, cause checks occur in points setter
 
     @staticmethod
     def check_on_convex(points: list[Point]) -> bool:
@@ -117,15 +141,40 @@ class Polygon(ABCGeo):
         sign = get_sign(*pair_sides[0])
         return all(get_sign(side1, side2) == sign for side1, side2 in pair_sides)
 
+    @staticmethod
+    def _raise_if_not_convex(points: list[Point]) -> None:
+        """
+        Check if polygon is convex.
+
+        Args:
+            points: list of points that form polygon
+
+        Raises:
+            ValueError: if data is incorrect.
+
+        """
+        if Polygon.CHECK_ON_CONVEX and not Polygon.check_on_convex(points):
+            error_msg = "points do not form convex polygon"
+            raise ValueError(error_msg)
+
     def __getitem__(self, index: int) -> Point:
         """
         Allow to get element through '[]'.
         """
         return self._points[index]
 
-    def __setitem__(self, index: int, value: Point) -> None:
+    def __setitem__(self, index: int, point: Point) -> None:
         """
         Allow to set new value through '[]'.
+
+        Raises:
+            TypeError point parameter is not Point type
+            ::Optional:: ValueError if points after changing do not form convex figure
+                This check will occur if CHECK_ON_CONVEX constant is True
+
         """
         if 0 <= index < len(self._points):
-            self._points[index] = value
+            self.points[index] = point
+            temp_points = self._points.copy()
+            temp_points[index] = point
+            self.points = temp_points           #double copying, cause checks occur in points setter

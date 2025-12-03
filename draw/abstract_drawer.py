@@ -1,4 +1,5 @@
-"""Abstract class for drawing geometry objects.
+"""
+Abstract class for drawing geometry objects.
 
 This module provides:
 - ABCDrawer : abstract drawer class
@@ -8,20 +9,39 @@ This module provides:
 
 from abc import ABC, abstractmethod
 
+import QCustomPlot_PyQt6 as qcp
 
-class ABCDrawer(ABC):
+from core.abstract_geometry import ABCGeo
+
+
+class ABCDrawer(ABCGeo, ABC):
     """
     Abstaract drawer class.
     """
 
     @abstractmethod
-    def draw(self) -> None:
+    def draw(self, map_view: qcp.QCustomPlot) -> None:
         """
         Draw geometry object.
         """
 
+    @property
     @abstractmethod
-    def delete(self) -> None:
+    def name(self) -> str:
         """
-        Delete geometry object.
+        Return geo object name.
+        """
+
+    @property
+    @abstractmethod
+    def type(self) -> str:
+        """
+        Return geo object type.
+        """
+
+    @property
+    @abstractmethod
+    def parameters(self) -> dict:
+        """
+        Return object parameters for GUI display.
         """
