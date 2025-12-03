@@ -357,6 +357,9 @@ class LittleAlgorithm(TSPSolver):
 
         self._check_input_data(matrix, start)
 
+        if salesmen_count >= origin_size:
+            salesmen_count = origin_size - 1
+
         matrix = self._transform_matrix_for_multiple_salesmen(matrix, start, salesmen_count)
 
         modified_size = matrix.shape[0]
