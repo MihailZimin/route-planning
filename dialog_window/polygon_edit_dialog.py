@@ -8,6 +8,7 @@ This module provides:
 
 from PyQt6.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QMessageBox, QWidget
 
+from core.point import Point
 from dialog_window.base_edit_dialog import EditDialogWindow
 from draw.polygon_drawer import PolygonDrawer
 
@@ -62,29 +63,15 @@ class PolygonEditDialogWindow(EditDialogWindow):
         """
         Slot for accept button with validation of parameters.
         """
-        min_x_coord = 0
-        max_x_coord = 1000
-        min_y_coord = 0
-        max_y_coord = 1000
-
+        self._geo_object.name = self._rows["Название"].text()
         for i in range(len(self._geo_object.points)):
-            x_coord = self._rows["X" + str(i + 1)].text()
-            y_coord = self._rows["Y" + str(i + 1)].text()
-
-            if not x_coord or not y_coord:
-                QMessageBox.information(self, "Траектория БПЛА", "Заполните все поля")
-                return
             try:
-                x_coord = float(x_coord)
-                y_coord = float(y_coord)
-            except ValueError:
-                QMessageBox.information(self, "Траектория БПЛА", "Введите корректные координаты")
-                return
-            if x_coord < min_x_coord or x_coord > max_x_coord:
-                QMessageBox.information(self, "Траектория БПЛА", "Введите корректные координаты")
-                return
-            if y_coord < min_y_coord or y_coord > max_y_coord:
-                QMessageBox.information(self, "Траектория БПЛА", "Введите корректные координаты")
+                self._geo_object[i] = Point(
+                        float(self._rows["X" + str(i + 1)].text()),
+                        float(self._rows["Y" + str(i + 1)].text())
+                )
+            except ValueError as error:
+                QMessageBox.information(self, "Траектория БПЛА", str(error))
                 return
         self.accept()
 
@@ -96,12 +83,3 @@ class PolygonEditDialogWindow(EditDialogWindow):
         for i, point in enumerate(self._geo_object.points):
             self._rows["X" + str(i + 1)].setText(str(point.x))
             self._rows["Y" + str(i + 1)].setText(str(point.y))
-
-    def setChanges(self) -> None:
-        """
-        Change polygon parameters.
-        """
-        self._geo_object.name = self._rows["Название"].text()
-        for i, point in enumerate(self._geo_object.points):
-            point.x = float(self._rows["X" + str(i + 1)].text())
-            point.y = float(self._rows["Y" + str(i + 1)].text())

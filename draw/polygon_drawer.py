@@ -7,6 +7,7 @@ This module provides:
 """
 
 import QCustomPlot_PyQt6 as qcp
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QBrush, QColor, QPen
 
 from core.point import Point
@@ -49,9 +50,16 @@ class PolygonDrawer(Polygon, ABCDrawer):
         """
         return PolygonDrawer._type
 
-    def draw(self, map_view: qcp.QCustomPlot) -> None:
+    def draw(self, map_view: qcp.QCustomPlot, color:Qt.GlobalColor=Qt.GlobalColor.red) -> None:
         """
         Draw Polygon.
+
+        Args:
+            map_view: widget where polygon will be drawn.
+            color: color of polygon.
+
+        Default polygon color: red.
+
         """
         x_coords = []
         y_coords = []
@@ -65,7 +73,6 @@ class PolygonDrawer(Polygon, ABCDrawer):
 
         pen = QPen(QColor(0, 0, 0))
         pen.setWidth(1)
-        color = QColor(0, 0, 255)
         point_style = qcp.QCPScatterStyle()
         point_style.setShape(qcp.QCPScatterStyle.ScatterShape.ssCircle)
         point_style.setPen(pen)
