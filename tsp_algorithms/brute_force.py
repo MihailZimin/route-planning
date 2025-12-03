@@ -11,7 +11,12 @@ class BruteForceSolver(TSPSolver):
     Class that represents brute force solution to TSP.
     """
 
-    def solve(self, matrix: np.ndarray, start: int, salesmen_count: int = 1) -> list[int]:
+    def solve(
+            self,
+            matrix: np.ndarray,
+            start: int,
+            salesmen_count: int = 1
+        ) -> tuple[list[list[int]], float]:
         """
         Solve travel salesman problem.
 
