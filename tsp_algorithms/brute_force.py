@@ -30,6 +30,7 @@ class BruteForceSolver(TSPSolver):
             sequence(list) of points in optimal order.
 
         """
+        np.fill_diagonal(matrix, np.inf)
         origin_size = matrix.shape[0]
         matrix = np.where(matrix == -1, np.inf, matrix)
 
