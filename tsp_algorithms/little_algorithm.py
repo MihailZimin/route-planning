@@ -276,6 +276,27 @@ class LittleAlgorithm(TSPSolver):
 
         return result
 
+    def __check_vertex_isolated(self, matrix: np.ndarray, frm: int, to: int) -> bool:
+        """
+        Check if vertex become isolated.
+
+        Args:
+            matrix: matrix of distances
+            frm: start point
+            to: end point
+
+        Returns:
+            True if there is no other way to visit vertices
+            False if it is possible
+
+        """
+        exits_from_frm = np.sum(matrix[frm, :] != np.inf)
+        if exits_from_frm == 0:
+            return True
+
+        entries_to_to = np.sum(matrix[:, to] != np.inf)
+        return entries_to_to == 0
+
     def __make_children(self, cur_node: Node) -> tuple[Node, Node]:
         """
         Auxiliary method to form new correct nodes in Little algorithm.
@@ -292,6 +313,8 @@ class LittleAlgorithm(TSPSolver):
         left_matrix[frm, to] = np.inf
         left_penalty = self.__reduce_row_and_col(left_matrix, frm, to)
         left_bound = cur_node.lower_bound + left_penalty
+        if self.__check_vertex_isolated(left_matrix, frm, to):
+            left_bound = np.inf
         left_child = Node(left_matrix, left_bound, cur_node.route.copy())
 
         right_matrix = cur_node.matrix.copy()
@@ -308,7 +331,12 @@ class LittleAlgorithm(TSPSolver):
 
         return left_child, right_child
 
-    def solve(self, matrix: np.ndarray, start: int, salesmen_count: int = 1) -> list[int]:
+    def solve(
+            self,
+            matrix: np.ndarray,
+            start: int,
+            salesmen_count: int = 1
+        ) -> tuple[list[list[int]], float]:
         """
         Representation method of Little's algorithm.
 
