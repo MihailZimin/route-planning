@@ -23,6 +23,8 @@ class PointEditDialogWindow(EditDialogWindow):
         Create point edit window.
         """
         super().__init__(point, "dialog_window/point_edit_dialog.ui", parent)
+        if self._geo_object.is_start_point:
+            self.isStartRadioButton.setChecked(True)
 
     def validateAccept(self) -> None:
         """
@@ -35,6 +37,11 @@ class PointEditDialogWindow(EditDialogWindow):
             self._geo_object.name = name
             self._geo_object.x = x
             self._geo_object.y = y
+            if self.isStartRadioButton.isChecked():
+                self._geo_object.is_start_point = True
+            else:
+                self._geo_object.is_start_point = False
+
         except ValueError as error:
             QMessageBox.information(self, "Траектория БПЛА", str(error))
             return

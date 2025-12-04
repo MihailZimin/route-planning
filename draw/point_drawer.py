@@ -29,6 +29,7 @@ class PointDrawer(ABCDrawer, Point):
         """
         super().__init__(x, y)
         self._name = name
+        self.is_start_point = False
 
     @property
     def name(self) -> str:
