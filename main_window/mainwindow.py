@@ -78,6 +78,8 @@ class MainWindow(QMainWindow):
         self.trajectory_drawer: TrajectoryDrawer = None
         self.ui_timer: QTimer = None
         self.start_point: PointDrawer = None
+        self.bpla_count = 1
+        self.speed = 60
         self.initializeUI()
 
     def initializeUI(self) -> None:
@@ -140,6 +142,28 @@ class MainWindow(QMainWindow):
         self.resetButton.setEnabled(enabled)
         self.finishButton.setEnabled(enabled)
         self.slider.setEnabled(enabled)
+
+    def get_trajectory_params(self) -> None:
+        """
+        Get parameters of trajectrory.
+        """
+        new_speed = self.speedLineEdit.text()
+        new_bpla_count = self.droneAmountLineEdit.text()
+        try:
+            new_speed = float(new_speed)
+            new_bpla_count = int(new_bpla_count)
+        except TypeError:
+            QMessageBox.information(self, "Траектория БПЛА",
+                "He валидные параметры")
+            self.speedLineEdit.setText("60")
+            self.droneAmountLineEdit.text("1")
+            return
+        
+        self.speed = new_speed
+        self.bpla_count = new_bpla_count
+
+        self.speedLineEdit.setText(str(self.speed))
+        self.droneAmountLineEdit.text(str(self.bpla_count))
 
     def start_animation(self) -> None:
         """
@@ -226,6 +250,10 @@ class MainWindow(QMainWindow):
         """
         Slot for changing map.
         """
+        if self.trajectory_drawer is not None and self.trajectory_drawer.is_animating:
+            QMessageBox.information(self, "Траектория БПЛА",
+                "Идет анимация траектории")
+            return
         self.stackedWidget.setCurrentIndex(1)
 
     def chooseMap(self) -> None:
@@ -487,11 +515,9 @@ class MainWindow(QMainWindow):
                     if obj.type == "Point" and obj.is_start_point:
                         obj.is_start_point = False
             self.start_point = point
-            self.start_point.draw(self.custom_plot, Qt.GlobalColor.yellow)
-        else:
-            point.draw(self.custom_plot)
 
         self.geo_objects.append(point)
+        self.redraw()
         self.updateObjectList()
 
         MainWindow.clearLineEdit(
@@ -525,7 +551,7 @@ class MainWindow(QMainWindow):
             return
 
         self.geo_objects.append(circle)
-        circle.draw(self.custom_plot)
+        self.redraw()
         self.updateObjectList()
 
         MainWindow.clearLineEdit(
@@ -565,7 +591,7 @@ class MainWindow(QMainWindow):
 
         line = LineDrawer(point_begin, point_end, name)
         self.geo_objects.append(line)
-        line.draw(self.custom_plot)
+        self.redraw()
         self.updateObjectList()
 
         MainWindow.clearLineEdit(
@@ -632,7 +658,7 @@ class MainWindow(QMainWindow):
             return
 
         self.geo_objects.append(polygon)
-        polygon.draw(self.custom_plot)
+        self.redraw()
         self.updateObjectList()
 
         self.objectList.setCurrentRow(len(self.geo_objects) - 1)

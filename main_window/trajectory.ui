@@ -349,8 +349,12 @@ border-radius: 10px;</string>
                </property>
               </widget>
              </item>
-             <item row="0" column="1">
-              <widget class="QLineEdit" name="speedLineEdit"/>
+             <item row="1" column="1">
+              <widget class="QLineEdit" name="droneAmountLineEdit">
+               <property name="text">
+                <string>1</string>
+               </property>
+              </widget>
              </item>
              <item row="1" column="0">
               <widget class="QLabel" name="droneAmountLabel">
@@ -370,8 +374,24 @@ border-radius: 10px;</string>
                </property>
               </widget>
              </item>
-             <item row="1" column="1">
-              <widget class="QLineEdit" name="droneAmountLineEdit"/>
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="speedLineEdit">
+               <property name="text">
+                <string>60</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0" colspan="2">
+              <widget class="QPushButton" name="acceptParams">
+               <property name="styleSheet">
+                <string notr="true">font: 75 9pt &quot;Microsoft Tai Le&quot;;
+border: 2px solid black #cccccc;
+border-radius: 10px;</string>
+               </property>
+               <property name="text">
+                <string>Подтвердить</string>
+               </property>
+              </widget>
              </item>
             </layout>
            </widget>
@@ -661,8 +681,8 @@ QPushButton:pressed {
                      <rect>
                       <x>0</x>
                       <y>0</y>
-                      <width>247</width>
-                      <height>115</height>
+                      <width>98</width>
+                      <height>28</height>
                      </rect>
                     </property>
                     <layout class="QGridLayout" name="gridLayout_18">
