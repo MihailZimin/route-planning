@@ -11,7 +11,12 @@ class BruteForceSolver(TSPSolver):
     Class that represents brute force solution to TSP.
     """
 
-    def solve(self, matrix: np.ndarray, start: int) -> list[int]:
+    def solve(
+            self,
+            matrix: np.ndarray,
+            start: int,
+            salesmen_count: int = 1
+        ) -> tuple[list[list[int]], float]:
         """
         Solve travel salesman problem.
 
@@ -19,17 +24,26 @@ class BruteForceSolver(TSPSolver):
             matrix: matrix of lengthes,
                 where matrix[i][j] is length of path from i-th control point to j-th
             start: index of start control point
+            salesmen_count: count of salesmen
 
         Returns:
             sequence(list) of points in optimal order.
 
         """
-        size = matrix.shape[0]
+        np.fill_diagonal(matrix, np.inf)
+        origin_size = matrix.shape[0]
         matrix = np.where(matrix == -1, np.inf, matrix)
 
         self._check_input_data(matrix, start)
 
-        permutated_vertices = [i for i in range(size) if i != start]
+        if salesmen_count >= origin_size:
+            salesmen_count = origin_size - 1
+
+        matrix = self._transform_matrix_for_multiple_salesmen(matrix, start, salesmen_count)
+
+        modified_size = matrix.shape[0]
+
+        permutated_vertices = [i for i in range(modified_size) if i != start]
 
         optimal_length = np.inf
         optimal_path = []
@@ -46,4 +60,5 @@ class BruteForceSolver(TSPSolver):
                 optimal_path = [start, *permutation, start]
 
         self._optimal_length = optimal_length
-        return optimal_path, optimal_length
+        final_routes = self._unravel_multiple_salesmen_routes(optimal_path, origin_size, start)
+        return final_routes, optimal_length

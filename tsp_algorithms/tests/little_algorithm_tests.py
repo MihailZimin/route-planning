@@ -114,6 +114,7 @@ def test_route_length_to_optimal(
         matrix = rng.uniform(1, 100, size=(matrix_size, matrix_size))
         np.fill_diagonal(matrix, np.inf)
         route_little, length_little = sample_solver_little.solve(matrix, start_vertex)
+        route_little = route_little[0]
         if length_little == -1:
             continue
 
