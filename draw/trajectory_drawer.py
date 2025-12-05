@@ -31,17 +31,21 @@ class TrajectoryDrawer:
 
         """
         self.route_drawer = []
+        self.trajectory_length = 0
         for curve in path.route:
             if isinstance(curve, Line):
                 line = LineDrawer(curve.start, curve.end)
+                self.trajectory_length += line.length()
                 self.route_drawer.append(line)
             else:
                 arc = ArcDrawer(curve.center, curve.p_start, curve.p_end)
+                self.trajectory_length += arc.length()
                 self.route_drawer.append(arc)
 
         self.progress = 0.0
         self.is_animating = False
         self.map_view = map_view
+        self.current_length = 0.0
         self.trajectory = qcp.QCPCurve(self.map_view.xAxis, self.map_view.yAxis)
         pen = QPen(Qt.GlobalColor.blue)
         pen.setWidth(3)
@@ -64,6 +68,7 @@ class TrajectoryDrawer:
 
         self.is_animating = True
         self.progress = 0.0
+        self.current_length = 0.0
         self.trajectory.data().clear()
         self.timer.start(16)
 
@@ -90,6 +95,7 @@ class TrajectoryDrawer:
         """
         self.pause_animation()
         self.progress = 0.0
+        self.current_length = 0
         self.trajectory.data().clear()
         self.map_view.replot()
 
@@ -103,6 +109,23 @@ class TrajectoryDrawer:
         """
         self.progress = new_progress
         self._update_trajectory()
+
+    def finish_animation(self) -> None:
+        """
+        Finish animation of trajectory.
+        """
+        self.set_progress(1.0)
+
+    def set_duration(self, duration_ms: int) -> None:
+        """
+        Set duration of animation.
+        """
+        self.duration = max(100, duration_ms)
+        if self.is_animating:
+            current_progress = self.progress
+            self.reset_animation()
+            self.progress = current_progress
+            self.start_animation()
 
     def _animation_step(self) -> None:
         """
@@ -144,17 +167,24 @@ class TrajectoryDrawer:
         if lines_num == 0:
             return []
 
-        progress_per_line = 1.0 / lines_num
+        traveled_dist = current_progress * self.trajectory_length
         points = []
-        animated_lines = int(current_progress / progress_per_line)
-        for i in range(animated_lines):
-            line_points = self.route_drawer[i].get_progress_points(1.0)
-            points.extend(line_points)
+        counted_dist = 0
+        self.current_length = 0
 
-        if animated_lines < lines_num:
-            line_progress = (current_progress % progress_per_line) / progress_per_line
-            line_points = self.route_drawer[animated_lines].get_progress_points(line_progress)
-            points.extend(line_points)
+        for line in self.route_drawer:
+            cur_line_lenth = line.length()
+
+            if counted_dist + cur_line_lenth <= traveled_dist:
+                points.extend(line.get_progress_points(1.0))
+                counted_dist += cur_line_lenth
+                self.current_length += cur_line_lenth
+            else:
+                remainder = traveled_dist - counted_dist
+                elem_progress = remainder / cur_line_lenth
+                points.extend(line.get_progress_points(elem_progress))
+                self.current_length += elem_progress * cur_line_lenth
+                break
 
         return points
 
@@ -167,6 +197,16 @@ class TrajectoryDrawer:
 
         """
         return self.progress
+
+    def get_current_length(self) -> float:
+        """
+        Get current length of trajectory for statistic.
+
+        Returns:
+            Current length of trajectory.
+
+        """
+        return round(self.current_length)
 
     def draw(self, map_view: qcp.QCustomPlot, color:Qt.GlobalColor=Qt.GlobalColor.red) -> None:
         """
