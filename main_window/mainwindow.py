@@ -6,7 +6,7 @@ This module provides:
 
 """
 
-
+import traceback
 import sys
 from enum import Enum
 from pathlib import Path
@@ -80,6 +80,7 @@ class MainWindow(QMainWindow):
         self.start_point: PointDrawer = None
         self.bpla_count = 1
         self.speed = 50
+        self.is_calculated = False
         self.initializeUI()
 
     def initializeUI(self) -> None:
@@ -363,51 +364,56 @@ class MainWindow(QMainWindow):
         """
         Slot for calculation trajectory for animation.
         """
-        control_points = []
-        obstacles = []
+        try:
+            # --- НАЧАЛО БЛОКА ЗАЩИТЫ ---
+            if self.is_calculated:
+                QMessageBox.information(self, "Траектория БПЛА",
+                    "Оптимальный маршрут для данной карты уже был вычислен")
+                return
 
-        if self.start_point is None:
-            QMessageBox.information(self, "Траектория БПЛА",
-                "Ha карте нет стартовой точки")
-            return
+            control_points = []
+            obstacles = []
+            for geo_object in self.geo_objects:
+                if geo_object.type == "Point":
+                    control_points.append(geo_object)
+                else:
+                    obstacles.append(geo_object)
 
-        control_points.append(self.start_point)
+            if not control_points:
+                QMessageBox.information(self, "Траектория БПЛА",
+                    "Ha карте нет контрольных точек")
+                return
 
-        for geo_object in self.geo_objects:
-            if geo_object.type == "Point":
-                control_points.append(geo_object)
+            # Вычисления
+            print("Начинаем расчет маршрутов...") # Лог для отладки
+            routes = route_calculation(control_points, obstacles)
+            print("Маршруты построены. Считаем матрицу...") 
+            matrix = matrix_calculation(routes)
+
+            if self.algorithm == Algorithm.LITTLE:
+                solver = LittleAlgorithm()
+                path, _ = solver.solve(matrix, 0)
             else:
-                obstacles.append(geo_object)
+                solver = BruteForceSolver()
+                path, _ = solver.solve(matrix, 0)
 
-        if not control_points:
+            total_path_list = []
+            for i in range(len(path) - 1):
+                cur_path = routes[path[i]][path[i + 1]]
+                total_path_list.extend(cur_path.route)
+
+            total_path = Route(total_path_list)
+            self.trajectory_drawer = TrajectoryDrawer(total_path, self.custom_plot)
+            self.set_animation_buttons_state(enabled=True)
             QMessageBox.information(self, "Траектория БПЛА",
-                "Ha карте нет контрольных точек")
-            return
-
-        routes = route_calculation(control_points, obstacles)
-        matrix = matrix_calculation(routes)
-
-        if self.algorithm == Algorithm.LITTLE:
-            solver = LittleAlgorithm()
-            path, _ = solver.solve(matrix, 0, 1)
-            path = path[0]
-        else:
-            solver = BruteForceSolver()
-            path, _ = solver.solve(matrix, 0, 1)
-            path = path[0]
-
-        total_path_list = []
-        for i in range(len(path) - 1):
-            cur_path = routes[path[i]][path[i + 1]]
-            total_path_list.extend(cur_path.route)
-
-        total_path = Route(total_path_list)
-        self.trajectory_drawer = TrajectoryDrawer(total_path, self.custom_plot)
-        self.update_animation_duration()
-        self.set_animation_buttons_state(enabled=True)
-        QMessageBox.information(self, "Траектория БПЛА",
-                "Оптимальный маршрут посчитан")
-
+                    "Оптимальный маршрут посчитан")
+            self.is_calculated = True
+            
+        except Exception as e:
+            # ЕСЛИ СЛУЧИЛАСЬ ОШИБКА - МЫ ЕЁ УВИДИМ
+            print("\n!!! КРИТИЧЕСКАЯ ОШИБКА ПРИ РАСЧЕТЕ !!!")
+            traceback.print_exc()
+            QMessageBox.critical(self, "Ошибка", f"Произошла ошибка:\n{e}")
     def chooseAlgorithm(self, action: QAction) -> None:
         """
         Slot for choosing tsp algorithm.

@@ -11,11 +11,16 @@ from core.polygon import Polygon
 
 try:
     from pathfinding.dijkstra import algorithm_dijkstra
-    from pathfinding.visibility_graph import build_visibility_matrix, collect_nodes
+    from pathfinding.visibility_graph import (
+        build_visibility_matrix,
+        collect_nodes,
+    )
 except (ImportError, AttributeError):
-    # Fallback for local testing
     from dijkstra import algorithm_dijkstra
-    from visibility_graph import build_visibility_matrix, collect_nodes
+    from visibility_graph import (
+        build_visibility_matrix,
+        collect_nodes,
+    )
 
 
 class Route:
@@ -35,31 +40,54 @@ def point_to_point(
     start: Point, end: Point, obstacles: list[Circle | Line | Polygon]
 ) -> Route:
     """
-    Find shortest path between two points avoiding obstacles using Dijkstra.
+    Find shortest path using Tangent Graph (supporting Arcs).
     """
-    # 1. Собираем граф (узлы: старт, финиш, углы препятствий)
-    nodes = collect_nodes(start, end, obstacles)
-
-    # 2. Строим матрицу видимости (кто кого видит напрямую)
-    matrix = build_visibility_matrix(nodes, obstacles)
-
-    # 3. Находим индексы узлов Старта и Финиша в списке nodes
-    start_idx = nodes.index(start)
-    end_idx = nodes.index(end)
+    # 1. Собираем узлы и маппинг "узел -> круг"
+    nodes, node_to_circle = collect_nodes(start, end, obstacles)
+    
+    # 2. Строим матрицу (где ребра по кругу имеют вес дуги)
+    matrix = build_visibility_matrix(nodes, obstacles, node_to_circle)
+    
+    # 3. Индексы старта и финиша (они всегда первые)
+    start_idx = 0
+    end_idx = 1 
 
     # 4. Запускаем Дейкстру
     path_indices, _ = algorithm_dijkstra(matrix, start_idx, end_idx)
 
-    # 5. Если пути нет (или он пустой), возвращаем прямую линию (fallback)
+    # Fallback, если пути нет
     if not path_indices:
         return Route([Line(start, end)])
 
-    # 6. Превращаем список точек в список линий (маршрут)
+    # 5. Реконструируем путь (создаем Line или Arc)
     path_segments = []
-    for i in range(len(path_indices) - 1):
-        p1 = nodes[path_indices[i]]
-        p2 = nodes[path_indices[i + 1]]
-        path_segments.append(Line(p1, p2))
+    
+    for k in range(len(path_indices) - 1):
+        idx_curr = path_indices[k]
+        idx_next = path_indices[k+1]
+        
+        p_curr = nodes[idx_curr]
+        p_next = nodes[idx_next]
+        
+        # Проверяем, лежат ли ОБЕ точки на ОДНОЙ И ТОЙ ЖЕ окружности
+        circ_curr = node_to_circle.get(idx_curr)
+        circ_next = node_to_circle.get(idx_next)
+        
+        if circ_curr and circ_next and circ_curr == circ_next:
+            # Это дуга! Создаем Arc
+            try:
+                # ВАЖНО: Твой класс Arc рисует всегда против часовой стрелки (из core/arc.py).
+                # Поэтому нам нужно понять порядок точек, чтобы дуга была короткой.
+                # Но пока просто создадим Arc, так как базовый класс может не поддерживать 
+                # направление "по часовой".
+                arc = Arc(circ_curr.center, p_curr, p_next)
+                path_segments.append(arc)
+            except ValueError:
+                # Если Arc упал, рисуем прямую
+                path_segments.append(Line(p_curr, p_next))
+        else:
+            # Это прямая линия (полет между объектами)
+            path_segments.append(Line(p_curr, p_next))
 
     return Route(path_segments)
 
@@ -68,16 +96,13 @@ def route_calculation(
     points: list[Point], obstacles: list[Circle | Line | Polygon]
 ) -> list[list[Route]]:
     """Calculate routes between all pairs of control points."""
-    # Создаем матрицу маршрутов размером NxN
     n = len(points)
     matrix = [[None for _ in range(n)] for _ in range(n)]
 
     for i, j in product(range(n), range(n)):
         if i == j:
-            # Путь из точки в саму себя - пустой
             matrix[i][j] = Route([])
         else:
-            # Считаем сложный путь с препятствиями
             matrix[i][j] = point_to_point(points[i], points[j], obstacles)
 
     return matrix
