@@ -249,7 +249,7 @@ class LittleAlgorithm(TSPSolver):
         """
         result = []
         edges = route.copy()
-        min_elements_form_circle = 2
+        min_elements_form_circle = 1
 
         while len(edges):
             length = 1
@@ -276,6 +276,27 @@ class LittleAlgorithm(TSPSolver):
 
         return result
 
+    def __check_vertex_isolated(self, matrix: np.ndarray, frm: int, to: int) -> bool:
+        """
+        Check if vertex become isolated.
+
+        Args:
+            matrix: matrix of distances
+            frm: start point
+            to: end point
+
+        Returns:
+            True if there is no other way to visit vertices
+            False if it is possible
+
+        """
+        exits_from_frm = np.sum(matrix[frm, :] != np.inf)
+        if exits_from_frm == 0:
+            return True
+
+        entries_to_to = np.sum(matrix[:, to] != np.inf)
+        return entries_to_to == 0
+
     def __make_children(self, cur_node: Node) -> tuple[Node, Node]:
         """
         Auxiliary method to form new correct nodes in Little algorithm.
@@ -292,6 +313,8 @@ class LittleAlgorithm(TSPSolver):
         left_matrix[frm, to] = np.inf
         left_penalty = self.__reduce_row_and_col(left_matrix, frm, to)
         left_bound = cur_node.lower_bound + left_penalty
+        if self.__check_vertex_isolated(left_matrix, frm, to):
+            left_bound = np.inf
         left_child = Node(left_matrix, left_bound, cur_node.route.copy())
 
         right_matrix = cur_node.matrix.copy()
@@ -308,7 +331,30 @@ class LittleAlgorithm(TSPSolver):
 
         return left_child, right_child
 
-    def solve(self, matrix: np.ndarray, start: int) -> list[int]:
+    def __finish_node(self, cur_node: Node, modified_size: int) -> None:
+        """
+        Finish node route.
+
+        Args:
+            cur_node: current node
+            modified_size: size of modified matrix of distances
+
+        """
+        for row in range(modified_size):
+            for column in range(modified_size):
+                if cur_node.matrix[row, column] != np.inf:
+                    cur_node.lower_bound += cur_node.matrix[row, column]
+                    cur_node.route.append((row, column))
+        final_edge = self.__get_close_edges(cur_node.route)
+        if final_edge[0][0] != final_edge[0][1]:
+            cur_node.lower_bound = np.inf
+
+    def solve(
+            self,
+            matrix: np.ndarray,
+            start: int,
+            salesmen_count: int = 1
+        ) -> tuple[list[list[int]], float]:
         """
         Representation method of Little's algorithm.
 
@@ -316,6 +362,7 @@ class LittleAlgorithm(TSPSolver):
             matrix: matrix of lengthes,
                 where matrix[i][j] is length of path from i-th control point to j-th
             start: index of start control point
+            salesmen_count: count of salesmen
 
         Returns:
             list of indices of points which form circle for the most optimal TSP solution
@@ -323,10 +370,17 @@ class LittleAlgorithm(TSPSolver):
         """
         np.fill_diagonal(matrix, np.inf)
         matrix = np.where(matrix == -1, np.inf, matrix)
-        sz = matrix.shape[0]
+        origin_size = matrix.shape[0]
         nodes = []
 
         self._check_input_data(matrix, start)
+
+        if salesmen_count >= origin_size:
+            salesmen_count = origin_size - 1
+
+        matrix = self._transform_matrix_for_multiple_salesmen(matrix, start, salesmen_count)
+
+        modified_size = matrix.shape[0]
 
         root_matrix = matrix.copy()
         lower_bound = (self.__reduce_matrix_by_rows(root_matrix) +
@@ -343,18 +397,20 @@ class LittleAlgorithm(TSPSolver):
             if optimal_length <= cur_node.lower_bound:
                 continue
 
-            if len(cur_node.route) == sz - 1:
-                final_edge = self.__get_close_edges(cur_node.route)
-                cur_node.route.append(*final_edge)
+            if len(cur_node.route) == modified_size - 2:
+                self.__finish_node(cur_node, modified_size)
 
-            if optimal_length > cur_node.lower_bound and len(cur_node.route) == sz:
+            if optimal_length > cur_node.lower_bound and len(cur_node.route) == modified_size:
                 optimal_length = cur_node.lower_bound
                 optimal_route = cur_node.route
                 continue
 
-            left_child, right_child = self.__make_children(cur_node)
-            self.__add_node(nodes, left_child)
-            self.__add_node(nodes, right_child)
+            if len(cur_node.route) < modified_size:
+                left_child, right_child = self.__make_children(cur_node)
+                self.__add_node(nodes, left_child)
+                self.__add_node(nodes, right_child)
 
         self._optimal_length = optimal_length
-        return self.__unravel_edges(start, optimal_route), optimal_length
+        mixed_route = self.__unravel_edges(start, optimal_route)
+        final_routes = self._unravel_multiple_salesmen_routes(mixed_route, origin_size, start)
+        return final_routes, optimal_length
