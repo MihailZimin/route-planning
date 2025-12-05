@@ -377,16 +377,24 @@ border-radius: 10px;</string>
              <item row="0" column="1">
               <widget class="QLineEdit" name="speedLineEdit">
                <property name="text">
-                <string>60</string>
+                <string>50</string>
                </property>
               </widget>
              </item>
              <item row="2" column="0" colspan="2">
               <widget class="QPushButton" name="acceptParams">
                <property name="styleSheet">
-                <string notr="true">font: 75 9pt &quot;Microsoft Tai Le&quot;;
-border: 2px solid black #cccccc;
-border-radius: 10px;</string>
+                <string notr="true">QPushButton {
+    border: 2px solid black #cccccc;
+	border-radius: 10px;
+}
+
+QPushButton:pressed {
+    margin-left: 1px;
+    margin-top: 1px;
+    margin-right: -1px;
+    margin-bottom: -1px;
+}</string>
                </property>
                <property name="text">
                 <string>Подтвердить</string>

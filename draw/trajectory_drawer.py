@@ -116,6 +116,17 @@ class TrajectoryDrawer:
         """
         self.set_progress(1.0)
 
+    def set_duration(self, duration_ms: int) -> None:
+        """
+        Set duration of animation.
+        """
+        self.duration = max(100, duration_ms)
+        if self.is_animating:
+            current_progress = self.progress
+            self.reset_animation()
+            self.progress = current_progress
+            self.start_animation()
+
     def _animation_step(self) -> None:
         """
         Increase animation progress.

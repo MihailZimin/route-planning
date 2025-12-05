@@ -75,11 +75,11 @@ class MainWindow(QMainWindow):
         self.geo_objects: list[ABCDrawer] = []
         self.points_polygon: list[Point] = []
         self.algorithm: Algorithm = Algorithm.LITTLE
-        self.trajectory_drawer: TrajectoryDrawer = None
+        self.trajectory_drawer: TrajectoryDrawer = []
         self.ui_timer: QTimer = None
         self.start_point: PointDrawer = None
         self.bpla_count = 1
-        self.speed = 60
+        self.speed = 50
         self.initializeUI()
 
     def initializeUI(self) -> None:
@@ -102,6 +102,7 @@ class MainWindow(QMainWindow):
         self.addLineButton.clicked.connect(self.addLine)
         self.addPointPolygonButton.clicked.connect(self.addPolygonPoint)
         self.addPolygonButton.clicked.connect(self.addPolygon)
+        self.acceptParams.clicked.connect(self.get_trajectory_params)
 
         self.deleteButton.clicked.connect(self.deleteObject)
         self.objectList.itemSelectionChanged.connect(self.showObjectsParams)
@@ -158,12 +159,33 @@ class MainWindow(QMainWindow):
             self.speedLineEdit.setText("60")
             self.droneAmountLineEdit.text("1")
             return
-        
+
         self.speed = new_speed
         self.bpla_count = new_bpla_count
 
         self.speedLineEdit.setText(str(self.speed))
-        self.droneAmountLineEdit.text(str(self.bpla_count))
+        self.droneAmountLineEdit.setText(str(self.bpla_count))
+
+        if self.trajectory_drawer:
+            self.update_animation_duration()
+
+        QMessageBox.information(self, "Траектория БПЛА",
+                "Параметры установлены")
+
+    def update_animation_duration(self) -> None:
+        """
+        Update speed of bpla.
+        """
+        if self.trajectory_drawer:
+            total_length_meters = self.trajectory_drawer.trajectory_length
+            pixels_to_meters = 0.1
+            total_length_meters = total_length_meters * pixels_to_meters
+
+            if self.speed > 0:
+                duration_seconds = total_length_meters / self.speed
+                duration_ms = int(duration_seconds * 1000)
+
+                self.trajectory_drawer.set_duration(duration_ms)
 
     def start_animation(self) -> None:
         """
@@ -252,7 +274,7 @@ class MainWindow(QMainWindow):
         """
         Slot for changing map.
         """
-        if self.trajectory_drawer is not None and self.trajectory_drawer.is_animating:
+        if self.trajectory_drawer and self.trajectory_drawer.is_animating:
             QMessageBox.information(self, "Траектория БПЛА",
                 "Идет анимация траектории")
             return
@@ -367,10 +389,12 @@ class MainWindow(QMainWindow):
 
         if self.algorithm == Algorithm.LITTLE:
             solver = LittleAlgorithm()
-            path, _ = solver.solve(matrix, 0)
+            path, _ = solver.solve(matrix, 0, 1)
+            path = path[0]
         else:
             solver = BruteForceSolver()
-            path, _ = solver.solve(matrix, 0)
+            path, _ = solver.solve(matrix, 0, 1)
+            path = path[0]
 
         total_path_list = []
         for i in range(len(path) - 1):
@@ -379,6 +403,7 @@ class MainWindow(QMainWindow):
 
         total_path = Route(total_path_list)
         self.trajectory_drawer = TrajectoryDrawer(total_path, self.custom_plot)
+        self.update_animation_duration()
         self.set_animation_buttons_state(enabled=True)
         QMessageBox.information(self, "Траектория БПЛА",
                 "Оптимальный маршрут посчитан")
