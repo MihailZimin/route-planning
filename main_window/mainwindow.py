@@ -342,11 +342,8 @@ class MainWindow(QMainWindow):
                         obj_params = obj.save()
                         obj_type = obj.type
                         obj_string = obj_type + "|" + obj_params + "|" + obj.name
-                        file.write(obj_string + "\n")
-                    if self.start_point is not None:
-                        point_params = self.start_point.save()
-                        point_name = self.start_point.name
-                        obj_string = "Point|" + point_params + "|" + point_name + "|" + "Start"
+                        if obj.type == "Point" and obj.is_start_point:
+                            obj_string += "|Start"
                         file.write(obj_string + "\n")
                 self.statusBar.showMessage("Карта сохранена")
         else:
@@ -371,8 +368,6 @@ class MainWindow(QMainWindow):
                 "Ha карте нет стартовой точки")
             return
 
-        control_points.append(self.start_point)
-
         for geo_object in self.geo_objects:
             if geo_object.type == "Point":
                 control_points.append(geo_object)
@@ -386,7 +381,6 @@ class MainWindow(QMainWindow):
 
         routes = route_calculation(control_points, obstacles)
         matrix = matrix_calculation(routes)
-
         if self.algorithm == Algorithm.LITTLE:
             solver = LittleAlgorithm()
             path, _ = solver.solve(matrix, 0, 1)
@@ -736,7 +730,7 @@ class MainWindow(QMainWindow):
 
         if edit_win.exec() == QDialog.DialogCode.Accepted:
             if geo_object.type == "Point" and geo_object.is_start_point:
-                if index != start_point_index:
+                if start_point_index != -1 and index != start_point_index:
                     self.geo_objects[start_point_index].is_start_point = False
                 self.start_point = geo_object
             self.showObjectsParams()
