@@ -184,6 +184,8 @@ class MainWindow(QMainWindow):
         Reset animation.
         """
         if self.trajectory_drawer:
+            self.startButton.setIcon(QIcon("pict_trajectory/play.png"))
+            self.startButton.setIconSize(QSize(35, 35))
             self.trajectory_drawer.reset_animation()
 
     def finish_animation(self) -> None:
