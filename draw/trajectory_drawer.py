@@ -5,6 +5,8 @@ This module provides:
     TrajectoryDrawer class for drawing calculated trajectory.
 """
 
+import math
+
 import QCustomPlot_PyQt6 as qcp
 from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QPen
@@ -12,6 +14,7 @@ from PyQt6.QtGui import QPen
 from core.line import Line
 from core.point import Point
 from draw.arc_drawer import ArcDrawer
+from draw.drone_drawer import DroneDrawer
 from draw.line_drawer import LineDrawer
 from pathfinding.pathfinding import Route
 
@@ -21,13 +24,14 @@ class TrajectoryDrawer:
     Class for drawing trajectory with animation.
     """
 
-    def __init__(self, path: Route, map_view: qcp.QCustomPlot) -> None:
+    def __init__(self, path: Route, map_view: qcp.QCustomPlot, control_points: list[Point]) -> None:
         """
         Initialize trajectory drawer.
 
         Args:
             path: list of lines and arches which form a trajectory.
             map_view: widget where trajectory will be drawn.
+            control_points: list of control points.
 
         """
         self.route_drawer = []
@@ -45,15 +49,53 @@ class TrajectoryDrawer:
         self.progress = 0.0
         self.is_animating = False
         self.map_view = map_view
-        self.current_length = 0.0
         self.trajectory = qcp.QCPCurve(self.map_view.xAxis, self.map_view.yAxis)
         pen = QPen(Qt.GlobalColor.blue)
         pen.setWidth(3)
         self.trajectory.setPen(pen)
 
+        self.drone_marker = DroneDrawer(map_view, size=20.0)
+
         self.timer = QTimer()
         self.timer.timeout.connect(self._animation_step)
         self.duration = 5000
+
+        self.prev_point = None
+        self.current_angle = 0.0
+
+        self.visited_points_num = 0
+        self.control_points = control_points
+        self.visited_points = []
+
+        self._calculate_initial_angle()
+
+    def _calculate_initial_angle(self) -> None:
+        """
+        Set a start angle of trajectory.
+        """
+        min_len_points = 2
+        error_lim = 0.001
+        if len(self.route_drawer) > 0:
+            initial_points = self._get_points_at_progress(0.001)
+            if len(initial_points) >= min_len_points:
+                p1 = initial_points[0]
+                p2 = initial_points[1]
+                dx = p2.x - p1.x
+                dy = p2.y - p1.y
+
+                if abs(dx) > error_lim or abs(dy) > error_lim:
+                    self.current_angle = math.atan2(dy, dx)
+                    self.drone_marker.set_angle_rad(self.current_angle)
+                else:
+                    initial_points = self._get_points_at_progress(0.01)
+                    if len(initial_points) >= min_len_points:
+                        p1 = initial_points[0]
+                        p2 = initial_points[-1]
+                        dx = p2.x - p1.x
+                        dy = p2.y - p1.y
+                        if abs(dx) > error_lim or abs(dy) > error_lim:
+                            self.current_angle = math.atan2(dy, dx)
+                            self.drone_marker.set_angle_rad(self.current_angle)
 
     def start_animation(self) -> bool:
         """
@@ -68,8 +110,15 @@ class TrajectoryDrawer:
 
         self.is_animating = True
         self.progress = 0.0
-        self.current_length = 0.0
         self.trajectory.data().clear()
+        self.drone_marker.set_visible(False)
+
+        initial_points = self._get_points_at_progress(0.0)
+        if initial_points:
+            start_point = initial_points[0]
+            self.drone_marker.set_position(start_point.x, start_point.y)
+            self.drone_marker.set_angle_rad(self.current_angle)
+
         self.timer.start(16)
 
         return True
@@ -95,7 +144,9 @@ class TrajectoryDrawer:
         """
         self.pause_animation()
         self.progress = 0.0
-        self.current_length = 0
+        self.visited_points_num = 0
+        self.visited_points = []
+        self.drone_marker.set_visible(False)
         self.trajectory.data().clear()
         self.map_view.replot()
 
@@ -121,11 +172,6 @@ class TrajectoryDrawer:
         Set duration of animation.
         """
         self.duration = max(100, duration_ms)
-        if self.is_animating:
-            current_progress = self.progress
-            self.reset_animation()
-            self.progress = current_progress
-            self.start_animation()
 
     def _animation_step(self) -> None:
         """
@@ -150,8 +196,34 @@ class TrajectoryDrawer:
         self.trajectory.data().clear()
 
         points = self._get_points_at_progress(self.progress)
-        for point in points:
-            self.trajectory.addData(point.x, point.y)
+
+        if points:
+            for point in points:
+                self.trajectory.addData(point.x, point.y)
+                for control_point in self.control_points:
+                    if control_point == point and point not in self.visited_points:
+                        self.visited_points_num += 1
+                        self.visited_points.append(point)
+
+            current_point = points[-1]
+
+            self.drone_marker.set_position(current_point.x, current_point.y)
+
+            min_points_len = 2
+            if len(points) >= min_points_len:
+                prev_point = points[-2]
+                dx = current_point.x - prev_point.x
+                dy = current_point.y - prev_point.y
+
+                angle_rad = math.atan2(dy, dx)
+
+                self.current_angle = angle_rad
+                self.drone_marker.set_angle_rad(angle_rad)
+            else:
+                self.drone_marker.set_angle_rad(self.current_angle)
+
+            if not self.drone_marker.is_visible():
+                self.drone_marker.set_visible(True)
 
         self.map_view.replot()
 
@@ -167,25 +239,35 @@ class TrajectoryDrawer:
         if lines_num == 0:
             return []
 
+        if current_progress <= 0.0:
+            if self.route_drawer:
+                first_points = self.route_drawer[0].get_progress_points(0.0)
+                if first_points:
+                    return [first_points[0]]
+            return []
+
         traveled_dist = current_progress * self.trajectory_length
         points = []
         counted_dist = 0
-        self.current_length = 0
 
-        for line in self.route_drawer:
-            cur_line_lenth = line.length()
+        for segment in self.route_drawer:
+            segment_length = segment.length()
 
-            if counted_dist + cur_line_lenth <= traveled_dist:
-                points.extend(line.get_progress_points(1.0))
-                counted_dist += cur_line_lenth
-                self.current_length += cur_line_lenth
+            if counted_dist + segment_length <= traveled_dist:
+                segment_points = segment.get_progress_points(1.0)
+                if segment_points:
+                    points.extend(segment_points)
+                counted_dist += segment_length
             else:
                 remainder = traveled_dist - counted_dist
-                elem_progress = remainder / cur_line_lenth
-                points.extend(line.get_progress_points(elem_progress))
-                self.current_length += elem_progress * cur_line_lenth
-                break
+                segment_progress = remainder / segment_length
 
+                if segment_progress > 0:
+                    segment_points = segment.get_progress_points(segment_progress)
+                    if segment_points:
+                        points.extend(segment_points)
+
+                break
         return points
 
     def get_current_progress(self) -> float:
@@ -206,7 +288,18 @@ class TrajectoryDrawer:
             Current length of trajectory.
 
         """
-        return round(self.current_length)
+        current_length = self.progress * self.trajectory_length
+        return round(current_length)
+
+    def get_visited_control_points_num(self) -> int:
+        """
+        Get visited control points amount.
+
+        Returns:
+            Number of visited control points.
+
+        """
+        return self.visited_points_num
 
     def draw(self, map_view: qcp.QCustomPlot, color:Qt.GlobalColor=Qt.GlobalColor.red) -> None:
         """
