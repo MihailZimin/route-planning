@@ -5,8 +5,8 @@ This is the entrance to the app.
 """
 
 
-import sys
 import faulthandler
+import sys
 
 faulthandler.enable()
 

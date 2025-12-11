@@ -1,9 +1,11 @@
-"""Module for drawing drone"""
+"""Module for drawing drone."""
 
-from PyQt6.QtGui import QPen, QBrush, QColor
-from PyQt6.QtCore import Qt
-import QCustomPlot_PyQt6 as qcp
 import math
+
+import QCustomPlot_PyQt6 as qcp
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QBrush, QColor, QPen
+
 
 class DroneDrawer:
     """
@@ -22,7 +24,7 @@ class DroneDrawer:
         pen = QPen(QColor(0, 0, 255))
         pen.setWidth(2)
         self.triangle_curve.setPen(pen)
-        
+
         brush = QBrush(Qt.GlobalColor.white)
         self.triangle_curve.setBrush(brush)
         self.triangle_curve.setVisible(False)
@@ -30,7 +32,7 @@ class DroneDrawer:
         self.x = 0
         self.y = 0
         self.angle = 0
-        
+
     def set_position(self, x: float, y: float) -> None:
         """
         Set position of drone.
@@ -38,28 +40,28 @@ class DroneDrawer:
         self.x = x
         self.y = y
         self._update_triangle()
-        
+
     def set_angle_deg(self, angle_degrees: float) -> None:
         """
         Set angle in degrees.
         """
         self.angle = math.radians(angle_degrees)
         self._update_triangle()
-        
+
     def set_angle_rad(self, angle_radians: float) -> None:
         """
-        Set angle in rad
+        Set angle in rad.
         """
         self.angle = angle_radians
         self._update_triangle()
-        
+
     def _update_triangle(self) -> None:
         """
         Update vertices of the triangle.
         """
         if not self.triangle_curve.visible():
             self.triangle_curve.setVisible(True)
-            
+
         base_vertices = [
             (self.size, 0),
             (-self.size/2, self.size/3),
@@ -71,7 +73,7 @@ class DroneDrawer:
 
         cos_a = math.cos(self.angle)
         sin_a = math.sin(self.angle)
-        
+
         for vx, vy in base_vertices:
             rx = vx * cos_a - vy * sin_a
             ry = vx * sin_a + vy * cos_a
@@ -80,8 +82,8 @@ class DroneDrawer:
             final_y = self.y + ry
 
             self.triangle_curve.addData(final_x, final_y)
-            
-    def set_visible(self, visible: bool) -> None:
+
+    def set_visible(self, visible: bool) -> None:   #noqa: FBT001
         """
         Set drone visible.
         """

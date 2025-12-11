@@ -5,6 +5,8 @@ This module provides:
     TrajectoryDrawer class for drawing calculated trajectory.
 """
 
+import math
+
 import QCustomPlot_PyQt6 as qcp
 from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QPen
@@ -12,11 +14,10 @@ from PyQt6.QtGui import QPen
 from core.line import Line
 from core.point import Point
 from draw.arc_drawer import ArcDrawer
-from draw.line_drawer import LineDrawer
 from draw.drone_drawer import DroneDrawer
+from draw.line_drawer import LineDrawer
 from pathfinding.pathfinding import Route
 
-import math
 
 class TrajectoryDrawer:
     """
@@ -72,25 +73,27 @@ class TrajectoryDrawer:
         """
         Set a start angle of trajectory.
         """
+        min_len_points = 2
+        error_lim = 0.001
         if len(self.route_drawer) > 0:
             initial_points = self._get_points_at_progress(0.001)
-            if len(initial_points) >= 2:
+            if len(initial_points) >= min_len_points:
                 p1 = initial_points[0]
                 p2 = initial_points[1]
                 dx = p2.x - p1.x
                 dy = p2.y - p1.y
-                
-                if abs(dx) > 0.001 or abs(dy) > 0.001:
+
+                if abs(dx) > error_lim or abs(dy) > error_lim:
                     self.current_angle = math.atan2(dy, dx)
                     self.drone_marker.set_angle_rad(self.current_angle)
                 else:
                     initial_points = self._get_points_at_progress(0.01)
-                    if len(initial_points) >= 2:
+                    if len(initial_points) >= min_len_points:
                         p1 = initial_points[0]
                         p2 = initial_points[-1]
                         dx = p2.x - p1.x
                         dy = p2.y - p1.y
-                        if abs(dx) > 0.001 or abs(dy) > 0.001:
+                        if abs(dx) > error_lim or abs(dy) > error_lim:
                             self.current_angle = math.atan2(dy, dx)
                             self.drone_marker.set_angle_rad(self.current_angle)
 
@@ -206,13 +209,14 @@ class TrajectoryDrawer:
 
             self.drone_marker.set_position(current_point.x, current_point.y)
 
-            if len(points) >= 2:
+            min_points_len = 2
+            if len(points) >= min_points_len:
                 prev_point = points[-2]
                 dx = current_point.x - prev_point.x
                 dy = current_point.y - prev_point.y
-                
+
                 angle_rad = math.atan2(dy, dx)
-                
+
                 self.current_angle = angle_rad
                 self.drone_marker.set_angle_rad(angle_rad)
             else:
@@ -220,7 +224,7 @@ class TrajectoryDrawer:
 
             if not self.drone_marker.is_visible():
                 self.drone_marker.set_visible(True)
-            
+
         self.map_view.replot()
 
     def _get_points_at_progress(self, current_progress: float) -> list[Point]:
@@ -286,13 +290,14 @@ class TrajectoryDrawer:
         """
         current_length = self.progress * self.trajectory_length
         return round(current_length)
-    
+
     def get_visited_control_points_num(self) -> int:
         """
         Get visited control points amount.
 
         Returns:
             Number of visited control points.
+
         """
         return self.visited_points_num
 

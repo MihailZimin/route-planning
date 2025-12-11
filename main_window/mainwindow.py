@@ -257,7 +257,9 @@ class MainWindow(QMainWindow):
         if self.trajectory_drawers:
             progress = self.trajectory_drawers[0].get_current_progress()
             cur_length = sum(drawer.get_current_length() for drawer in self.trajectory_drawers)
-            cur_visited_control_points = sum(drawer.get_visited_control_points_num() for drawer in self.trajectory_drawers)
+            cur_visited_control_points = sum(
+                drawer.get_visited_control_points_num() for drawer in self.trajectory_drawers
+            )
 
             self.slider.blockSignals(True)
             self.slider.setValue(int(progress * 100))
@@ -395,7 +397,7 @@ class MainWindow(QMainWindow):
             QMessageBox.information(self, "Траектория БПЛА",
                 "Ha карте нет стартовой точки")
             return
-        
+
         if self.bpla_count == 0:
             QMessageBox.information(self, "Траектория БПЛА",
                 "Введите количество БПЛА")
@@ -432,7 +434,9 @@ class MainWindow(QMainWindow):
                 total_path_list.extend(cur_path.route)
 
             total_path = Route(total_path_list)
-            self.trajectory_drawers.append((TrajectoryDrawer(total_path, self.custom_plot, control_points_for_drawer)))
+            self.trajectory_drawers.append(
+                TrajectoryDrawer(total_path, self.custom_plot, control_points_for_drawer)
+            )
 
         self.update_animation_duration()
         self.set_animation_buttons_state(enabled=True)
@@ -772,7 +776,7 @@ class MainWindow(QMainWindow):
 
         if edit_win.exec() == QDialog.DialogCode.Accepted:
             if geo_object.type == "Point" and geo_object.is_start_point:
-                if start_point_index != -1 and index != start_point_index:
+                if start_point_index not in (-1, index):
                     self.geo_objects[start_point_index].is_start_point = False
                 self.start_point = geo_object
             self.showObjectsParams()
