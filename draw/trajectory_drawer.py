@@ -23,13 +23,14 @@ class TrajectoryDrawer:
     Class for drawing trajectory with animation.
     """
 
-    def __init__(self, path: Route, map_view: qcp.QCustomPlot) -> None:
+    def __init__(self, path: Route, map_view: qcp.QCustomPlot, control_points: list[Point]) -> None:
         """
         Initialize trajectory drawer.
 
         Args:
             path: list of lines and arches which form a trajectory.
             map_view: widget where trajectory will be drawn.
+            control_points: list of control points.
 
         """
         self.route_drawer = []
@@ -47,7 +48,6 @@ class TrajectoryDrawer:
         self.progress = 0.0
         self.is_animating = False
         self.map_view = map_view
-        self.current_length = 0.0
         self.trajectory = qcp.QCPCurve(self.map_view.xAxis, self.map_view.yAxis)
         pen = QPen(Qt.GlobalColor.blue)
         pen.setWidth(3)
@@ -61,6 +61,10 @@ class TrajectoryDrawer:
 
         self.prev_point = None
         self.current_angle = 0.0
+
+        self.visited_points_num = 0
+        self.control_points = control_points
+        self.visited_points = []
 
         self._calculate_initial_angle()
 
@@ -103,7 +107,6 @@ class TrajectoryDrawer:
 
         self.is_animating = True
         self.progress = 0.0
-        self.current_length = 0.0
         self.trajectory.data().clear()
         self.drone_marker.set_visible(False)
 
@@ -138,7 +141,8 @@ class TrajectoryDrawer:
         """
         self.pause_animation()
         self.progress = 0.0
-        self.current_length = 0
+        self.visited_points_num = 0
+        self.visited_points = []
         self.drone_marker.set_visible(False)
         self.trajectory.data().clear()
         self.map_view.replot()
@@ -165,11 +169,6 @@ class TrajectoryDrawer:
         Set duration of animation.
         """
         self.duration = max(100, duration_ms)
-        if self.is_animating:
-            current_progress = self.progress
-            self.reset_animation()
-            self.progress = current_progress
-            self.start_animation()
 
     def _animation_step(self) -> None:
         """
@@ -198,6 +197,10 @@ class TrajectoryDrawer:
         if points:
             for point in points:
                 self.trajectory.addData(point.x, point.y)
+                for control_point in self.control_points:
+                    if control_point == point and point not in self.visited_points:
+                        self.visited_points_num += 1
+                        self.visited_points.append(point)
 
             current_point = points[-1]
 
@@ -242,7 +245,6 @@ class TrajectoryDrawer:
         traveled_dist = current_progress * self.trajectory_length
         points = []
         counted_dist = 0
-        self.current_length = 0
 
         for segment in self.route_drawer:
             segment_length = segment.length()
@@ -252,7 +254,6 @@ class TrajectoryDrawer:
                 if segment_points:
                     points.extend(segment_points)
                 counted_dist += segment_length
-                self.current_length += segment_length
             else:
                 remainder = traveled_dist - counted_dist
                 segment_progress = remainder / segment_length
@@ -262,7 +263,6 @@ class TrajectoryDrawer:
                     if segment_points:
                         points.extend(segment_points)
 
-                    self.current_length += remainder
                 break
         return points
 
@@ -284,7 +284,17 @@ class TrajectoryDrawer:
             Current length of trajectory.
 
         """
-        return round(self.current_length)
+        current_length = self.progress * self.trajectory_length
+        return round(current_length)
+    
+    def get_visited_control_points_num(self) -> int:
+        """
+        Get visited control points amount.
+
+        Returns:
+            Number of visited control points.
+        """
+        return self.visited_points_num
 
     def draw(self, map_view: qcp.QCustomPlot, color:Qt.GlobalColor=Qt.GlobalColor.red) -> None:
         """

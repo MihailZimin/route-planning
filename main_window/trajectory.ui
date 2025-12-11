@@ -463,6 +463,9 @@ border-radius: 10px;</string>
                <property name="enabled">
                 <bool>false</bool>
                </property>
+               <property name="text">
+                <string>0</string>
+               </property>
               </widget>
              </item>
              <item row="0" column="0">
@@ -494,6 +497,9 @@ border-radius: 10px;
               <widget class="QLineEdit" name="curPointsLineEdit">
                <property name="enabled">
                 <bool>false</bool>
+               </property>
+               <property name="text">
+                <string>0</string>
                </property>
               </widget>
              </item>

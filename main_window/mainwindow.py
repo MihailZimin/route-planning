@@ -80,6 +80,7 @@ class MainWindow(QMainWindow):
         self.start_point: PointDrawer = None
         self.bpla_count = 1
         self.speed = 50
+        self.visited_control_points = 0
         self.initializeUI()
 
     def initializeUI(self) -> None:
@@ -256,12 +257,14 @@ class MainWindow(QMainWindow):
         if self.trajectory_drawers:
             progress = self.trajectory_drawers[0].get_current_progress()
             cur_length = sum(drawer.get_current_length() for drawer in self.trajectory_drawers)
+            cur_visited_control_points = sum(drawer.get_visited_control_points_num() for drawer in self.trajectory_drawers)
 
             self.slider.blockSignals(True)
             self.slider.setValue(int(progress * 100))
             self.slider.blockSignals(False)
 
             self.curDistanceLineEdit.setText(str(cur_length))
+            self.curPointsLineEdit.setText(str(cur_visited_control_points))
 
             if progress >= 1:
                 self.startButton.setIcon(QIcon("pict_trajectory/play.png"))
@@ -385,6 +388,7 @@ class MainWindow(QMainWindow):
         Slot for calculation trajectory for animation.
         """
         control_points = []
+        control_points_for_drawer = []
         obstacles = []
 
         if self.start_point is None:
@@ -399,6 +403,8 @@ class MainWindow(QMainWindow):
 
         for geo_object in self.geo_objects:
             if geo_object.type == "Point":
+                if geo_object != self.start_point:
+                    control_points_for_drawer.append(geo_object)
                 control_points.append(geo_object)
             else:
                 obstacles.append(geo_object)
@@ -426,7 +432,7 @@ class MainWindow(QMainWindow):
                 total_path_list.extend(cur_path.route)
 
             total_path = Route(total_path_list)
-            self.trajectory_drawers.append((TrajectoryDrawer(total_path, self.custom_plot)))
+            self.trajectory_drawers.append((TrajectoryDrawer(total_path, self.custom_plot, control_points_for_drawer)))
 
         self.update_animation_duration()
         self.set_animation_buttons_state(enabled=True)
