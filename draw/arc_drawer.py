@@ -69,7 +69,7 @@ class ArcDrawer(Arc):
 
         map_view.replot()
 
-    def get_progress_points(self, progress: float, point_count: int = 100) -> list[Point]:
+    def get_progress_points(self, progress: float) -> list[Point]:
         """
         Get points for animation drawing.
 
