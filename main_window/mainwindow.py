@@ -347,6 +347,7 @@ class MainWindow(QMainWindow):
             self.updateObjectList()
             self.redraw()
             self.statusBar.showMessage(f"Выбран файл: {file_path}")
+            self.set_animation_buttons_state(enabled=False)
 
     def saveMap(self) -> None:
         """
