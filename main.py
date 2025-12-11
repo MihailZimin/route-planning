@@ -6,6 +6,9 @@ This is the entrance to the app.
 
 
 import sys
+import faulthandler
+
+faulthandler.enable()
 
 from PyQt6.QtWidgets import QApplication
 
