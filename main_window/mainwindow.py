@@ -75,7 +75,7 @@ class MainWindow(QMainWindow):
         self.geo_objects: list[ABCDrawer] = []
         self.points_polygon: list[Point] = []
         self.algorithm: Algorithm = Algorithm.LITTLE
-        self.trajectory_drawer: TrajectoryDrawer = []
+        self.trajectory_drawers: list[TrajectoryDrawer] = []
         self.ui_timer: QTimer = None
         self.start_point: PointDrawer = None
         self.bpla_count = 1
@@ -148,6 +148,11 @@ class MainWindow(QMainWindow):
         """
         Get parameters of trajectrory.
         """
+        for trajectory_drawer in self.trajectory_drawers:
+            if trajectory_drawer.is_animating:
+                QMessageBox.information(self, "Траектория БПЛА",
+                    "Идет анимация траектории")
+                return
         new_speed = self.speedLineEdit.text()
         new_bpla_count = self.droneAmountLineEdit.text()
         try:
@@ -160,14 +165,22 @@ class MainWindow(QMainWindow):
             self.droneAmountLineEdit.text("1")
             return
 
+        if new_speed <= 0 or new_bpla_count < 0:
+            QMessageBox.information(self, "Траектория БПЛА",
+                "He валидные параметры")
+            return
+
         self.speed = new_speed
         self.bpla_count = new_bpla_count
 
         self.speedLineEdit.setText(str(self.speed))
         self.droneAmountLineEdit.setText(str(self.bpla_count))
 
-        if self.trajectory_drawer:
+        if self.trajectory_drawers:
             self.update_animation_duration()
+
+        self.set_animation_buttons_state(enabled=False)
+        self.redraw()
 
         QMessageBox.information(self, "Траектория БПЛА",
                 "Параметры установлены")
@@ -176,8 +189,8 @@ class MainWindow(QMainWindow):
         """
         Update speed of bpla.
         """
-        if self.trajectory_drawer:
-            total_length_meters = self.trajectory_drawer.trajectory_length
+        for trajectory_drawer in self.trajectory_drawers:
+            total_length_meters = trajectory_drawer.trajectory_length
             pixels_to_meters = 0.1
             total_length_meters = total_length_meters * pixels_to_meters
 
@@ -185,57 +198,64 @@ class MainWindow(QMainWindow):
                 duration_seconds = total_length_meters / self.speed
                 duration_ms = int(duration_seconds * 1000)
 
-                self.trajectory_drawer.set_duration(duration_ms)
+                trajectory_drawer.set_duration(duration_ms)
 
     def start_animation(self) -> None:
         """
         Start or continue animation.
         """
-        if self.trajectory_drawer:
-            if self.trajectory_drawer.is_animating:
+        if self.trajectory_drawers:
+            if self.trajectory_drawers[0].is_animating:
+                for trajectory_drawer in self.trajectory_drawers:
+                    if trajectory_drawer.is_animating:
+                        trajectory_drawer.pause_animation()
                 self.startButton.setIcon(QIcon("pict_trajectory/play.png"))
                 self.startButton.setIconSize(QSize(35, 35))
-                self.trajectory_drawer.pause_animation()
             else:
+                for trajectory_drawer in self.trajectory_drawers:
+                    if not trajectory_drawer.is_animating:
+                        trajectory_drawer.resume_animation()
                 self.startButton.setIcon(QIcon("pict_trajectory/pause.png"))
                 self.startButton.setIconSize(QSize(35, 35))
-                self.trajectory_drawer.resume_animation()
 
     def reset_animation(self) -> None:
         """
         Reset animation.
         """
-        if self.trajectory_drawer:
+        if self.trajectory_drawers:
             self.startButton.setIcon(QIcon("pict_trajectory/play.png"))
             self.startButton.setIconSize(QSize(35, 35))
-            self.trajectory_drawer.reset_animation()
+            for trajectory_drawer in self.trajectory_drawers:
+                trajectory_drawer.reset_animation()
 
     def finish_animation(self) -> None:
         """
         Finish animation.
         """
-        if self.trajectory_drawer:
+        if self.trajectory_drawers:
             self.startButton.setIcon(QIcon("pict_trajectory/play.png"))
             self.startButton.setIconSize(QSize(35, 35))
-            self.trajectory_drawer.finish_animation()
+            for trajectory_drawer in self.trajectory_drawers:
+                trajectory_drawer.finish_animation()
 
     def on_progress_slider_changed(self, value: int) -> None:
         """
         Change slider progress.
         """
-        if self.trajectory_drawer:
+        if self.trajectory_drawers:
             self.slider.blockSignals(True)
             progress = value / 100.0
-            self.trajectory_drawer.set_progress(progress)
+            for trajectory_drawer in self.trajectory_drawers:
+                trajectory_drawer.set_progress(progress)
             self.slider.blockSignals(False)
 
     def update_animation_ui(self) -> None:
         """
         Update animation via mainwindow timer.
         """
-        if self.trajectory_drawer:
-            progress = self.trajectory_drawer.get_current_progress()
-            cur_length = self.trajectory_drawer.get_current_length()
+        if self.trajectory_drawers:
+            progress = self.trajectory_drawers[0].get_current_progress()
+            cur_length = sum(drawer.get_current_length() for drawer in self.trajectory_drawers)
 
             self.slider.blockSignals(True)
             self.slider.setValue(int(progress * 100))
@@ -274,10 +294,12 @@ class MainWindow(QMainWindow):
         """
         Slot for changing map.
         """
-        if self.trajectory_drawer and self.trajectory_drawer.is_animating:
-            QMessageBox.information(self, "Траектория БПЛА",
-                "Идет анимация траектории")
-            return
+        if self.trajectory_drawers:
+            for trajectory_drawer in self.trajectory_drawers:
+                if trajectory_drawer.is_animating:
+                    QMessageBox.information(self, "Траектория БПЛА",
+                        "Идет анимация траектории")
+                    return
         self.stackedWidget.setCurrentIndex(1)
 
     def chooseMap(self) -> None:
@@ -287,6 +309,7 @@ class MainWindow(QMainWindow):
         file_path, _ = QFileDialog.getOpenFileName(self, "Выберите файл", "")
         if file_path:
             self.geo_objects = []
+            self.trajectory_drawers = []
             with Path(file_path).open("r", encoding="utf-8") as file:
                 obj_list = file.readlines()
                 for obj in obj_list:
@@ -367,6 +390,11 @@ class MainWindow(QMainWindow):
             QMessageBox.information(self, "Траектория БПЛА",
                 "Ha карте нет стартовой точки")
             return
+        
+        if self.bpla_count == 0:
+            QMessageBox.information(self, "Траектория БПЛА",
+                "Введите количество БПЛА")
+            return
 
         for geo_object in self.geo_objects:
             if geo_object.type == "Point":
@@ -383,20 +411,22 @@ class MainWindow(QMainWindow):
         matrix = matrix_calculation(routes)
         if self.algorithm == Algorithm.LITTLE:
             solver = LittleAlgorithm()
-            path, _ = solver.solve(matrix, 0, 1)
-            path = path[0]
+            path, _ = solver.solve(matrix, 0, self.bpla_count)
         else:
             solver = BruteForceSolver()
-            path, _ = solver.solve(matrix, 0, 1)
-            path = path[0]
+            path, _ = solver.solve(matrix, 0, self.bpla_count)
 
-        total_path_list = []
-        for i in range(len(path) - 1):
-            cur_path = routes[path[i]][path[i + 1]]
-            total_path_list.extend(cur_path.route)
+        self.trajectory_drawers = []
 
-        total_path = Route(total_path_list)
-        self.trajectory_drawer = TrajectoryDrawer(total_path, self.custom_plot)
+        for j in range(len(path)):
+            total_path_list = []
+            for i in range(len(path[j]) - 1):
+                cur_path = routes[path[j][i]][path[j][i + 1]]
+                total_path_list.extend(cur_path.route)
+
+            total_path = Route(total_path_list)
+            self.trajectory_drawers.append((TrajectoryDrawer(total_path, self.custom_plot)))
+
         self.update_animation_duration()
         self.set_animation_buttons_state(enabled=True)
         QMessageBox.information(self, "Траектория БПЛА",
@@ -457,6 +487,7 @@ class MainWindow(QMainWindow):
         self.updateObjectList()
         self.redraw()
         self.set_animation_buttons_state(enabled=False)
+        self.trajectory_drawers = []
 
     def deletePolygonPoint(self) -> None:
         """
@@ -551,6 +582,7 @@ class MainWindow(QMainWindow):
                 "Точка добавлена")
         self.isStartRadioButton.setChecked(False)
         self.set_animation_buttons_state(enabled=False)
+        self.trajectory_drawers = []
 
     def addCircle(self) -> None:
         """
@@ -589,6 +621,7 @@ class MainWindow(QMainWindow):
         QMessageBox.information(self, "Траектория БПЛА",
                 "Окружность добавлена")
         self.set_animation_buttons_state(enabled=False)
+        self.trajectory_drawers = []
 
     def addLine(self) -> None:
         """
@@ -630,6 +663,7 @@ class MainWindow(QMainWindow):
         QMessageBox.information(self, "Траектория БПЛА",
                 "Отрезок добавлен")
         self.set_animation_buttons_state(enabled=False)
+        self.trajectory_drawers = []
 
     def addPolygonPoint(self) -> None:
         """
@@ -690,6 +724,7 @@ class MainWindow(QMainWindow):
         QMessageBox.information(self, "Траектория БПЛА",
                 "Многоугольник добавлен")
         self.set_animation_buttons_state(enabled=False)
+        self.trajectory_drawers = []
 
     def redraw(self) -> None:
         """
@@ -739,6 +774,7 @@ class MainWindow(QMainWindow):
             QMessageBox.information(self, "Траектория БПЛА",
                     "Объект обновлён")
             self.set_animation_buttons_state(enabled=False)
+            self.trajectory_drawers = []
 
     def editPolygonPoint(self) -> None:
         """
