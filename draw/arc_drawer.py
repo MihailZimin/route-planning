@@ -81,18 +81,29 @@ class ArcDrawer(Arc):
             Points of arc from start to animation progress.
 
         """
+        if progress <= 0.0:
+            return [Point(self.p_start.x, self.p_start.y)]
+
         x0 = self.center.x
         y0 = self.center.y
         rad = self.radius
 
-        current_angle = self.angle_start + (self.angle_end - self.angle_start) * progress
-        current_point_count = int(point_count * progress)
+        total_angle = self.angle_end - self.angle_start
+        total_length = rad * abs(total_angle)
+
+        num_points = max(100, min(500, int(total_length/2)))
+
         points = []
-        for i in range(current_point_count):
-            delta_t = (current_angle - self.angle_start) / (point_count - 1)
-            t = self.angle_start + i * delta_t
-            x = x0 + rad * cos(t)
-            y = y0 + rad * sin(t)
+        for i in range(num_points + 1):
+
+            point_progress = i / num_points
+            if point_progress > progress:
+                break
+            point_length = total_length * point_progress
+            point_angle = self.angle_start + (point_length / rad) * (1 if total_angle >= 0 else -1)
+
+            x = x0 + rad * cos(point_angle)
+            y = y0 + rad * sin(point_angle)
             points.append(Point(x, y))
 
         return points
