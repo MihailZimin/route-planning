@@ -1,18 +1,13 @@
 """Module for building tangent visibility graph for precise circular pathfinding."""
 
 import math
-from itertools import product
+from itertools import combinations, product
 
 import numpy as np
 from core.circle import Circle
 from core.line import Line
 from core.point import Point
 from core.polygon import Polygon
-
-try:
-    from pathfinding.dijkstra import algorithm_dijkstra
-except (ImportError, AttributeError):
-    from dijkstra import algorithm_dijkstra
 
 
 def get_distance(p1: Point, p2: Point) -> float:
@@ -114,20 +109,16 @@ def is_path_blocked(p1: Point, p2: Point, obstacles: list) -> bool:
             if segments_intersect(p1, p2, obs.start, obs.end):
                 return True
         elif isinstance(obs, Polygon):
-            for i in range(len(obs.points) - 1):
-                if segments_intersect(p1, p2, obs.points[i], obs.points[i+1]):
+            for i, j in combinations(range(len(obs.points) - 1)):
+                if segments_intersect(p1, p2, obs.points[i], obs.points[j]):
                     return True
         elif isinstance(obs, Circle):
             # Проверяем, лежат ли точки на этой окружности
-            d1 = get_distance(p1, obs.center)
-            d2 = get_distance(p2, obs.center)
-            on_circle = math.isclose(d1, obs.radius, abs_tol=1e-3) and \
-                        math.isclose(d2, obs.radius, abs_tol=1e-3)
-            
+            on_circle1 = math.isclose(get_distance(p1, obs.center), obs.radius, abs_tol=1e-3)
+            on_circle2 = math.isclose(get_distance(p2, obs.center), obs.radius, abs_tol=1e-3)
             # Если точки НЕ на этой окружности, проверяем, не режем ли мы её
-            if not on_circle: 
-                if circle_line_intersection(p1, p2, obs):
-                    return True
+            if not (on_circle1 and on_circle2) and circle_line_intersection(p1, p2, obs):
+                return True
     return False
 
 
