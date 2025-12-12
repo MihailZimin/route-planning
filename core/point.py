@@ -1,4 +1,5 @@
 """Point geometry class for core."""
+
 import json
 
 from .abstract_geometry import ABCGeo
@@ -10,20 +11,22 @@ class Point(ABCGeo):
     Point core class.
     """
 
-    def __init__(self, x: float = 0, y: float = 0) -> None:
+    def __init__(self, x: float = 0, y: float = 0, *, unsafe: bool = False) -> None:
         """
         Initialize 2D point.
 
         Args:
             x: X-coordinate of the point
             y: Y-coordinate of the point
+            unsafe: If true, skip bound checks
 
         Raises:
             ValueError if coordinates do not fit in certain range
 
         """
-        BasicValidationFunctions.check_coord(x, "x")
-        BasicValidationFunctions.check_coord(y, "y")
+        if not unsafe:
+            BasicValidationFunctions.check_coord(x, "x")
+            BasicValidationFunctions.check_coord(y, "y")
         self._x = x
         self._y = y
 

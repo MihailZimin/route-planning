@@ -1,4 +1,5 @@
 """Class TSPSolver for easier data processing."""
+
 import itertools
 from abc import ABC, abstractmethod
 
@@ -32,11 +33,7 @@ class TSPSolver(ABC):
         """
 
     def _find_right_order(
-            self,
-            v: int,
-            visited: list[int],
-            matrix: np.ndarray,
-            order: list[int]
+        self, v: int, visited: list[int], matrix: np.ndarray, order: list[int]
     ) -> None:
         """
         Find topologic-like order of elements.
@@ -54,18 +51,14 @@ class TSPSolver(ABC):
         """
         visited[v] = 1
         for u in range(matrix.shape[0]):
-            if (visited[u] or matrix[v][u] == np.inf):
+            if visited[u] or matrix[v][u] == np.inf:
                 continue
             self._find_right_order(u, visited, matrix, order)
         order.append(v)
 
     def _get_component(
-            self,
-            v: int,
-            visited: list[int],
-            component: list[int],
-            matrix: np.ndarray
-        ) -> None:
+        self, v: int, visited: list[int], component: list[int], matrix: np.ndarray
+    ) -> None:
         """
         Find strongly connected component.
 
@@ -81,7 +74,7 @@ class TSPSolver(ABC):
         visited[v] = 1
         component.append(v)
         for u in range(matrix.shape[0]):
-            if (visited[u] or matrix.T[v][u] == np.inf):
+            if visited[u] or matrix.T[v][u] == np.inf:
                 continue
             self._get_component(u, visited, component, matrix)
 
@@ -114,9 +107,7 @@ class TSPSolver(ABC):
         return components
 
     def _get_elements_not_in_main_component(
-            self,
-            components: list[list[int]],
-            main_element: int
+        self, components: list[list[int]], main_element: int
     ) -> list[int]:
         """
         Find every element which is not in the component with main element.
@@ -152,16 +143,15 @@ class TSPSolver(ABC):
         components = self._find_strongly_connected_components(matrix)
         if len(components) > 1:
             unreachable_elements = self._get_elements_not_in_main_component(components, start)
-            error_msg = (f"Can't build a route thruough every vertex\n"
-                         f"Those vertices are unreachable: {unreachable_elements}")
+            error_msg = (
+                f"Can't build a route thruough every vertex\n"
+                f"Those vertices are unreachable: {unreachable_elements}"
+            )
             raise SolutionExceptionError(error_msg)
 
     def _transform_matrix_for_multiple_salesmen(
-            self,
-            matrix: np.ndarray,
-            start_point: int,
-            salesmen_count: int
-        ) -> np.ndarray:
+        self, matrix: np.ndarray, start_point: int, salesmen_count: int
+    ) -> np.ndarray:
         """
         Transform matrix of distances with one control point to matrix with multiple control points.
 
@@ -185,11 +175,8 @@ class TSPSolver(ABC):
         return result_matrix
 
     def _unravel_multiple_salesmen_routes(
-            self,
-            mixed_route: list[int],
-            points_count: int,
-            start_point: int
-        ) -> list[list[int]]:
+        self, mixed_route: list[int], points_count: int, start_point: int
+    ) -> list[list[int]]:
         """
         Divide raw route to multiple routes for each salesman.
 
@@ -215,4 +202,3 @@ class TSPSolver(ABC):
                 single_route = []
 
         return result_routes
-

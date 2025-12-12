@@ -1,4 +1,5 @@
 """Tests for core class Polygon."""
+
 import pytest
 
 from core.point import Point
@@ -11,6 +12,7 @@ def sample_polygon() -> Polygon:
     Fixture for Polygon.
     """
     return Polygon([Point(0, 0), Point(1, 0), Point(1, 1), Point(0, 1)])
+
 
 @pytest.fixture
 def sample_points() -> list[Point]:
@@ -46,9 +48,7 @@ class TestPolygon:
         """
         str_saved = sample_polygon.save()
 
-        assert str_saved == (
-            "[0, 0]; [1, 0]; [1, 1]; [0, 1]; [0, 0]"
-            )
+        assert str_saved == ("[0, 0]; [1, 0]; [1, 1]; [0, 1]; [0, 0]")
 
     def test_save_format_consistency(self, sample_polygon: Polygon) -> None:
         """
@@ -63,9 +63,7 @@ class TestPolygon:
         """
         Test polygon format.
         """
-        assert str(sample_polygon) == (
-            "[(0, 0) (1, 0) (1, 1) (0, 1) (0, 0)]"
-        )
+        assert str(sample_polygon) == ("[(0, 0) (1, 0) (1, 1) (0, 1) (0, 0)]")
 
     def test_reassignment_of_points(self, sample_polygon: Polygon) -> None:
         """
@@ -102,7 +100,12 @@ class TestPolygon:
         """
         convex_list_of_points = [Point(0, 0), Point(1, 0), Point(1, 1), Point(0, 1), Point(0, 0)]
         not_convex_list_of_points = [
-            Point(0, 0), Point(1, 0), Point(1, 1), Point(0.5, 0.5), Point(0, 1), Point(0, 0)
+            Point(0, 0),
+            Point(1, 0),
+            Point(1, 1),
+            Point(0.5, 0.5),
+            Point(0, 1),
+            Point(0, 0),
         ]
         assert Polygon.check_on_convex(convex_list_of_points)
         assert not Polygon.check_on_convex(not_convex_list_of_points)

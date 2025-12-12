@@ -1,4 +1,5 @@
 """Polygon class for core."""
+
 import itertools
 
 import numpy as np
@@ -113,7 +114,7 @@ class Polygon(ABCGeo):
         if pos >= 0:
             temp_points = self._points.copy()
             temp_points.insert(pos, point)
-            self.points = temp_points           #double copying, cause checks occur in points setter
+            self.points = temp_points  # double copying, cause checks occur in points setter
 
     @staticmethod
     def check_on_convex(points: list[Point]) -> bool:
@@ -177,4 +178,4 @@ class Polygon(ABCGeo):
             self.points[index] = point
             temp_points = self._points.copy()
             temp_points[index] = point
-            self.points = temp_points           #double copying, cause checks occur in points setter
+            self.points = temp_points  # double copying, cause checks occur in points setter

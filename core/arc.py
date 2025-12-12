@@ -1,4 +1,5 @@
 """Arc class for core."""
+
 import json
 import math
 
@@ -40,9 +41,11 @@ class Arc(ABCGeo):
 
         """
         Point.check_point_instance(center, p_start, p_end)
-        self.__errormsg = ("Invalid input points, distance between"
-                         "center and first point is not equal to"
-                         "distance between center and second point")
+        self.__errormsg = (
+            "Invalid input points, distance between"
+            "center and first point is not equal to"
+            "distance between center and second point"
+        )
         self._precision = precision
 
         radius = center.distance_to(p_start)
@@ -58,12 +61,7 @@ class Arc(ABCGeo):
 
     @classmethod
     def from_angle(
-        cls,
-        center: Point,
-        radius: float,
-        angle_start: float,
-        angle_end: float,
-        precision: float = 1e-5
+        cls, center: Point, radius: float, angle_start: float, angle_end: float, precision: float = 1e-5
     ) -> "Arc":
         """
         Initialize Arc with radius, center point and angle.
@@ -89,14 +87,10 @@ class Arc(ABCGeo):
 
         """
         p_start = Point(
-            center.x + radius * math.cos(angle_start),
-            center.y + radius * math.sin(angle_start)
+            center.x + radius * math.cos(angle_start), center.y + radius * math.sin(angle_start)
         )
 
-        p_end = Point(
-            center.x + radius * math.cos(angle_end),
-            center.y + radius * math.sin(angle_end)
-        )
+        p_end = Point(center.x + radius * math.cos(angle_end), center.y + radius * math.sin(angle_end))
 
         return cls(center, p_start, p_end, precision)
 
@@ -107,14 +101,14 @@ class Arc(ABCGeo):
         center_str = f"[{self._center.x}, {self._center.y}]"
 
         return (
-        '{\n'
-        f'    "center": {center_str},\n'
-        f'    "radius": {self._radius},\n'
-        f'    "angle_start": {self._angle_start},\n'
-        f'    "angle_end": {self._angle_end},\n'
-        f'    "precision": {self._precision}\n'
-        '}'
-    )
+            "{\n"
+            f'    "center": {center_str},\n'
+            f'    "radius": {self._radius},\n'
+            f'    "angle_start": {self._angle_start},\n'
+            f'    "angle_end": {self._angle_end},\n'
+            f'    "precision": {self._precision}\n'
+            "}"
+        )
 
     @classmethod
     def load(cls, json_data: str) -> "Arc":
@@ -231,8 +225,7 @@ class Arc(ABCGeo):
 
         self._p_start = new_start
         self._angle_start = math.atan2(
-            self._p_start.y - self._center.y,
-            self._p_start.x - self._center.x
+            self._p_start.y - self._center.y, self._p_start.x - self._center.x
         )
 
     @property

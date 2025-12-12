@@ -37,7 +37,7 @@ class ArcDrawer(Arc):
         """
         return pi / 2 - angle if angle >= 0 and angle <= pi / 2 else 2 * pi - (angle - pi / 2)
 
-    def draw(self, map_view: qcp.QCustomPlot, color:Qt.GlobalColor=Qt.GlobalColor.red) -> None:
+    def draw(self, map_view: qcp.QCustomPlot, color: Qt.GlobalColor = Qt.GlobalColor.red) -> None:
         """
         Draw arc.
 
@@ -91,11 +91,10 @@ class ArcDrawer(Arc):
         total_angle = self.angle_end - self.angle_start
         total_length = rad * abs(total_angle)
 
-        num_points = max(100, min(500, int(total_length/2)))
+        num_points = max(100, min(500, int(total_length / 2)))
 
         points = []
         for i in range(num_points + 1):
-
             point_progress = i / num_points
             if point_progress > progress:
                 break

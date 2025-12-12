@@ -3,6 +3,7 @@
 from itertools import product
 
 import numpy as np
+
 from core.arc import Arc
 from core.circle import Circle
 from core.line import Line
@@ -36,57 +37,51 @@ class Route:
         return sum([x.length() for x in self.route])
 
 
-def point_to_point(
-    start: Point, end: Point, obstacles: list[Circle | Line | Polygon]
-) -> Route:
+def point_to_point(start: Point, end: Point, obstacles: list[Circle | Line | Polygon]) -> Route:
     """
-    Find shortest path using Tangent Graph (supporting Arcs).
+    Find the shortest path using Tangent Graph (supporting Arcs).
     """
-    # 1. Собираем узлы и маппинг "узел -> круг"
+    # 1. Collecting all points that can theoretically form an optimal route
     nodes, node_to_circle = collect_nodes(start, end, obstacles)
-    
-    # 2. Строим матрицу (где ребра по кругу имеют вес дуги)
-    matrix = build_visibility_matrix(nodes, obstacles, node_to_circle)
-    
-    # 3. Индексы старта и финиша (они всегда первые)
-    start_idx = 0
-    end_idx = 1 
 
-    # 4. Запускаем Дейкстру
+    # 2. Converting to matrix
+    matrix = build_visibility_matrix(nodes, obstacles, node_to_circle)
+
+    # 3. Getting start and finish node's indexes
+    start_idx = 0
+    end_idx = 1
+
+    # 4. Getting optimal path between start and end
     path_indices, _ = algorithm_dijkstra(matrix, start_idx, end_idx)
 
-    # Fallback, если пути нет
+    # Fallback for no path (should not be triggered)
     if not path_indices:
         return Route([Line(start, end)])
 
-    # 5. Реконструируем путь (создаем Line или Arc)
+    # 5. Converting to Route object with Line/Arc segments
     path_segments = []
-    
+
     for k in range(len(path_indices) - 1):
         idx_curr = path_indices[k]
-        idx_next = path_indices[k+1]
-        
+        idx_next = path_indices[k + 1]
+
         p_curr = nodes[idx_curr]
         p_next = nodes[idx_next]
-        
-        # Проверяем, лежат ли ОБЕ точки на ОДНОЙ И ТОЙ ЖЕ окружности
+
+        # Check if points are on the same circle
         circ_curr = node_to_circle.get(idx_curr)
         circ_next = node_to_circle.get(idx_next)
-        
+
         if circ_curr and circ_next and circ_curr == circ_next:
-            # Это дуга! Создаем Arc
+            # 2 points form an Arc
             try:
-                # ВАЖНО: Твой класс Arc рисует всегда против часовой стрелки (из core/arc.py).
-                # Поэтому нам нужно понять порядок точек, чтобы дуга была короткой.
-                # Но пока просто создадим Arc, так как базовый класс может не поддерживать 
-                # направление "по часовой".
                 arc = Arc(circ_curr.center, p_curr, p_next)
                 path_segments.append(arc)
             except ValueError:
-                # Если Arc упал, рисуем прямую
+                # Fallback to a Line
                 path_segments.append(Line(p_curr, p_next))
         else:
-            # Это прямая линия (полет между объектами)
+            # 2 points form a Line
             path_segments.append(Line(p_curr, p_next))
 
     return Route(path_segments)

@@ -1,4 +1,5 @@
 """Tests for core class Circle."""
+
 import pytest
 
 from core.circle import Circle

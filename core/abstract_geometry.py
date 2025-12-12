@@ -1,4 +1,5 @@
 """Abstract geometry classes for core geometry objects."""
+
 from abc import ABC, abstractmethod
 
 

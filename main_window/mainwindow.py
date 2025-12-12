@@ -6,7 +6,6 @@ This module provides:
 
 """
 
-
 import sys
 from enum import Enum
 from pathlib import Path
@@ -64,7 +63,7 @@ class MainWindow(QMainWindow):
         "Point": PointEditDialogWindow,
         "Circle": CircleEditDialogWindow,
         "Line": LineEditDialogWindow,
-        "Polygon": PolygonEditDialogWindow
+        "Polygon": PolygonEditDialogWindow,
     }
 
     def __init__(self) -> None:
@@ -151,8 +150,7 @@ class MainWindow(QMainWindow):
         """
         for trajectory_drawer in self.trajectory_drawers:
             if trajectory_drawer.is_animating:
-                QMessageBox.information(self, "Траектория БПЛА",
-                    "Идет анимация траектории")
+                QMessageBox.information(self, "Траектория БПЛА", "Идет анимация траектории")
                 return
         new_speed = self.speedLineEdit.text()
         new_bpla_count = self.droneAmountLineEdit.text()
@@ -160,15 +158,13 @@ class MainWindow(QMainWindow):
             new_speed = float(new_speed)
             new_bpla_count = int(new_bpla_count)
         except TypeError:
-            QMessageBox.information(self, "Траектория БПЛА",
-                "He валидные параметры")
+            QMessageBox.information(self, "Траектория БПЛА", "He валидные параметры")
             self.speedLineEdit.setText("60")
             self.droneAmountLineEdit.text("1")
             return
 
         if new_speed <= 0 or new_bpla_count < 0:
-            QMessageBox.information(self, "Траектория БПЛА",
-                "He валидные параметры")
+            QMessageBox.information(self, "Траектория БПЛА", "He валидные параметры")
             return
 
         self.speed = new_speed
@@ -183,8 +179,7 @@ class MainWindow(QMainWindow):
         self.set_animation_buttons_state(enabled=False)
         self.redraw()
 
-        QMessageBox.information(self, "Траектория БПЛА",
-                "Параметры установлены")
+        QMessageBox.information(self, "Траектория БПЛА", "Параметры установлены")
 
     def update_animation_duration(self) -> None:
         """
@@ -302,8 +297,7 @@ class MainWindow(QMainWindow):
         if self.trajectory_drawers:
             for trajectory_drawer in self.trajectory_drawers:
                 if trajectory_drawer.is_animating:
-                    QMessageBox.information(self, "Траектория БПЛА",
-                        "Идет анимация траектории")
+                    QMessageBox.information(self, "Траектория БПЛА", "Идет анимация траектории")
                     return
         self.stackedWidget.setCurrentIndex(1)
 
@@ -360,10 +354,7 @@ class MainWindow(QMainWindow):
         """
         if self.geo_objects:
             file_name, _ = QFileDialog.getSaveFileName(
-                self,
-                "Сохранить карту",
-                "",
-                "Text files (*.txt);;All Files (*)"
+                self, "Сохранить карту", "", "Text files (*.txt);;All Files (*)"
             )
             if file_name:
                 with Path(file_name).open("w", encoding="utf-8") as file:
@@ -376,8 +367,7 @@ class MainWindow(QMainWindow):
                         file.write(obj_string + "\n")
                 self.statusBar.showMessage("Карта сохранена")
         else:
-            QMessageBox.information(self, "Траектория БПЛА",
-                "Ha карте нет объектов для сохранения")
+            QMessageBox.information(self, "Траектория БПЛА", "Ha карте нет объектов для сохранения")
 
     def controlTrajectory(self) -> None:
         """
@@ -394,13 +384,11 @@ class MainWindow(QMainWindow):
         obstacles = []
 
         if self.start_point is None:
-            QMessageBox.information(self, "Траектория БПЛА",
-                "Ha карте нет стартовой точки")
+            QMessageBox.information(self, "Траектория БПЛА", "Ha карте нет стартовой точки")
             return
 
         if self.bpla_count == 0:
-            QMessageBox.information(self, "Траектория БПЛА",
-                "Введите количество БПЛА")
+            QMessageBox.information(self, "Траектория БПЛА", "Введите количество БПЛА")
             return
 
         for geo_object in self.geo_objects:
@@ -412,8 +400,7 @@ class MainWindow(QMainWindow):
                 obstacles.append(geo_object)
 
         if not control_points:
-            QMessageBox.information(self, "Траектория БПЛА",
-                "Ha карте нет контрольных точек")
+            QMessageBox.information(self, "Траектория БПЛА", "Ha карте нет контрольных точек")
             return
 
         routes = route_calculation(control_points, obstacles)
@@ -440,8 +427,7 @@ class MainWindow(QMainWindow):
 
         self.update_animation_duration()
         self.set_animation_buttons_state(enabled=True)
-        QMessageBox.information(self, "Траектория БПЛА",
-                "Оптимальный маршрут посчитан")
+        QMessageBox.information(self, "Траектория БПЛА", "Оптимальный маршрут посчитан")
 
     def chooseAlgorithm(self, action: QAction) -> None:
         """
@@ -481,8 +467,7 @@ class MainWindow(QMainWindow):
         selected_objects = self.objectList.selectedItems()
 
         if not selected_objects:
-            QMessageBox.information(self, "Траектория БПЛА",
-                "Выберите элемент")
+            QMessageBox.information(self, "Траектория БПЛА", "Выберите элемент")
             return
 
         items_index = []
@@ -507,8 +492,7 @@ class MainWindow(QMainWindow):
         selected_objects = self.polygonPoints.selectedItems()
 
         if not selected_objects:
-            QMessageBox.information(self, "Траектория БПЛА",
-                "Выберите точку")
+            QMessageBox.information(self, "Траектория БПЛА", "Выберите точку")
             return
 
         items_index = []
@@ -589,8 +573,7 @@ class MainWindow(QMainWindow):
 
         self.objectList.setCurrentRow(len(self.geo_objects) - 1)
 
-        QMessageBox.information(self, "Траектория БПЛА",
-                "Точка добавлена")
+        QMessageBox.information(self, "Траектория БПЛА", "Точка добавлена")
         self.isStartRadioButton.setChecked(False)
         self.set_animation_buttons_state(enabled=False)
         self.trajectory_drawers = []
@@ -623,14 +606,13 @@ class MainWindow(QMainWindow):
                 self.circleNameLineEdit,
                 self.XCoordLineEditCircle,
                 self.YCoordLineEditCircle,
-                self.radiusLineEditCircle
+                self.radiusLineEditCircle,
             ]
         )
 
         self.objectList.setCurrentRow(len(self.geo_objects) - 1)
 
-        QMessageBox.information(self, "Траектория БПЛА",
-                "Окружность добавлена")
+        QMessageBox.information(self, "Траектория БПЛА", "Окружность добавлена")
         self.set_animation_buttons_state(enabled=False)
         self.trajectory_drawers = []
 
@@ -665,14 +647,13 @@ class MainWindow(QMainWindow):
                 self.XCoordLineEditBegin,
                 self.YCoordLineEditBegin,
                 self.XCoordLineEditEnd,
-                self.YCoordLineEditEnd
+                self.YCoordLineEditEnd,
             ]
         )
 
         self.objectList.setCurrentRow(len(self.geo_objects) - 1)
 
-        QMessageBox.information(self, "Траектория БПЛА",
-                "Отрезок добавлен")
+        QMessageBox.information(self, "Траектория БПЛА", "Отрезок добавлен")
         self.set_animation_buttons_state(enabled=False)
         self.trajectory_drawers = []
 
@@ -692,15 +673,9 @@ class MainWindow(QMainWindow):
         self.points_polygon.append(polygon_point)
         self.updatePointsPolygonList()
 
-        MainWindow.clearLineEdit(
-            [
-                self.XCoordLineEditPolygon,
-                self.YCoordLineEditPolygon
-            ]
-        )
+        MainWindow.clearLineEdit([self.XCoordLineEditPolygon, self.YCoordLineEditPolygon])
 
-        QMessageBox.information(self, "Траектория БПЛА",
-                "Точка многоугольника добавлена")
+        QMessageBox.information(self, "Траектория БПЛА", "Точка многоугольника добавлена")
 
     def addPolygon(self) -> None:
         """
@@ -709,8 +684,9 @@ class MainWindow(QMainWindow):
         min_points = 2
         points_count = len(self.points_polygon)
         if points_count <= min_points:
-            QMessageBox.information(self, "Траектория БПЛА",
-                "Недостаточно точек для добавления многоугольника")
+            QMessageBox.information(
+                self, "Траектория БПЛА", "Недостаточно точек для добавления многоугольника"
+            )
             return
 
         name = self.polygonNameLineEdit.text()
@@ -732,8 +708,7 @@ class MainWindow(QMainWindow):
         self.points_polygon = []
         self.updatePointsPolygonList()
         MainWindow.clearLineEdit([self.polygonNameLineEdit])
-        QMessageBox.information(self, "Траектория БПЛА",
-                "Многоугольник добавлен")
+        QMessageBox.information(self, "Траектория БПЛА", "Многоугольник добавлен")
         self.set_animation_buttons_state(enabled=False)
         self.trajectory_drawers = []
 
@@ -782,8 +757,7 @@ class MainWindow(QMainWindow):
             self.showObjectsParams()
             self.updateObjectList()
             self.redraw()
-            QMessageBox.information(self, "Траектория БПЛА",
-                    "Объект обновлён")
+            QMessageBox.information(self, "Траектория БПЛА", "Объект обновлён")
             self.set_animation_buttons_state(enabled=False)
             self.trajectory_drawers = []
 
@@ -798,8 +772,8 @@ class MainWindow(QMainWindow):
 
         if edit_point_win.exec() == QDialog.DialogCode.Accepted:
             edit_point_win.setChanges()
-            QMessageBox.information(self, "Траектория БПЛА",
-                    "Точка обновлена")
+            QMessageBox.information(self, "Траектория БПЛА", "Точка обновлена")
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

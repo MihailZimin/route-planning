@@ -301,7 +301,7 @@ class TrajectoryDrawer:
         """
         return self.visited_points_num
 
-    def draw(self, map_view: qcp.QCustomPlot, color:Qt.GlobalColor=Qt.GlobalColor.red) -> None:
+    def draw(self, map_view: qcp.QCustomPlot, color: Qt.GlobalColor = Qt.GlobalColor.red) -> None:
         """
         Draw full trajectory without animation.
 

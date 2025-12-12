@@ -1,4 +1,5 @@
 """Tests for core class Point."""
+
 import json
 
 import pytest
@@ -62,7 +63,6 @@ class TestPoint:
         point.y = 200
         assert point.x == 100
 
-
     def test_save_method(self) -> None:
         """
         Test save method with positive coords.
@@ -112,12 +112,15 @@ class TestPoint:
         assert str(point) == "(0, 0)"
 
     # Parametrized tests
-    @pytest.mark.parametrize(("x", "y", "expected_str"), [
-        (1, 2, "(1, 2)"),
-        (1.5, 2.5, "(1.5, 2.5)"),
-        (-1, -2, "(-1, -2)"),
-        (0, 0, "(0, 0)"),
-    ])
+    @pytest.mark.parametrize(
+        ("x", "y", "expected_str"),
+        [
+            (1, 2, "(1, 2)"),
+            (1.5, 2.5, "(1.5, 2.5)"),
+            (-1, -2, "(-1, -2)"),
+            (0, 0, "(0, 0)"),
+        ],
+    )
     def test_str_parametrized(self, x: float, y: float, expected_str: str) -> None:
         """
         Parametrized test of str format.
@@ -125,12 +128,15 @@ class TestPoint:
         point = Point(x, y)
         assert str(point) == expected_str
 
-    @pytest.mark.parametrize(("x", "y", "expected_json"), [
-        (1, 2, [1, 2]),
-        (1.5, 2.5, [1.5, 2.5]),
-        (-1, -2, [-1, -2]),
-        (0, 0, [0, 0]),
-    ])
+    @pytest.mark.parametrize(
+        ("x", "y", "expected_json"),
+        [
+            (1, 2, [1, 2]),
+            (1.5, 2.5, [1.5, 2.5]),
+            (-1, -2, [-1, -2]),
+            (0, 0, [0, 0]),
+        ],
+    )
     def test_load_parametrized(self, x: float, y: float, expected_json: str) -> None:
         """
         Parametrized test to load.
@@ -208,6 +214,7 @@ def sample_point() -> Point:
     Fixture for a point.
     """
     return Point(5, 10)
+
 
 @pytest.fixture
 def origin_point() -> Point:

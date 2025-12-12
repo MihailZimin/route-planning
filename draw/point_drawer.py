@@ -6,7 +6,6 @@ This module provides:
 
 """
 
-
 import QCustomPlot_PyQt6 as qcp
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QBrush, QColor, QFont, QPen
@@ -22,7 +21,8 @@ class PointDrawer(ABCDrawer, Point):
     """
 
     _point_size: int = 5
-    _type : str = "Point"
+    _type: str = "Point"
+
     def __init__(self, x: float = 0, y: float = 0, name: str = "") -> None:
         """
         Init point drawer.
@@ -52,7 +52,7 @@ class PointDrawer(ABCDrawer, Point):
         """
         return PointDrawer._type
 
-    def draw(self, map_view: qcp.QCustomPlot, color:Qt.GlobalColor=Qt.GlobalColor.red) -> None:
+    def draw(self, map_view: qcp.QCustomPlot, color: Qt.GlobalColor = Qt.GlobalColor.red) -> None:
         """
         Draw point.
 
@@ -79,8 +79,7 @@ class PointDrawer(ABCDrawer, Point):
         if self.name:
             text_item = qcp.QCPItemText(map_view)
             text_item.position.setCoords(
-                self.x + 2*PointDrawer._point_size,
-                self.y + 2*PointDrawer._point_size
+                self.x + 2 * PointDrawer._point_size, self.y + 2 * PointDrawer._point_size
             )
             text_item.setText(self.name)
             text_item.setFont(QFont("Arial", 8))
@@ -92,8 +91,4 @@ class PointDrawer(ABCDrawer, Point):
         """
         Return line parameters for GUI display.
         """
-        return {
-            "Название": self.name,
-            "X": self.x,
-            "Y": self.y
-        }
+        return {"Название": self.name, "X": self.x, "Y": self.y}

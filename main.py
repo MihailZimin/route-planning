@@ -4,11 +4,7 @@ Entry point.
 This is the entrance to the app.
 """
 
-
-import faulthandler
 import sys
-
-faulthandler.enable()
 
 from PyQt6.QtWidgets import QApplication
 

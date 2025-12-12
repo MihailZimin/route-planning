@@ -6,7 +6,6 @@ This module provides:
 
 """
 
-
 import QCustomPlot_PyQt6 as qcp
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QBrush, QColor, QPen
@@ -22,7 +21,8 @@ class CircleDrawer(ABCDrawer, Circle):
     Class for drawing circle.
     """
 
-    _type : str = "Circle"
+    _type: str = "Circle"
+
     def __init__(self, center: Point, radius: float, name: str = "") -> None:
         """
         Init circle drawer.
@@ -38,7 +38,7 @@ class CircleDrawer(ABCDrawer, Circle):
         return self._name
 
     @name.setter
-    def name(self, name : str) -> None:
+    def name(self, name: str) -> None:
         """
         Set circle name.
         """
@@ -51,7 +51,7 @@ class CircleDrawer(ABCDrawer, Circle):
         """
         return CircleDrawer._type
 
-    def draw(self, map_view: qcp.QCustomPlot, color: Qt.GlobalColor=Qt.GlobalColor.red) -> None:
+    def draw(self, map_view: qcp.QCustomPlot, color: Qt.GlobalColor = Qt.GlobalColor.red) -> None:
         """
         Draw circle.
 
@@ -79,9 +79,4 @@ class CircleDrawer(ABCDrawer, Circle):
         """
         Return line parameters for GUI display.
         """
-        return {
-            "Название": self.name,
-            "X": self.center.x,
-            "Y": self.center.y,
-            "Радиус": self.radius
-        }
+        return {"Название": self.name, "X": self.center.x, "Y": self.center.y, "Радиус": self.radius}

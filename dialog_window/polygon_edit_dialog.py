@@ -67,8 +67,8 @@ class PolygonEditDialogWindow(EditDialogWindow):
         for i in range(len(self._geo_object.points)):
             try:
                 self._geo_object[i] = Point(
-                        float(self._rows["X" + str(i + 1)].text()),
-                        float(self._rows["Y" + str(i + 1)].text())
+                    float(self._rows["X" + str(i + 1)].text()),
+                    float(self._rows["Y" + str(i + 1)].text()),
                 )
             except ValueError as error:
                 QMessageBox.information(self, "Траектория БПЛА", str(error))
