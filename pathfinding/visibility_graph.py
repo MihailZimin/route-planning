@@ -142,25 +142,29 @@ def collect_nodes(start: Point, end: Point, obstacles: list) -> tuple[list[Point
     nodes = [start, end]
     node_to_circle = {}  # Map: index -> Circle
 
+    # Case w/o circles
     for obs in obstacles:
-        if isinstance(obs, Circle):
-            # Tangents from start
-            tangents_start = get_tangent_points(start, obs)
-            # Tangents from finish
-            tangents_end = get_tangent_points(end, obs)
-
-            # While adding points, remember circle which they belong to
-            current_idx = len(nodes)
-            all_tangents = tangents_start + tangents_end
-            for i, p in enumerate(all_tangents):
-                nodes.append(p)
-                node_to_circle[current_idx + i] = obs
-
-        elif isinstance(obs, Line):
+        if isinstance(obs, Line):
             nodes.append(obs.start)
             nodes.append(obs.end)
         elif isinstance(obs, Polygon):
             nodes.extend(obs.points[:-1])
+
+    # Case w circles
+    def add_circle_tangent(point: Point, circle: Circle) -> None:
+        tangents = get_tangent_points(point, circle)
+        current_idx = len(nodes)
+        for i, p in enumerate(tangents):
+            nodes.append(p)
+            node_to_circle[current_idx + i] = circle
+
+    noncircle_points = nodes.copy()
+    circles = [c for c in obstacles if isinstance(c, Circle)]
+
+    for circle in circles:
+        # Tangents from all non-circles to circle
+        for point in noncircle_points:
+            add_circle_tangent(point, circle)
 
     return nodes, node_to_circle
 
