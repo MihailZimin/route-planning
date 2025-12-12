@@ -65,13 +65,15 @@ def algorithm_dijkstra(
 if __name__ == "__main__":
     # Test block
     inf = np.inf
-    test_matrix = np.array([
-        [inf, 1.0, inf, 3.0, inf],  # 0
-        [1.0, inf, 4.0, inf, 1.0],  # 1
-        [inf, 4.0, inf, inf, inf],  # 2
-        [3.0, inf, inf, inf, 1.0],  # 3
-        [inf, 1.0, inf, 1.0, inf],  # 4
-    ])
+    test_matrix = np.array(
+        [
+            [inf, 1.0, inf, 3.0, inf],  # 0
+            [1.0, inf, 4.0, inf, 1.0],  # 1
+            [inf, 4.0, inf, inf, inf],  # 2
+            [3.0, inf, inf, inf, 1.0],  # 3
+            [inf, 1.0, inf, 1.0, inf],  # 4
+        ]
+    )
 
     test_path, test_dist = algorithm_dijkstra(test_matrix, 0, 4)
     print(f"Path: {test_path}, Length: {test_dist}")  # noqa: T201
