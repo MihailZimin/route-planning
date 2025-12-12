@@ -165,6 +165,38 @@ def collect_nodes(start: Point, end: Point, obstacles: list) -> tuple[list[Point
         # Tangents from all non-circles to circle
         for point in noncircle_points:
             add_circle_tangent(point, circle)
+        # Tangents from all other circles
+        for other in circles:
+            if circle == other:
+                continue
+            internal_similitude = Point(
+                x=(other.radius * circle.center.x + circle.radius * other.center.x)
+                / (other.radius + circle.radius),
+                y=(other.radius * circle.center.y + circle.radius * other.center.y)
+                / (other.radius + circle.radius),
+            )
+            add_circle_tangent(internal_similitude, circle)
+
+            # Similar approach works only if circles are of different sizes
+            if not math.isclose(other.radius, circle.radius):
+                external_similitude = Point(
+                    x=(other.radius * circle.center.x - circle.radius * other.center.x)
+                    / (other.radius - circle.radius),
+                    y=(other.radius * circle.center.y - circle.radius * other.center.y)
+                    / (other.radius - circle.radius),
+                    unsafe=True,
+                )
+                add_circle_tangent(external_similitude, circle)
+            else:
+                # Otherwise, use normal vector as offset
+                distance = get_distance(circle.center, other.center)
+                offset = Point(
+                    x=(other.center.y - circle.center.y) / distance * circle.radius,
+                    y=(other.center.x - circle.center.x) / distance * circle.radius,
+                    unsafe=True,
+                )
+                add_circle_tangent(Point(circle.center.x + offset.x, circle.center.y + offset.y), circle)
+                add_circle_tangent(Point(circle.center.x - offset.x, circle.center.y - offset.y), circle)
 
     return nodes, node_to_circle
 
