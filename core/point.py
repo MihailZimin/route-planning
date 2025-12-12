@@ -1,4 +1,5 @@
 """Point geometry class for core."""
+
 import json
 
 from .abstract_geometry import ABCGeo

@@ -6,7 +6,6 @@ This module provides:
 
 """
 
-
 from PyQt6 import uic
 from PyQt6.QtCore import QSize
 from PyQt6.QtWidgets import QDialog, QWidget
@@ -20,7 +19,7 @@ class EditDialogWindow(QDialog):
     Edit window class for editing geo objects.
     """
 
-    def __init__(self, geo_object : ABCDrawer | ABCGeo, path: str, parent: QWidget = None) -> None:
+    def __init__(self, geo_object: ABCDrawer | ABCGeo, path: str, parent: QWidget = None) -> None:
         """
         Create edit window object.
 

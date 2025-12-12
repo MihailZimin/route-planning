@@ -64,9 +64,9 @@ class DroneDrawer:
 
         base_vertices = [
             (self.size, 0),
-            (-self.size/2, self.size/3),
-            (-self.size/2, -self.size/3),
-            (self.size, 0)
+            (-self.size / 2, self.size / 3),
+            (-self.size / 2, -self.size / 3),
+            (self.size, 0),
         ]
 
         self.triangle_curve.data().clear()
@@ -83,7 +83,7 @@ class DroneDrawer:
 
             self.triangle_curve.addData(final_x, final_y)
 
-    def set_visible(self, visible: bool) -> None:   #noqa: FBT001
+    def set_visible(self, visible: bool) -> None:  # noqa: FBT001
         """
         Set drone visible.
         """

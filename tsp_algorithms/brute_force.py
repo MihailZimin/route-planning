@@ -1,4 +1,5 @@
 """Brute force algorithm class."""
+
 import itertools
 
 import numpy as np
@@ -12,11 +13,8 @@ class BruteForceSolver(TSPSolver):
     """
 
     def solve(
-            self,
-            matrix: np.ndarray,
-            start: int,
-            salesmen_count: int = 1
-        ) -> tuple[list[list[int]], float]:
+        self, matrix: np.ndarray, start: int, salesmen_count: int = 1
+    ) -> tuple[list[list[int]], float]:
         """
         Solve travel salesman problem.
 

@@ -4,7 +4,6 @@ Entry point.
 This is the entrance to the app.
 """
 
-
 import sys
 
 from PyQt6.QtWidgets import QApplication

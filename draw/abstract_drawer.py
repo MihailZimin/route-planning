@@ -6,7 +6,6 @@ This module provides:
 
 """
 
-
 from abc import ABC, abstractmethod
 
 import QCustomPlot_PyQt6 as qcp

@@ -6,7 +6,6 @@ This module provides:
 
 """
 
-
 import QCustomPlot_PyQt6 as qcp
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QBrush, QColor, QPen
@@ -22,8 +21,9 @@ class LineDrawer(ABCDrawer, Line):
     Class for drawing line.
     """
 
-    _type : str = "Line"
-    _point_size : int = 5
+    _type: str = "Line"
+    _point_size: int = 5
+
     def __init__(self, start: Point, end: Point, name: str = "") -> None:
         """
         Init line drawer.
@@ -52,7 +52,7 @@ class LineDrawer(ABCDrawer, Line):
         """
         return LineDrawer._type
 
-    def draw(self, map_view: qcp.QCustomPlot, color:Qt.GlobalColor=Qt.GlobalColor.red) -> None:
+    def draw(self, map_view: qcp.QCustomPlot, color: Qt.GlobalColor = Qt.GlobalColor.red) -> None:
         """
         Draw line.
 
@@ -93,14 +93,13 @@ class LineDrawer(ABCDrawer, Line):
         start_x = self.start.x
         start_y = self.start.y
 
-        if (progress == 0):
+        if progress == 0:
             return [Point(start_x, start_y)]
 
         current_x = self.start.x + (self.end.x - self.start.x) * progress
         current_y = self.start.y + (self.end.y - self.start.y) * progress
 
         return [Point(start_x, start_y), Point(current_x, current_y)]
-
 
     @property
     def parameters(self) -> dict:
@@ -112,5 +111,5 @@ class LineDrawer(ABCDrawer, Line):
             "X1": self.start.x,
             "Y1": self.start.y,
             "X2": self.end.x,
-            "Y2": self.end.y
+            "Y2": self.end.y,
         }

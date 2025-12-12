@@ -21,7 +21,8 @@ class PolygonDrawer(Polygon, ABCDrawer):
     Class for drawing polygon.
     """
 
-    _type : str = "Polygon"
+    _type: str = "Polygon"
+
     def __init__(self, points: list[Point], name: str = "") -> None:
         """
         Init polygon drawer.
@@ -50,7 +51,7 @@ class PolygonDrawer(Polygon, ABCDrawer):
         """
         return PolygonDrawer._type
 
-    def draw(self, map_view: qcp.QCustomPlot, color:Qt.GlobalColor=Qt.GlobalColor.red) -> None:
+    def draw(self, map_view: qcp.QCustomPlot, color: Qt.GlobalColor = Qt.GlobalColor.red) -> None:
         """
         Draw Polygon.
 

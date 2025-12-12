@@ -1,4 +1,5 @@
 """Little algorithm class."""
+
 import heapq
 
 import numpy as np
@@ -7,34 +8,34 @@ from .abstract_solver import TSPSolver
 
 
 class Node:
+    """
+    Auxiliary class for Little's algorithm.
+    """
+
+    def __init__(
+        self,
+        matrix: np.ndarray,
+        lower_bound: float,
+        route: list[tuple[int, int]],
+    ) -> None:
         """
-        Auxiliary class for Little's algorithm.
+        Initialize node.
+
+        Args:
+            matrix: 2D numpy array of distances
+            lower_bound: lower bound of possible route length
+            route: list of edges between points
+
         """
+        self.matrix = matrix
+        self.lower_bound = lower_bound
+        self.route = route
 
-        def __init__(
-                self,
-                matrix: np.ndarray,
-                lower_bound: float,
-                route: list[tuple[int, int]],
-            ) -> None:
-            """
-            Initialize node.
-
-            Args:
-                matrix: 2D numpy array of distances
-                lower_bound: lower bound of possible route length
-                route: list of edges between points
-
-            """
-            self.matrix = matrix
-            self.lower_bound = lower_bound
-            self.route = route
-
-        def __lt__(self, other: "Node") -> bool:
-            """
-            Auxiliary method for possibility to add elements to queue.
-            """
-            return self.lower_bound < other.lower_bound
+    def __lt__(self, other: "Node") -> bool:
+        """
+        Auxiliary method for possibility to add elements to queue.
+        """
+        return self.lower_bound < other.lower_bound
 
 
 class LittleAlgorithm(TSPSolver):
@@ -42,7 +43,7 @@ class LittleAlgorithm(TSPSolver):
     Class that represents Little algorithm solution to TSP.
     """
 
-    def __add_node(self, nodes: list[Node],  node: Node) -> None:
+    def __add_node(self, nodes: list[Node], node: Node) -> None:
         """
         Auxiliary method for clearer usage of heap.
 
@@ -350,11 +351,8 @@ class LittleAlgorithm(TSPSolver):
             cur_node.lower_bound = np.inf
 
     def solve(
-            self,
-            matrix: np.ndarray,
-            start: int,
-            salesmen_count: int = 1
-        ) -> tuple[list[list[int]], float]:
+        self, matrix: np.ndarray, start: int, salesmen_count: int = 1
+    ) -> tuple[list[list[int]], float]:
         """
         Representation method of Little's algorithm.
 
@@ -383,8 +381,9 @@ class LittleAlgorithm(TSPSolver):
         modified_size = matrix.shape[0]
 
         root_matrix = matrix.copy()
-        lower_bound = (self.__reduce_matrix_by_rows(root_matrix) +
-                        self.__reduce_matrix_by_cols(root_matrix))
+        lower_bound = self.__reduce_matrix_by_rows(root_matrix) + self.__reduce_matrix_by_cols(
+            root_matrix
+        )
         root = Node(root_matrix, lower_bound, route=[])
         self.__add_node(nodes, root)
 
